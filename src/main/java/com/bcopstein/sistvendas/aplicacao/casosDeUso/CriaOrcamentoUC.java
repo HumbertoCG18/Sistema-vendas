@@ -32,8 +32,9 @@ public class CriaOrcamentoUC {
 
     // Modified to accept NovoOrcamentoRequestDTO
     public OrcamentoDTO run(NovoOrcamentoRequestDTO request){
-        List<ItemPedidoDTO> itens = request.getItens();
-        String estadoCliente = request.getEstadoCliente();
+    List<ItemPedidoDTO> itens = request.getItens();
+    String estadoCliente = request.getEstadoCliente();
+    String paisCliente = request.getPaisCliente(); // OBTER PAÍS
 
         // System.out.println("CriaOrcamentoUC: Recebendo itens para orçamento: " + itens + ", Estado: " + estadoCliente);
         PedidoModel pedido = new PedidoModel(0); // Pedido ID is transient here
@@ -59,7 +60,7 @@ public class CriaOrcamentoUC {
         }
         
         // System.out.println("CriaOrcamentoUC: Pedido criado com " + pedido.getItens().size() + " item(ns)");
-        OrcamentoModel orcamento = servicoDeVendas.criaOrcamento(pedido, estadoCliente); // Pass estadoCliente
+        OrcamentoModel orcamento = servicoDeVendas.criaOrcamento(pedido, estadoCliente, paisCliente); // Pass estadoCliente
         return OrcamentoDTO.fromModel(orcamento);
     }
 }

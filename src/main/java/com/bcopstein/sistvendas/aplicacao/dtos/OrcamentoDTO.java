@@ -26,7 +26,8 @@ public class OrcamentoDTO {
     private String impostoFederalFormatado; // String formatada: "Valor (15.00%)"
     
     private BigDecimal valorDescontoTotal; // Total de descontos aplicados
-    
+    private String paisCliente; // NOVO ATRIBUTO
+
     private BigDecimal custoConsumidor; // Custo final para o consumidor
     
     private boolean efetivado;
@@ -53,7 +54,8 @@ public class OrcamentoDTO {
                        BigDecimal impostoFederal, String impostoFederalFormatado,
                        BigDecimal valorDescontoTotal,
                        BigDecimal custoConsumidor, boolean efetivado, String estadoCliente,
-                       LocalDate dataGeracao) {
+                       LocalDate dataGeracao,
+                       String paisCliente) {
         this.id = id;
         this.itens = itens != null ? itens : new ArrayList<>();
         this.precosUnitariosItens = precosUnitariosItens != null ? precosUnitariosItens : new ArrayList<>();
@@ -67,6 +69,7 @@ public class OrcamentoDTO {
         this.efetivado = efetivado;
         this.estadoCliente = estadoCliente;
         this.dataGeracao = dataGeracao;
+        this.paisCliente = paisCliente;
 
     }
 
@@ -84,7 +87,9 @@ public class OrcamentoDTO {
     public boolean isEfetivado() { return efetivado; }
     public String getEstadoCliente() { return estadoCliente; }
     public LocalDate getDataGeracao() { return dataGeracao; }
-    public void setDataGeracao(LocalDate dataGeracao) { this.dataGeracao = dataGeracao; }
+    public void setDataGeracao(LocalDate dataGeracao) {this.dataGeracao = dataGeracao;}
+    public String getPaisCliente() { return paisCliente; }
+
     
 
     // Setters (úteis para construção ou frameworks de mapeamento)
@@ -99,7 +104,9 @@ public class OrcamentoDTO {
     public void setValorDescontoTotal(BigDecimal valorDescontoTotal) { this.valorDescontoTotal = valorDescontoTotal; }
     public void setCustoConsumidor(BigDecimal custoConsumidor) { this.custoConsumidor = custoConsumidor; }
     public void setEfetivado(boolean efetivado) { this.efetivado = efetivado; }
-    public void setEstadoCliente(String estadoCliente) { this.estadoCliente = estadoCliente; }
+    public void setEstadoCliente(String estadoCliente) {this.estadoCliente = estadoCliente;}
+    public void setPaisCliente(String paisCliente) { this.paisCliente = paisCliente; }
+
 
 
     public static OrcamentoDTO fromModel(OrcamentoModel orcamento) {
@@ -141,9 +148,8 @@ public class OrcamentoDTO {
                                                   aliquotaEstadualModel.multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP));
         
         // Imposto federal tem alíquota fixa de 15%
-        String impostoFederalFmt = String.format(Locale.US, "%.2f (15.00%%)", 
-                impostoFederalModel);
-                                                 
+        String impostoFederalFmt = String.format(Locale.US, "%.2f (15.00%%)", impostoFederalModel);
+        String paisClienteModel = orcamento.getPaisCliente();
          LocalDate dataGeracaoModel = orcamento.getDataGeracao();
 
         return new OrcamentoDTO(
@@ -159,7 +165,8 @@ public class OrcamentoDTO {
                 custoConsumidorModel,
                 orcamento.isEfetivado(),
                 orcamento.getEstadoCliente(),
-                dataGeracaoModel
+                dataGeracaoModel,
+                paisClienteModel
         );
     }
 }

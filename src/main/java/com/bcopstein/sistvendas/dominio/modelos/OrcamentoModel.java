@@ -35,6 +35,7 @@ public class OrcamentoModel {
     private BigDecimal valorDesconto; // Soma de todos os descontos aplicáveis
     private BigDecimal custoConsumidor; // Custo final
     private LocalDate dataGeracao; // Novo atributo
+    private String paisCliente;
 
 
     private boolean efetivado;
@@ -54,13 +55,15 @@ public class OrcamentoModel {
         this.dataGeracao = LocalDate.now();
     }
 
+
+    //Setters
+    
+
+
     public LocalDate getDataGeracao() {
         return dataGeracao;
     }
 
-    public void setDataGeracao(LocalDate dataGeracao) { // Setter pode ser útil para testes ou casos específicos
-        this.dataGeracao = dataGeracao;
-    }
 
     public boolean isVencido() {
         if (this.dataGeracao == null) {
@@ -70,9 +73,13 @@ public class OrcamentoModel {
         return LocalDate.now().isAfter(this.dataGeracao.plusDays(21));
     }
 
-    // Getter and Setter for estadoCliente
-    public String getEstadoCliente() { return estadoCliente; }
-    public void setEstadoCliente(String estadoCliente) { this.estadoCliente = estadoCliente; }
+    // Setters
+    public void setEstadoCliente(String estadoCliente) {this.estadoCliente = estadoCliente;}
+
+    public void setPaisCliente(String paisCliente) {
+        this.paisCliente = paisCliente;
+    } // NOVO SETTER
+    
 
     // Getters para os campos BigDecimal (arredondados para exibição ou uso)
     public BigDecimal getCustoItens() { return custoItens.setScale(2, RoundingMode.HALF_UP); }
@@ -81,6 +88,8 @@ public class OrcamentoModel {
     public BigDecimal getImpostoFederal() { return impostoFederal.setScale(2, RoundingMode.HALF_UP); }
     public BigDecimal getValorDesconto() { return valorDesconto.setScale(2, RoundingMode.HALF_UP); }
     public BigDecimal getCustoConsumidor() { return custoConsumidor.setScale(2, RoundingMode.HALF_UP); }
+    public String getPaisCliente() { return paisCliente; } // NOVO GETTER
+    public String getEstadoCliente() { return estadoCliente; }
 
 
     public void addItensPedido(PedidoModel pedido) {
@@ -289,6 +298,7 @@ private void calcularDescontosInterno() {
                 "id=" + id +
                 ", dataGeracao=" + dataGeracao + 
                 ", itens=" + (itens != null ? itens.size() : 0) + " itens" +
+                "paisCliente='" + paisCliente + '\'' +
                 ", estadoCliente='" + estadoCliente + '\'' +
                 ", custoItens=" + (custoItens != null ? custoItens.setScale(2, RoundingMode.HALF_UP).toPlainString() : "0.00") +
                 ", impostoEstadual=" + (impostoEstadual != null ? impostoEstadual.setScale(2, RoundingMode.HALF_UP).toPlainString() : "0.00") +
