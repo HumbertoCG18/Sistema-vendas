@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lojas ACME - Sistema de Vendas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #919191;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            border: 1px solid #000000;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #3498db;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: 1px solid #2980b9;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0; /* Margin padrão */
+            transition: background-color 0.3s, transform 0.1s;
+            font-weight: bold;
+            display: inline-block;
+            text-align: center;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button.remove {
+            background-color: #e74c3c;
+            border-color: #c0392b;
+        }
+
+        button.remove:hover {
+            background-color: #c0392b;
+        }
+
+        button.add {
+            background-color: #2ecc71;
+            border-color: #27ae60;
+        }
+
+        button.add:hover {
+            background-color: #27ae60;
+        }
+
+        .result {
+            background-color: #e9ecef;
+            border: 1px solid #000000;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            overflow: auto;
+            max-height: 300px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+
+        input,
+        select {
+            padding: 10px;
+            margin: 5px 0 10px 0;
+            border: 1px solid #000000;
+            border-radius: 4px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        input[type="number"] {
+            width: 120px;
+        }
+        input[type="checkbox"] {
+            width: auto; /* As caixas de seleção não devem ter largura total */
+            margin-right: 5px;
+        }
+
+        .item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .item select.prodId {
+            flex-grow: 1;
+        }
+
+        .item input.prodQtd {
+            width: 70px;
+            flex-shrink: 0;
+        }
+
+        .item button.remove {
+            flex-shrink: 0;
+        }
+
+        .actions {
+            margin-top: 15px;
+        }
+
+        .loading {
+            color: #3498db;
+            font-style: italic;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-weight: bold;
+            background-color: #f8d7da;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #e74c3c;
+        }
+
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .product-card {
+            border: 1px solid #000000;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-card p {
+            margin: 8px 0;
+        }
+
+        .product-id {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .product-price {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .button-group {
+            display: flex;
+            /* justify-content: flex-start; Padrão */
+            align-items: center; 
+            gap: 10px; 
+            margin-top: 10px;
+            flex-wrap: wrap; 
+        }
+        .product-actions-group {
+            display: flex;
+            align-items: center; 
+            gap: 15px; 
+            margin-top: 10px;
+            margin-bottom: 15px; 
+        }
+        .product-actions-group label { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 5px; 
+            margin: 0; 
+            font-weight: normal; 
+        }
+         .product-actions-group button {
+            margin: 0; 
+        }
+
+
+        #listaOrcamentosParaGerenciar ul {
+            list-style-type: none;
+            padding: 0;
+            border: 1px solid black;
+        }
+
+        #listaOrcamentosParaGerenciar li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #listaOrcamentosParaGerenciar li .orc-info {
+            flex-grow: 1;
+            margin-right: 10px;
+            min-width: 200px;
+        }
+
+        #listaOrcamentosParaGerenciar li .orc-actions {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Lojas ACME - Sistema de Vendas</h1>
+
+    <div class="card">
+        <h2>Gerenciar Produtos</h2>
+        <div class="product-actions-group"> <button onclick="abrirFormularioProdutoPopup()">Adicionar Novo Produto</button>
+            <button onclick="exibirProdutosGerenciamentoComoJson()">Listar Produtos (JSON)</button>
+            <label for="chkMostrarDelistados">
+                <input type="checkbox" id="chkMostrarDelistados" onchange="carregarProdutosParaGerenciamento()"> Mostrar De-listados
+            </label>
+        </div>
+        <p style="font-size: 0.9em; color: #555;">Para editar um produto, clique em "Editar" na lista abaixo. Os dados
+            serão carregados no formulário em uma nova janela.</p>
+        
+        <div id="produtosGerenciamentoContainer" class="product-list"></div>
+        <div id="produtosGerenciamentoResult" class="result" style="display: none;"></div>
+        <div id="produtoFormGlobalResult" class="result" style="display: none;"></div>
+    </div>
+
+<div class="card">
+        <h2>Criar Novo Orçamento</h2>
+        <div>
+            <label for="estadoCliente" style="display:block; margin-bottom:3px;"><b>Estado do Cliente (UF):</b></label>
+            <input type="text" id="estadoCliente" placeholder="Ex: RS" style="width: 100px; margin-bottom:10px;">
+        </div>
+        <p>Adicione produtos ao orçamento:</p>
+        <div id="itensOrcamento">
+            </div>
+        <div class="actions button-group" style="margin-top: 20px; justify-content: space-between;"> 
+            <button class="add" onclick="adicionarLinhaDeItemParaOrcamento()">Adicionar Novo Item</button>
+            <button onclick="submeterNovoOrcamento()">Criar Orçamento</button>
+        </div>
+        <div id="orcamentoResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="card">
+        <h2>Gerenciar Orçamentos Existentes</h2>
+        <div id="listaOrcamentosParaGerenciar">
+        </div>
+        <div id="gerenciarOrcamentoResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="card">
+        <h2>Últimos Orçamentos Efetivados (Relatório)</h2>
+        <div>
+            <label for="numOrcamentos">Quantidade:</label>
+            <input type="number" id="numOrcamentos" placeholder="N" value="5" min="1" style="width:100px;">
+        </div>
+        <div class="button-group">
+            <button onclick="buscarUltimosOrcamentosEfetivados()">Buscar Relatório</button>
+        </div>
+        <div id="ultimosResult" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        let produtosCarregadosParaGerenciamento = [];
+        let produtosDisponiveisParaDropdown = []; 
+        let orcamentosCarregados = [];
+        let produtoFormWindow = null;
+
+        async function handleFetchError(response) {
+            if (!response.ok) {
+                let errorMsg = `Erro ${response.status}: ${response.statusText}`;
+                try {
+                    const errorData = await response.json();
+                    errorMsg = `Erro ${response.status}: ${errorData.message || response.statusText}`;
+                } catch (e) { /* Mantém msg original se JSON falhar */ }
+                throw new Error(errorMsg);
+            }
+            if (response.status === 204) return null;
+            return response.json();
+        }
+
+        window.onload = async function () {
+            await carregarProdutosParaGerenciamento();
+            await carregarTodosOrcamentosParaGerenciamento();
+            await carregarProdutosParaDropdownsOrcamento();
+            adicionarLinhaDeItemParaOrcamento(); 
+        };
+        
+        async function carregarProdutosParaDropdownsOrcamento() {
+            try {
+                const response = await fetch('/produtosDisponiveis'); 
+                produtosDisponiveisParaDropdown = await handleFetchError(response);
+                atualizarTodosOsSeletoresDeProduto();
+            } catch (error) {
+                console.error('Erro ao carregar produtos para dropdowns:', error);
+            }
+        }
+
+        function abrirFormularioProdutoPopup(produtoId = null) {
+            let url = 'produto_form.html';
+            if (produtoId) {
+                url += '?id=' + produtoId;
+            }
+            if (produtoFormWindow && !produtoFormWindow.closed) {
+                produtoFormWindow.close();
+            }
+            produtoFormWindow = window.open(url, 'ProdutoForm', 'width=600,height=750,scrollbars=yes,resizable=yes,status=yes');
+            if (produtoFormWindow) {
+                produtoFormWindow.focus();
+            } else {
+                alert('Por favor, permita pop-ups para este site.');
+            }
+        }
+
+        function notificarProdutoSalvo() {
+            console.log("Popup notificou que produto foi salvo. Recarregando listas...");
+            if (produtoFormWindow && !produtoFormWindow.closed) {
+                produtoFormWindow.close();
+            }
+            exibirResultadoOperacao('produtoFormGlobalResult', 'Produto salvo com sucesso através do formulário! Atualizando lista...', 'normal');
+            setTimeout(() => { // Hide message after a few seconds
+                 document.getElementById('produtoFormGlobalResult').style.display = 'none';
+            }, 4000);
+            carregarProdutosParaGerenciamento(); 
+            carregarProdutosParaDropdownsOrcamento(); 
+        }
+
+        async function carregarProdutosParaGerenciamento() {
+            try {
+                // Limpa os resultados anteriores antes de carregar.
+                document.getElementById('produtosGerenciamentoResult').style.display = 'none';
+                document.getElementById('produtosGerenciamentoResult').innerHTML = '';
+
+                // exibirResultadoOperacao('produtosGerenciamentoResult', 'Carregando produtos para gerenciamento...', 'Carregando');
+                const response = await fetch('/todosProdutosStatus'); 
+                produtosCarregadosParaGerenciamento = await handleFetchError(response);
+                renderizarProdutosComoCards(); 
+                // Esconde a mensagem de "Carregando" se não houver nenhum erro e outra mensagem é renderizada.
+                if (document.getElementById('produtosGerenciamentoResult').classList.contains('Carregando')) {
+                    document.getElementById('produtosGerenciamentoResult').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar produtos para gerenciamento:', error);
+                exibirResultadoOperacao('produtosGerenciamentoResult', 'Falha ao carregar produtos para gerenciamento: ' + error.message, 'error');
+            }
+        }
+
+        function renderizarProdutosComoCards() {
+            const container = document.getElementById('produtosGerenciamentoContainer');
+            container.innerHTML = '';
+            const mostrarDelistados = document.getElementById('chkMostrarDelistados').checked;
+
+            const produtosParaRenderizar = produtosCarregadosParaGerenciamento.filter(produto => {
+                return mostrarDelistados || produto.listado;
+            });
+
+            if (!produtosParaRenderizar || produtosParaRenderizar.length === 0) {
+                container.innerHTML = '<p>Nenhum produto encontrado para os critérios selecionados.</p>';
+                return;
+            }
+
+            produtosParaRenderizar.forEach(produto => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'product-card';
+                let statusInfo = '';
+                let actionButtons = '';
+
+                if (!produto.listado) {
+                    cardDiv.style.opacity = '0.6';
+                    statusInfo = '<p style="color: #777; font-weight: bold;">DE-LISTADO</p>';
+                    actionButtons = `<button onclick="alert('Funcionalidade Relistar Produto (ID: ${produto.id}) a ser implementada.')">Relistar</button>`;
+                } else {
+                    if (produto.quantidadeEmEstoque === 0) {
+                        statusInfo = '<p style="color: orange; font-weight: bold;">SEM ESTOQUE</p>';
+                    } else if (produto.quantidadeEmEstoque > 0 && produto.quantidadeEmEstoque < produto.estoqueMin) {
+                        statusInfo = `<p style="color: darkorange; font-weight: bold;">BAIXO ESTOQUE (${produto.quantidadeEmEstoque} de ${produto.estoqueMin} min)</p>`;
+                    } else { // quantidadeEmEstoque >= estoqueMin
+                        statusInfo = `<p style="color: green; font-weight: bold;">EM ESTOQUE (${produto.quantidadeEmEstoque})</p>`;
+                    }
+                    actionButtons = `
+                        <button onclick="abrirFormularioProdutoPopup(${produto.id})">Editar</button>
+                        <button class="remove" onclick="desativarProdutoPeloCard(${produto.id}, '${produto.descricao.replace(/'/g, "\\'")}')">De-listar</button>
+                    `;
+                }
+
+                cardDiv.innerHTML = `
+                    <div>
+                        <p class="product-id">ID: ${produto.id}</p>
+                        <p><strong>${produto.descricao}</strong></p>
+                        <p class="product-price">R$ ${(produto.precoUnitario || 0).toFixed(2)}</p>
+                        ${statusInfo}
+                        <p style="font-size:0.8em">Min:${produto.estoqueMin} / Max:${produto.estoqueMax}</p>
+                    </div>
+                    <div class="button-group" style="margin-top: auto;">
+                        ${actionButtons}
+                    </div>
+                `;
+                container.appendChild(cardDiv);
+            });
+        }
+
+        async function carregarTodosOrcamentosParaGerenciamento() {
+            try {
+                const response = await fetch('/todosOrcamentos');
+                orcamentosCarregados = await handleFetchError(response);
+                renderizarListaDeOrcamentos();
+            } catch (error) {
+                console.error('Erro ao carregar orçamentos:', error);
+                exibirResultadoOperacao('gerenciarOrcamentoResult', 'Falha ao carregar lista de orçamentos: ' + error.message, 'error');
+            }
+        }
+
+        function atualizarTodosOsSeletoresDeProduto() {
+            const seletores = document.querySelectorAll('select.prodId');
+            seletores.forEach(seletor => {
+                const valorAtual = seletor.value;
+                seletor.innerHTML = '<option value="">Selecione um produto...</option>';
+                if (produtosDisponiveisParaDropdown) { 
+                    produtosDisponiveisParaDropdown.forEach(produto => {
+                        const option = document.createElement('option');
+                        option.value = produto.id;
+                        // Assumindo que produtosDisponiveisParaDropdown contém items com id, descricao, precoUnitario
+                        option.textContent = `${produto.id} - ${produto.descricao} (R$ ${(produto.precoUnitario || 0).toFixed(2)})`;
+                        seletor.appendChild(option);
+                    });
+                }
+                if (valorAtual) seletor.value = valorAtual;
+            });
+        }
+
+        function renderizarListaDeOrcamentos() {
+            const divLista = document.getElementById('listaOrcamentosParaGerenciar');
+            divLista.innerHTML = '';
+
+            if (!orcamentosCarregados || orcamentosCarregados.length === 0) {
+                divLista.innerHTML = '<p>Nenhum orçamento encontrado para gerenciar.</p>';
+                return;
+            }
+            const ul = document.createElement('ul');
+            orcamentosCarregados.sort((a,b) => a.id - b.id); 
+            orcamentosCarregados.forEach(orc => {
+                const li = document.createElement('li');
+                const status = orc.efetivado ? '<span style="color: green;">(EFETIVADO)</span>' : '<span style="color: orange;">(PENDENTE)</span>';
+                let clienteInfo = orc.estadoCliente ? ` [${orc.estadoCliente.toUpperCase()}]` : '';
+                let botoesAcao = '<div class="orc-actions">';
+                if (!orc.efetivado) {
+                    botoesAcao += `<button onclick="efetivarOrcamentoDaLista(${orc.id})">Efetivar</button>`;
+                }
+                botoesAcao += `<button class="remove" onclick="removerOrcamentoDaLista(${orc.id})">Remover</button>`;
+                botoesAcao += '</div>';
+
+                li.innerHTML = `<span class="orc-info"><strong>Orçamento #${orc.id}</strong>${clienteInfo} - Total: R$ ${(orc.custoConsumidor || 0).toFixed(2)} ${status}</span> ${botoesAcao}`;
+                ul.appendChild(li);
+            });
+            divLista.appendChild(ul);
+        }
+
+        function formatarComoJson(data) { return JSON.stringify(data, null, 2); }
+
+        function exibirResultadoOperacao(elementId, data, tipo = 'normal') {
+            const el = document.getElementById(elementId);
+            if (!el) { console.error("Elemento de resultado não encontrado:", elementId); return; }
+            el.style.display = 'block';
+            el.classList.remove('loading', 'error');
+
+            if (tipo === 'loading') {
+                el.classList.add('loading');
+                el.innerHTML = typeof data === 'string' ? data : 'Processando...';
+            } else if (tipo === 'error') {
+                el.classList.add('error');
+                el.innerHTML = typeof data === 'string' ? data : 'Ocorreu um erro.';
+            } else {
+                el.innerHTML = (typeof data === 'object' && data !== null) ? formatarComoJson(data) : (data === null ? 'Operação concluída.' : data);
+            }
+        }
+
+        async function exibirProdutosGerenciamentoComoJson() {
+            if (produtosCarregadosParaGerenciamento && produtosCarregadosParaGerenciamento.length > 0) {
+                 exibirResultadoOperacao('produtosGerenciamentoResult', produtosCarregadosParaGerenciamento);
+            } else {
+                 // Tenta carregar caso esteja vazio.
+                 await carregarProdutosParaGerenciamento();
+                 if (produtosCarregadosParaGerenciamento && produtosCarregadosParaGerenciamento.length > 0){
+                    exibirResultadoOperacao('produtosGerenciamentoResult', produtosCarregadosParaGerenciamento);
+                 } else {
+                    exibirResultadoOperacao('produtosGerenciamentoResult', 'Nenhum produto carregado para exibir como JSON.', 'error');
+                 }
+            }
+        }
+
+        function adicionarLinhaDeItemParaOrcamento() {
+            const container = document.getElementById('itensOrcamento');
+            const novaLinha = document.createElement('div');
+            novaLinha.className = 'item';
+            novaLinha.innerHTML = `
+                <select class="prodId"><option value="">Selecione...</option></select>
+                <input type="number" placeholder="Qtd" class="prodQtd" min="1" value="1">
+                <button class="remove" onclick="this.parentElement.remove()">Remover</button>
+            `;
+            container.appendChild(novaLinha);
+            atualizarTodosOsSeletoresDeProduto(); 
+        }
+
+        async function submeterNovoOrcamento() {
+            const itens = [];
+            document.querySelectorAll('#itensOrcamento .item').forEach(div => {
+                const sel = div.querySelector('.prodId');
+                const qtd = div.querySelector('.prodQtd');
+                if (sel.value && qtd.value && parseInt(qtd.value) > 0) {
+                    itens.push({ idProduto: parseInt(sel.value), qtdade: parseInt(qtd.value) });
+                }
+            });
+
+            const estadoCliente = document.getElementById('estadoCliente').value.trim();
+            if (!estadoCliente) {
+                exibirResultadoOperacao('orcamentoResult', 'Por favor, informe o estado do cliente (Ex: RS).', 'error'); return;
+            }
+
+            if (itens.length === 0) {
+                exibirResultadoOperacao('orcamentoResult', 'Adicione itens válidos ao orçamento.', 'error'); return;
+            }
+            
+            const payload = {
+                itens: itens,
+                estadoCliente: estadoCliente
+            };
+
+            exibirResultadoOperacao('orcamentoResult', 'Criando orçamento...', 'loading');
+            try {
+                const response = await fetch('/novoOrcamento', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                const orcCriado = await handleFetchError(response);
+                exibirResultadoOperacao('orcamentoResult', orcCriado);
+                document.getElementById('itensOrcamento').innerHTML = ''; 
+                document.getElementById('estadoCliente').value = ''; 
+                adicionarLinhaDeItemParaOrcamento(); 
+                await carregarTodosOrcamentosParaGerenciamento(); 
+            } catch (error) {
+                exibirResultadoOperacao('orcamentoResult', 'Erro ao criar orçamento: ' + error.message, 'error');
+            }
+        }
+
+        async function efetivarOrcamentoDaLista(orcamentoId) {
+            if (!orcamentoId) { exibirResultadoOperacao('gerenciarOrcamentoResult', 'ID inválido.', 'error'); return; }
+            exibirResultadoOperacao('gerenciarOrcamentoResult', `Efetivando orçamento #${orcamentoId}...`, 'loading');
+            try {
+                const response = await fetch(`/efetivaOrcamento/${orcamentoId}`); 
+                const orcProcessado = await handleFetchError(response);
+                // Verifica se o orçamento realmente foi efetivado (Talvez haja um problema)
+                if (orcProcessado && orcProcessado.efetivado) {
+                    exibirResultadoOperacao('gerenciarOrcamentoResult', orcProcessado);
+                } else if (orcProcessado) {
+                     exibirResultadoOperacao('gerenciarOrcamentoResult', {...orcProcessado, mensagem: "Orçamento não efetivado devido à falta de estoque ou outro problema."}, 'error');
+                } else { // Não deve acontecer se o ID for inválido.
+                     exibirResultadoOperacao('gerenciarOrcamentoResult', 'Falha ao processar efetivação. Orçamento não encontrado ou resposta inválida.', 'error');
+                }
+                await carregarTodosOrcamentosParaGerenciamento(); 
+                 await carregarProdutosParaGerenciamento(); // Atualiza os produtos se houver uma mudança.
+                 await carregarProdutosParaDropdownsOrcamento(); // Atualiza o dropdown se houver uma mudança.
+            } catch (error) {
+                exibirResultadoOperacao('gerenciarOrcamentoResult', `Erro ao efetivar orçamento #${orcamentoId}: ${error.message}`, 'error');
+            }
+        }
+
+        async function removerOrcamentoDaLista(orcamentoId) {
+            if (!orcamentoId) { exibirResultadoOperacao('gerenciarOrcamentoResult', 'ID inválido.', 'error'); return; }
+            if (!confirm(`Remover orçamento #${orcamentoId}? Esta ação não pode ser desfeita.`)) return;
+
+            exibirResultadoOperacao('gerenciarOrcamentoResult', `Removendo orçamento #${orcamentoId}...`, 'loading');
+            try {
+                const response = await fetch(`/orcamentos/${orcamentoId}`, { method: 'DELETE' });
+                await handleFetchError(response); 
+                exibirResultadoOperacao('gerenciarOrcamentoResult', `Orçamento #${orcamentoId} removido.`, 'normal');
+                await carregarTodosOrcamentosParaGerenciamento();
+            } catch (error) {
+                exibirResultadoOperacao('gerenciarOrcamentoResult', `Erro ao remover orçamento #${orcamentoId}: ${error.message}`, 'error');
+            }
+        }
+        
+        async function desativarProdutoPeloCard(produtoId, produtoDescricao) {
+            if (!produtoId) { exibirResultadoOperacao('produtosGerenciamentoResult', 'ID do produto inválido.', 'error'); return; }
+            if (!confirm(`De-listar o produto "${produtoDescricao}" (ID: ${produtoId})?\nIsso o tornará indisponível para novos orçamentos.\nOrçamentos pendentes que contêm este produto podem ser afetados.`)) return;
+
+            exibirResultadoOperacao('produtosGerenciamentoResult', `De-listando produto ID ${produtoId}...`, 'loading');
+            try {
+                const response = await fetch(`/produtos/${produtoId}`, { method: 'DELETE' }); 
+                await handleFetchError(response); 
+                exibirResultadoOperacao('produtosGerenciamentoResult', `Produto ID ${produtoId} de-listado. Orçamentos podem ter sido atualizados.`, 'normal');
+                await carregarProdutosParaGerenciamento(); 
+                await carregarTodosOrcamentosParaGerenciamento(); 
+                await carregarProdutosParaDropdownsOrcamento(); 
+            } catch (error) {
+                exibirResultadoOperacao('produtosGerenciamentoResult', `Erro ao de-listar produto ID ${produtoId}: ${error.message}`, 'error');
+            }
+        }
+
+        async function buscarUltimosOrcamentosEfetivados() {
+            const n = document.getElementById('numOrcamentos').value || 5;
+            exibirResultadoOperacao('ultimosResult', `Buscando ${n} orçamentos efetivados...`, 'loading');
+            try {
+                const response = await fetch(`/orcamentosEfetivados?n=${n}`);
+                const dados = await handleFetchError(response);
+                exibirResultadoOperacao('ultimosResult', dados);
+            } catch (error) {
+                exibirResultadoOperacao('ultimosResult', 'Erro ao buscar relatório: ' + error.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
