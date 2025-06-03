@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.LinkedList;
 import java.util.List;
+import java.time.LocalDate;
 //import java.util.Locale;
 
 @Entity
@@ -33,6 +34,8 @@ public class OrcamentoModel {
     private BigDecimal impostoFederal;
     private BigDecimal valorDesconto; // Soma de todos os descontos aplicáveis
     private BigDecimal custoConsumidor; // Custo final
+    private LocalDate dataGeracao; // Novo atributo
+
 
     private boolean efetivado;
     private String estadoCliente;
@@ -48,6 +51,23 @@ public class OrcamentoModel {
         this.impostoFederal = BigDecimal.ZERO;
         this.valorDesconto = BigDecimal.ZERO;
         this.custoConsumidor = BigDecimal.ZERO;
+        this.dataGeracao = LocalDate.now();
+    }
+
+    public LocalDate getDataGeracao() {
+        return dataGeracao;
+    }
+
+    public void setDataGeracao(LocalDate dataGeracao) { // Setter pode ser útil para testes ou casos específicos
+        this.dataGeracao = dataGeracao;
+    }
+
+    public boolean isVencido() {
+        if (this.dataGeracao == null) {
+            return true; // Se não tem data de geração, considera-se inválido/vencido por precaução
+        }
+        // Os orçamentos possuem validade de 21 dias a partir da sua geração
+        return LocalDate.now().isAfter(this.dataGeracao.plusDays(21));
     }
 
     // Getter and Setter for estadoCliente
@@ -267,6 +287,7 @@ private void calcularDescontosInterno() {
     public String toString() {
         return "OrcamentoModel{" +
                 "id=" + id +
+                ", dataGeracao=" + dataGeracao + 
                 ", itens=" + (itens != null ? itens.size() : 0) + " itens" +
                 ", estadoCliente='" + estadoCliente + '\'' +
                 ", custoItens=" + (custoItens != null ? custoItens.setScale(2, RoundingMode.HALF_UP).toPlainString() : "0.00") +

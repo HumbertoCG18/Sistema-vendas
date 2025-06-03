@@ -57,41 +57,48 @@ public class ServicoDeVendas {
 
     @Transactional
     public OrcamentoModel efetivaOrcamento(long id) {
-        OrcamentoModel orcamento = this.orcamentosRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Orçamento ID " + id + " não encontrado para efetivação."));
+    OrcamentoModel orcamento = this.orcamentosRepo.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Orçamento ID " + id + " não encontrado para efetivação."));
 
-        if (orcamento.isEfetivado()) {
-            return orcamento;
-        }
-
-        if (orcamento.getItens() == null || orcamento.getItens().isEmpty()) {
-            throw new IllegalStateException("Orçamento ID " + id + " não pode ser efetivado pois não contém itens.");
-        }
-
-        boolean todosDisponiveis = true;
-        for (var item : orcamento.getItens()) {
-            if (item.getProduto() == null) {
-                todosDisponiveis = false;
-                break;
-            }
-            int quantidadeEmEstoque = servicoDeEstoque.qtdadeEmEstoque(item.getProduto().getId());
-            if (quantidadeEmEstoque < item.getQuantidade()) {
-                todosDisponiveis = false;
-                break;
-            }
-        }
-
-        if (todosDisponiveis) {
-            for (var item : orcamento.getItens()) {
-                servicoDeEstoque.baixaEstoque(item.getProduto().getId(), item.getQuantidade());
-            }
-            orcamento.efetiva();
-            orcamentosRepo.save(orcamento); // Salva o orçamento atualizado
-        } else {
-            System.out.println("ServicoDeVendas: Orçamento ID " + id + " NÃO efetivado (itens indisponíveis ou erro).");
-            // Não salva, mas retorna o estado atual (não efetivado)
-        }
+    if (orcamento.isEfetivado()) {
+        System.out.println("ServicoDeVendas: Orçamento ID " + id + " já está efetivado.");
         return orcamento;
+    }
+
+    // >>> NOVA VERIFICAÇÃO DE VALIDADE <<<
+    if (orcamento.isVencido()) {
+        throw new IllegalStateException("Orçamento ID " + id + " está vencido e não pode mais ser efetivado. Data Geração: " + orcamento.getDataGeracao());
+    }
+    // >>> FIM DA NOVA VERIFICAÇÃO <<<
+
+    if (orcamento.getItens() == null || orcamento.getItens().isEmpty()) {
+        throw new IllegalStateException("Orçamento ID " + id + " não pode ser efetivado pois não contém itens.");
+    }
+
+    boolean todosDisponiveis = true;
+    for (var item : orcamento.getItens()) {
+        if (item.getProduto() == null) {
+            todosDisponiveis = false;
+            break;
+        }
+        int quantidadeEmEstoque = servicoDeEstoque.qtdadeEmEstoque(item.getProduto().getId());
+        if (quantidadeEmEstoque < item.getQuantidade()) {
+            todosDisponiveis = false;
+            break;
+        }
+    }
+
+    if (todosDisponiveis) {
+        for (var item : orcamento.getItens()) {
+            servicoDeEstoque.baixaEstoque(item.getProduto().getId(), item.getQuantidade());
+        }
+        orcamento.efetiva();
+        orcamentosRepo.save(orcamento); // Salva o orçamento atualizado
+        System.out.println("ServicoDeVendas: Orçamento ID " + id + " efetivado com sucesso.");
+    } else {
+        System.out.println("ServicoDeVendas: Orçamento ID " + id + " NÃO efetivado (itens indisponíveis ou erro).");
+    }
+    return orcamento;
     }
 
     public List<OrcamentoModel> ultimosOrcamentosEfetivados(int n) {

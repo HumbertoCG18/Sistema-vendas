@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.time.LocalDate; // Adicionar import
 
 import com.bcopstein.sistvendas.dominio.modelos.ItemPedidoModel;
 import com.bcopstein.sistvendas.dominio.modelos.OrcamentoModel;
@@ -12,6 +13,7 @@ import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
 
 public class OrcamentoDTO {
     private long id;
+    private LocalDate dataGeracao; // Novo atributo
     private List<ItemPedidoDTO> itens;
     private List<Double> precosUnitariosItens; // Mantido por enquanto, conforme original
     
@@ -50,7 +52,8 @@ public class OrcamentoDTO {
                        BigDecimal impostoEstadual, String impostoEstadualFormatado,
                        BigDecimal impostoFederal, String impostoFederalFormatado,
                        BigDecimal valorDescontoTotal,
-                       BigDecimal custoConsumidor, boolean efetivado, String estadoCliente) {
+                       BigDecimal custoConsumidor, boolean efetivado, String estadoCliente,
+                       LocalDate dataGeracao) {
         this.id = id;
         this.itens = itens != null ? itens : new ArrayList<>();
         this.precosUnitariosItens = precosUnitariosItens != null ? precosUnitariosItens : new ArrayList<>();
@@ -63,6 +66,8 @@ public class OrcamentoDTO {
         this.custoConsumidor = custoConsumidor;
         this.efetivado = efetivado;
         this.estadoCliente = estadoCliente;
+        this.dataGeracao = dataGeracao;
+
     }
 
     // Getters atualizados
@@ -78,6 +83,9 @@ public class OrcamentoDTO {
     public BigDecimal getCustoConsumidor() { return custoConsumidor; }
     public boolean isEfetivado() { return efetivado; }
     public String getEstadoCliente() { return estadoCliente; }
+    public LocalDate getDataGeracao() { return dataGeracao; }
+    public void setDataGeracao(LocalDate dataGeracao) { this.dataGeracao = dataGeracao; }
+    
 
     // Setters (úteis para construção ou frameworks de mapeamento)
     public void setId(long id) { this.id = id; }
@@ -134,7 +142,9 @@ public class OrcamentoDTO {
         
         // Imposto federal tem alíquota fixa de 15%
         String impostoFederalFmt = String.format(Locale.US, "%.2f (15.00%%)", 
-                                                 impostoFederalModel);
+                impostoFederalModel);
+                                                 
+         LocalDate dataGeracaoModel = orcamento.getDataGeracao();
 
         return new OrcamentoDTO(
                 orcamento.getId(),
@@ -148,7 +158,8 @@ public class OrcamentoDTO {
                 valorDescontoTotalModel,
                 custoConsumidorModel,
                 orcamento.isEfetivado(),
-                orcamento.getEstadoCliente()
+                orcamento.getEstadoCliente(),
+                dataGeracaoModel
         );
     }
 }
