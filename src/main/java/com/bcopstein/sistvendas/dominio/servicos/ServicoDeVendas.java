@@ -71,13 +71,14 @@ public class ServicoDeVendas {
         }
 
         // Validação de local atendido
-        String paisUpper = paisCliente.trim().toUpperCase();
-        String estadoUpper = estadoCliente.trim().toUpperCase();
+            String paisUpper = paisCliente.trim().toUpperCase();
+            String estadoUpper = estadoCliente.trim().toUpperCase();
 
-        if (!LOCAIS_ATENDIDOS.containsKey(paisUpper) || 
-            (LOCAIS_ATENDIDOS.containsKey(paisUpper) && !LOCAIS_ATENDIDOS.get(paisUpper).contains(estadoUpper))) {
-            throw new IllegalArgumentException("Local de entrega não atendido: País '" + paisCliente + "', Estado '" + estadoCliente + "'.");
-        }
+            List<String> estadosAtendidosNoPais = LOCAIS_ATENDIDOS.get(paisUpper);
+
+            if (estadosAtendidosNoPais == null || !estadosAtendidosNoPais.contains(estadoUpper)) {
+                throw new IllegalArgumentException("Local de entrega não atendido: País '" + paisCliente + "', Estado '" + estadoCliente + "'.");
+            }
 
         // Criação e configuração do orçamento
         OrcamentoModel novoOrcamento = new OrcamentoModel();
