@@ -46,6 +46,7 @@ public class Controller {
     private EntradaEstoqueUC entradaEstoqueUC;
     private ProdutoPorCodigoUC produtoPorCodigoUC;
     private QtdadeEmEstoqueUC qtdadeEmEstoqueUC;
+    private RelistarProdutoUC relistarProdutoUC;
     // O ConsultaEstoquePorListaUC foi incorporado ao QtdadeEmEstoqueUC como um
     // método sobrecarregado,
     // então não precisamos de uma nova variável de instância para ele aqui.
@@ -91,6 +92,23 @@ public class Controller {
         this.consultaTaxaConversaoUC = consultaTaxaConversaoUC; // Atribuir novo UC
         this.consultaPerfilClienteUC = consultaPerfilClienteUC; // Atribuir novo UC
 
+    }
+
+    @PostMapping("/produtos/{id}/relistar")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Void> relistarProduto(@PathVariable long id) {
+        try {
+            boolean relistado = relistarProdutoUC.run(id);
+            if (relistado) {
+                return ResponseEntity.ok().build();
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Produto ID " + id + " não encontrado para re-listar.");
+            }
+        } catch (Exception e) {
+            System.err.println("Controller Erro: /produtos/" + id + "/relistar -> " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao re-listar produto.", e);
+        }
     }
 
     // >>> NOVO ENDPOINT para Perfil de Cliente <<<
