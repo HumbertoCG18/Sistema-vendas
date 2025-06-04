@@ -34,11 +34,11 @@ public class OrcamentoModel {
     private BigDecimal impostoFederal;
     private BigDecimal valorDesconto; // Soma de todos os descontos aplicáveis
     private BigDecimal custoConsumidor; // Custo final
-    private LocalDate dataGeracao; // Novo atributo
     private String paisCliente;
     private boolean efetivado;
     private String estadoCliente;
     private String nomeCliente; // NOVO ATRIBUTO
+    private LocalDate dataGeracao;
 
     // private double aliquotaImpostoAplicada; // Removido, substituído por aliquotaImpostoEstadualAplicada
 
@@ -61,7 +61,9 @@ public class OrcamentoModel {
 
     public String getNomeCliente() { return nomeCliente; } // NOVO GETTER
     public void setNomeCliente(String nomeCliente) { this.nomeCliente = nomeCliente; } // NOVO SETTER
-    
+    public void setDataGeracao(LocalDate dataGeracao) {
+    this.dataGeracao = dataGeracao;
+}
     public boolean isVencido() {
         if (this.dataGeracao == null) {
             return true; // Se não tem data de geração, considera-se inválido/vencido por precaução

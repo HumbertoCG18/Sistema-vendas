@@ -287,18 +287,239 @@
     </div>
 
     <div class="card">
-        <h2>Últimos Orçamentos Efetivados (Relatório)</h2>
-        <div>
-            <label for="numOrcamentos">Quantidade:</label>
-            <input type="number" id="numOrcamentos" placeholder="N" value="5" min="1" style="width:100px;">
-        </div>
-        <div class="button-group">
-            <button onclick="buscarUltimosOrcamentosEfetivados()">Buscar Relatório</button>
-        </div>
+        <h2>Orçamentos Efetivados (Relatório por Período)</h2> <p>Selecione um período para consultar os orçamentos efetivados:</p>
+        <div class="button-group" style="margin-bottom:15px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <button onclick="buscarOrcamentosEfetivadosPorPeriodoDefinido('dia')">Hoje</button>
+            <button onclick="buscarOrcamentosEfetivadosPorPeriodoDefinido('semana')">Últimos 7 Dias</button>
+            <button onclick="buscarOrcamentosEfetivadosPorPeriodoDefinido('quinzena')">Últimos 15 Dias</button>
+            <button onclick="buscarOrcamentosEfetivadosPorPeriodoDefinido('mes')">Últimos 30 Dias</button>
+            </div>
         <div id="ultimosResult" class="result" style="display: none;"></div>
     </div>
 
+        <div class="card">
+        <h2>Consultas Gerenciais Avançadas</h2>
+        <div>
+            <label for="tipoConsultaGerencialAvancada" style="display:block; margin-bottom:5px;"><b>Selecione a Consulta:</b></label>
+            <select id="tipoConsultaGerencialAvancada" onchange="renderizarFiltrosConsultaAvancada()" style="margin-bottom:15px; padding:8px; width:100%;">
+                <option value="">-- Selecione uma Consulta --</option>
+                <option value="volumeVendas">Volume Total de Vendas</option>
+                <option value="vendasPorProduto">Total de Vendas por Produto</option>
+                <option value="perfilCliente">Perfil de Compras do Cliente</option>
+                <option value="taxaConversao">Taxa de Conversão de Orçamentos</option>
+            </select>
+        </div>
+
+        <div id="filtrosConsultaAvancadaContainer" style="margin-bottom:15px;">
+            </div>
+
+        <div class="button-group">
+            <button onclick="executarConsultaGerencialAvancada()">Consultar</button>
+        </div>
+        <div id="resultadoConsultaAvancada" class="result" style="display: none; white-space: pre-wrap;"></div>
+    </div>
+
     <script>
+               function renderizarFiltrosConsultaAvancada() {
+            const tipoConsulta = document.getElementById('tipoConsultaGerencialAvancada').value;
+            const containerFiltros = document.getElementById('filtrosConsultaAvancadaContainer');
+            containerFiltros.innerHTML = ''; // Limpa filtros anteriores
+
+            // Helper para criar inputs de data (AAAA-MM-DD)
+            const criarInputData = (id, label, obrigatorio = true) => {
+                const hoje = new Date().toISOString().split('T')[0]; // Pega a data de hoje
+                return `
+                    <div style="margin-bottom:10px;">
+                        <label for="${id}" style="display:block; margin-bottom:3px;">${label}${obrigatorio ? '*' : ''}:</label>
+                        <input type="date" id="${id}" ${obrigatorio ? 'required' : ''} value="${id.toLowerCase().includes('final') ? hoje : ''}">
+                    </div>
+                `;
+            };
+
+            // Helper para criar input de texto
+            const criarInputTexto = (id, label, placeholder, obrigatorio = true) => {
+                 return `
+                    <div style="margin-bottom:10px;">
+                        <label for="${id}" style="display:block; margin-bottom:3px;">${label}${obrigatorio ? '*' : ''}:</label>
+                        <input type="text" id="${id}" placeholder="${placeholder}" ${obrigatorio ? 'required' : ''} style="width: calc(100% - 22px);">
+                    </div>
+                `;
+            };
+
+            switch (tipoConsulta) {
+                case 'volumeVendas':
+                case 'vendasPorProduto':
+                case 'taxaConversao':
+                    containerFiltros.innerHTML += criarInputData('consultaAvancadaDataInicial', 'Data Inicial');
+                    containerFiltros.innerHTML += criarInputData('consultaAvancadaDataFinal', 'Data Final');
+                    break;
+                case 'perfilCliente':
+                    containerFiltros.innerHTML += criarInputTexto('consultaAvancadaNomeCliente', 'Nome do Cliente', 'Digite o nome completo');
+                    containerFiltros.innerHTML += criarInputData('consultaAvancadaDataInicial', 'Data Inicial (Opcional)', false);
+                    containerFiltros.innerHTML += criarInputData('consultaAvancadaDataFinal', 'Data Final (Opcional)', false);
+                    break;
+                default:
+                    // Nenhum filtro para a opção "-- Selecione uma Consulta --"
+                    break;
+            }
+        }
+
+        // Função para executar a consulta gerencial avançada selecionada
+        async function executarConsultaGerencialAvancada() {
+            const tipoConsulta = document.getElementById('tipoConsultaGerencialAvancada').value;
+            const resultDivId = 'resultadoConsultaAvancada';
+            exibirResultadoOperacao(resultDivId, '', 'normal'); // Limpa resultado anterior e esconde
+
+            if (!tipoConsulta) {
+                exibirResultadoOperacao(resultDivId, 'Por favor, selecione um tipo de consulta.', 'error');
+                return;
+            }
+
+            let dataInicial, dataFinal, nomeCliente;
+            let url = '/gerencial/';
+            let queryParams = new URLSearchParams();
+
+            // Coleta os dados dos inputs dinâmicos
+            const elDataInicial = document.getElementById('consultaAvancadaDataInicial');
+            const elDataFinal = document.getElementById('consultaAvancadaDataFinal');
+            const elNomeCliente = document.getElementById('consultaAvancadaNomeCliente');
+
+            if (elDataInicial) dataInicial = elDataInicial.value;
+            if (elDataFinal) dataFinal = elDataFinal.value;
+            if (elNomeCliente) nomeCliente = elNomeCliente.value.trim();
+
+            // Validações e construção da URL
+            switch (tipoConsulta) {
+                case 'volumeVendas':
+                    url += 'volumeVendas';
+                    if (!dataInicial || !dataFinal) {
+                        exibirResultadoOperacao(resultDivId, 'Data inicial e final são obrigatórias.', 'error'); return;
+                    }
+                    queryParams.append('dataInicial', dataInicial);
+                    queryParams.append('dataFinal', dataFinal);
+                    break;
+                case 'vendasPorProduto':
+                    url += 'vendasPorProduto';
+                     if (!dataInicial || !dataFinal) {
+                        exibirResultadoOperacao(resultDivId, 'Data inicial e final são obrigatórias.', 'error'); return;
+                    }
+                    queryParams.append('dataInicial', dataInicial);
+                    queryParams.append('dataFinal', dataFinal);
+                    break;
+                case 'perfilCliente':
+                    url += 'perfilCliente';
+                    if (!nomeCliente) {
+                        exibirResultadoOperacao(resultDivId, 'Nome do cliente é obrigatório.', 'error'); return;
+                    }
+                    queryParams.append('nomeCliente', nomeCliente);
+                    if (dataInicial) queryParams.append('dataInicial', dataInicial);
+                    if (dataFinal) queryParams.append('dataFinal', dataFinal);
+                    break;
+                case 'taxaConversao':
+                    url += 'taxaConversao';
+                    if (!dataInicial || !dataFinal) {
+                        exibirResultadoOperacao(resultDivId, 'Data inicial e final são obrigatórias.', 'error'); return;
+                    }
+                    queryParams.append('dataInicial', dataInicial);
+                    queryParams.append('dataFinal', dataFinal);
+                    break;
+                default:
+                    // Não deveria acontecer se o select estiver populado
+                    exibirResultadoOperacao(resultDivId, 'Tipo de consulta desconhecido.', 'error'); return;
+            }
+
+            // Validação de período para datas, se ambas existirem
+            if (dataInicial && dataFinal && new Date(dataInicial) > new Date(dataFinal)) {
+                exibirResultadoOperacao(resultDivId, 'A data inicial não pode ser posterior à data final.', 'error');
+                return;
+            }
+            
+            const fullUrl = `${url}?${queryParams.toString()}`;
+            exibirResultadoOperacao(resultDivId, `Consultando ${document.getElementById('tipoConsultaGerencialAvancada').selectedOptions[0].text}...`, 'loading');
+
+            try {
+                const response = await fetch(fullUrl);
+                const dados = await handleFetchError(response); // Sua função de tratamento de erro existente
+
+                // Adapte a exibição conforme necessário. A função formatarComoJson já ajuda.
+                // Se quiser formatações mais elaboradas, crie funções específicas como fizemos antes.
+                if (dados === null || (Array.isArray(dados) && dados.length === 0) || (typeof dados === 'object' && Object.keys(dados).length === 0 && !Array.isArray(dados))) {
+                     exibirResultadoOperacao(resultDivId, "Nenhum resultado encontrado para os filtros aplicados.", 'normal');
+                } else {
+                    // Usar as funções de formatação que já criamos ou criar novas se necessário
+                    if (tipoConsulta === 'vendasPorProduto' && Array.isArray(dados)) {
+                        exibirResultadoOperacao(resultDivId, formatarVendasPorProduto(dados), 'normal_pre');
+                    } else if (tipoConsulta === 'perfilCliente' && typeof dados === 'object' && dados.nomeCliente) {
+                        exibirResultadoOperacao(resultDivId, formatarPerfilCliente(dados), 'normal_pre');
+                    } else if (tipoConsulta === 'volumeVendas' && typeof dados === 'object' && dados.hasOwnProperty('valorTotalVendas')) {
+                        exibirResultadoOperacao(resultDivId, formatarVolumeVendas(dados), 'normal_pre');
+                    } else if (tipoConsulta === 'taxaConversao' && typeof dados === 'object' && dados.hasOwnProperty('percentualConversao')) {
+                        exibirResultadoOperacao(resultDivId, formatarTaxaConversao(dados), 'normal_pre');
+                    }
+                    else {
+                        exibirResultadoOperacao(resultDivId, dados); // Fallback para JSON bruto
+                    }
+                }
+
+            } catch (error) {
+                exibirResultadoOperacao(resultDivId, `Erro ao executar consulta: ${error.message}`, 'error');
+            }
+        }
+
+        // Adicionar funções de formatação específicas para os DTOs gerenciais
+        function formatarVolumeVendas(dados) {
+            let texto = "Volume Total de Vendas:\n";
+            texto += `Período: ${dados.dataInicial} a ${dados.dataFinal}\n`;
+            texto += `Valor Total Vendido: R$ ${parseFloat(dados.valorTotalVendas).toFixed(2)}\n`;
+            texto += `Orçamentos Considerados: ${dados.quantidadeOrcamentosConsiderados}\n`;
+            return texto;
+        }
+
+        function formatarTaxaConversao(dados) {
+            let texto = "Taxa de Conversão de Orçamentos:\n";
+            texto += `Período: ${dados.dataInicialPeriodo} a ${dados.dataFinalPeriodo}\n`;
+            texto += `Total de Orçamentos Criados: ${dados.totalOrcamentosCriados}\n`;
+            texto += `Total de Orçamentos Efetivados: ${dados.totalOrcamentosEfetivados}\n`;
+            texto += `Percentual de Conversão: ${parseFloat(dados.percentualConversao).toFixed(2)}%\n`;
+            return texto;
+        }
+
+        // As funções formatarVendasPorProduto e formatarPerfilCliente já foram fornecidas anteriormente.
+        // Certifique-se de que elas estão no seu <script> e funcionam bem com 'normal_pre'.
+        // Exemplo de formatarVendasPorProduto (revisada para consistência):
+        function formatarVendasPorProduto(dados) {
+            if (!dados || dados.length === 0) return "Nenhum dado de vendas por produto encontrado.";
+            let texto = "Vendas por Produto:\n";
+            texto += "ID Produto | Descrição                               | Qtd. Vendida | Valor Arrecadado (R$)\n";
+            texto += "-------------------------------------------------------------------------------------------------\n";
+            dados.forEach(p => {
+                texto += `${String(p.idProduto).padEnd(10)} | ${String(p.descricaoProduto).padEnd(40).substring(0,40)} | ${String(p.quantidadeTotalVendida).padStart(12)} | ${parseFloat(p.valorTotalArrecadado).toFixed(2).padStart(20)}\n`;
+            });
+            return texto;
+        }
+
+        // Exemplo de formatarPerfilCliente (revisada para consistência):
+        function formatarPerfilCliente(dados) {
+            if (!dados) return "Nenhum dado de perfil de cliente encontrado.";
+            let texto = `Perfil do Cliente: ${dados.nomeCliente}\n`;
+            if (dados.dataInicialFiltro || dados.dataFinalFiltro) {
+                texto += `Período do Filtro: ${dados.dataInicialFiltro || 'N/A'} a ${dados.dataFinalFiltro || 'N/A'}\n`;
+            }
+            texto += `Total Gasto: R$ ${parseFloat(dados.totalGastoPeloCliente).toFixed(2)}\n`;
+            texto += `Total de Orçamentos Efetivados Considerados: ${dados.totalOrcamentosEfetivadosConsiderados}\n\n`;
+            texto += "Itens Comprados:\n";
+            texto += "ID Produto | Descrição                               | Qtd. Comprada | Valor Gasto (R$)\n";
+            texto += "-------------------------------------------------------------------------------------------------\n";
+            if (dados.itensComprados && dados.itensComprados.length > 0) {
+                dados.itensComprados.forEach(item => {
+                    texto += `${String(item.idProduto).padEnd(10)} | ${String(item.descricaoProduto).padEnd(40).substring(0,40)} | ${String(item.quantidadeTotalComprada).padStart(13)} | ${parseFloat(item.valorTotalGastoNoProduto).toFixed(2).padStart(17)}\n`;
+                });
+            } else {
+                texto += "Nenhum item comprado encontrado para este cliente (ou nos filtros aplicados).\n";
+            }
+            return texto;
+        }
+
         let produtosCarregadosParaGerenciamento = [];
         let produtosDisponiveisParaDropdown = []; 
         let orcamentosCarregados = [];
@@ -687,13 +908,46 @@
             }
         }
 
-        async function buscarUltimosOrcamentosEfetivados() {
-            const n = document.getElementById('numOrcamentos').value || 5;
-            exibirResultadoOperacao('ultimosResult', `Buscando ${n} orçamentos efetivados...`, 'loading');
+      async function buscarOrcamentosEfetivadosPorPeriodoDefinido(periodo) {
+            let dataFinal = new Date(); // Data de hoje como base para o fim do período
+            let dataInicial = new Date();
+            let tituloPeriodo = "";
+
+            switch (periodo) {
+                case 'dia':
+                    // dataInicial e dataFinal já são 'hoje'
+                    tituloPeriodo = "hoje";
+                    break;
+                case 'semana':
+                    dataInicial.setDate(dataFinal.getDate() - 6); // Últimos 7 dias (inclusive hoje)
+                    tituloPeriodo = "nos últimos 7 dias";
+                    break;
+                case 'quinzena':
+                    dataInicial.setDate(dataFinal.getDate() - 14); // Últimos 15 dias (inclusive hoje)
+                    tituloPeriodo = "nos últimos 15 dias";
+                    break;
+                case 'mes':
+                    dataInicial.setDate(dataFinal.getDate() - 29); // Últimos 30 dias (inclusive hoje)
+                    tituloPeriodo = "nos últimos 30 dias";
+                    break;
+                default:
+                    exibirResultadoOperacao('ultimosResult', 'Período inválido selecionado.', 'error');
+                    return;
+            }
+
+            // Formatar as datas para o formato AAAA-MM-DD exigido pelo backend
+            const dataFinalStr = dataFinal.toISOString().split('T')[0];
+            const dataInicialStr = dataInicial.toISOString().split('T')[0];
+
+            exibirResultadoOperacao('ultimosResult', `Buscando orçamentos efetivados ${tituloPeriodo} (de ${dataInicialStr} a ${dataFinalStr})...`, 'loading');
             try {
-                const response = await fetch(`/orcamentosEfetivados?n=${n}`);
-                const dados = await handleFetchError(response);
-                exibirResultadoOperacao('ultimosResult', dados);
+                const response = await fetch(`/orcamentosEfetivados?dataInicial=${dataInicialStr}&dataFinal=${dataFinalStr}`);
+                const dados = await handleFetchError(response); // Sua função de tratamento de erro
+                if (dados && dados.length > 0) {
+                    exibirResultadoOperacao('ultimosResult', dados);
+                } else {
+                    exibirResultadoOperacao('ultimosResult', `Nenhum orçamento efetivado encontrado ${tituloPeriodo}.`, 'normal');
+                }
             } catch (error) {
                 exibirResultadoOperacao('ultimosResult', 'Erro ao buscar relatório: ' + error.message, 'error');
             }
