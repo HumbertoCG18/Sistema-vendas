@@ -131,21 +131,27 @@ public class Controller {
     }
     
         @GetMapping("/gerencial/vendasPorProduto")
-    @CrossOrigin(origins = "*")
-    public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
-            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
-            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
-        try {
-            List<VendaProdutoDTO> vendas = consultaVendasPorProdutoUC.run(dataInicial, dataFinal);
-            return ResponseEntity.ok(vendas);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        } catch (Exception e) {
-            System.err.println("Controller Erro: /gerencial/vendasPorProduto -> " + e.getMessage());
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular vendas por produto.", e);
-        }
+@CrossOrigin(origins = "*")
+public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
+        @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+        @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal,
+        @RequestParam(required = false) Long idProduto) { // Parâmetro para ID do produto
+
+    // >>> DEBUG: Verificar o idProduto recebido no Controller <<<
+    System.out.println("CONTROLLER - getVendasPorProduto - idProduto recebido: " + idProduto);
+
+    try {
+        // Passa o idProduto para o UC
+        List<VendaProdutoDTO> vendas = consultaVendasPorProdutoUC.run(dataInicial, dataFinal, idProduto);
+        return ResponseEntity.ok(vendas);
+    } catch (IllegalArgumentException e) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+    } catch (Exception e) {
+        System.err.println("Controller Erro: /gerencial/vendasPorProduto -> " + e.getMessage());
+        e.printStackTrace();
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular vendas por produto.", e);
     }
+}
 
     @GetMapping("")
     @CrossOrigin(origins = "*")

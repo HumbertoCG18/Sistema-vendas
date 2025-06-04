@@ -320,6 +320,33 @@
     </div>
 
     <script>
+        async function popularSelectProdutos(selectId) {
+    const selectProduto = document.getElementById(selectId);
+    if (!selectProduto) return;
+
+    selectProduto.innerHTML = '<option value="">-- Todos os Produtos --</option>'; // Opção para buscar todos
+
+    try {
+        // Usar /todosProdutosStatus para ter a lista completa de produtos cadastrados
+        // Ou /produtosDisponiveis se quiser apenas os que têm estoque e estão listados
+        const response = await fetch('/todosProdutosStatus'); 
+        const produtos = await handleFetchError(response);
+
+        if (produtos && produtos.length > 0) {
+            produtos.forEach(produto => {
+                const option = document.createElement('option');
+                option.value = produto.id;
+                option.textContent = `${produto.id} - ${produto.descricao}`;
+                selectProduto.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error("Erro ao popular select de produtos:", error);
+        // Adicionar uma opção de erro ou desabilitar o select
+    }
+}
+
+
                function renderizarFiltrosConsultaAvancada() {
             const tipoConsulta = document.getElementById('tipoConsultaGerencialAvancada').value;
             const containerFiltros = document.getElementById('filtrosConsultaAvancadaContainer');
@@ -347,6 +374,19 @@
             };
 
             switch (tipoConsulta) {
+                 case 'vendasPorProduto':
+            containerFiltros.innerHTML += `
+                <div style="margin-bottom:10px;">
+                    <label for="consultaAvancadaProdutoId" style="display:block; margin-bottom:3px;">Produto Específico (Opcional):</label>
+                    <select id="consultaAvancadaProdutoId" style="width:100%; padding:8px;">
+                        <option value="">-- Todos os Produtos --</option>
+                    </select>
+                </div>
+            `;
+            containerFiltros.innerHTML += criarInputData('consultaAvancadaDataInicial', 'Data Inicial');
+            containerFiltros.innerHTML += criarInputData('consultaAvancadaDataFinal', 'Data Final');
+            popularSelectProdutos('consultaAvancadaProdutoId'); // Chama a função para popular
+            break;
                 case 'volumeVendas':
                 case 'vendasPorProduto':
                 case 'taxaConversao':
@@ -390,6 +430,26 @@
 
             // Validações e construção da URL
             switch (tipoConsulta) {
+                  case 'vendasPorProduto':
+            url += 'vendasPorProduto';
+            const elProdutoId = document.getElementById('consultaAvancadaProdutoId');
+            let idProdutoSelecionado = null;
+
+            if (elProdutoId && elProdutoId.value) {
+                idProdutoSelecionado = elProdutoId.value;
+                queryParams.append('idProduto', idProdutoSelecionado); // Adiciona o idProduto se selecionado
+            }
+
+            // Datas continuam obrigatórias para esta consulta, mesmo com produto específico,
+            // para manter a consistência do endpoint do backend que espera datas.
+            // Se o backend for alterado para tornar datas opcionais quando idProduto é fornecido,
+            // esta validação pode ser ajustada.
+            if (!dataInicial || !dataFinal) {
+                exibirResultadoOperacao(resultDivId, 'Data inicial e final são obrigatórias para esta consulta.', 'error'); return;
+            }
+            queryParams.append('dataInicial', dataInicial);
+            queryParams.append('dataFinal', dataFinal);
+            break;
                 case 'volumeVendas':
                     url += 'volumeVendas';
                     if (!dataInicial || !dataFinal) {

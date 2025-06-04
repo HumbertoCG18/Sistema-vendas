@@ -16,7 +16,8 @@ public class ConsultaVendasPorProdutoUC {
         this.servicoDeVendas = servicoDeVendas;
     }
 
-    public List<VendaProdutoDTO> run(LocalDate dataInicial, LocalDate dataFinal) {
-        return servicoDeVendas.calcularTotalVendasPorProduto(dataInicial, dataFinal);
+    public List<VendaProdutoDTO> run(LocalDate dataInicial, LocalDate dataFinal, Long idProduto) {
+        return servicoDeVendas.calcularTotalVendasPorProduto(dataInicial, dataFinal, idProduto);
     }
+
 }

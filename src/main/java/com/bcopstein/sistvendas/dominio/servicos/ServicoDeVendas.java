@@ -128,7 +128,7 @@ public class ServicoDeVendas {
         return new VolumeVendasDTO(dataInicial, dataFinal, totalVendas, orcamentosNoPeriodo.size());
     }
     
-    public List<VendaProdutoDTO> calcularTotalVendasPorProduto(LocalDate dataInicial, LocalDate dataFinal) {
+    public List<VendaProdutoDTO> calcularTotalVendasPorProduto(LocalDate dataInicial, LocalDate dataFinal, Long idProduto2) {
         List<OrcamentoModel> orcamentosConsiderados;
         if (dataInicial != null && dataFinal != null) {
             if (dataInicial.isAfter(dataFinal)) {
