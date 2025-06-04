@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import com.bcopstein.sistvendas.dominio.modelos.OrcamentoModel;
 //import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-//import org.springframework.data.jpa.repository.Query; // Adicionar import
+import org.springframework.data.jpa.repository.Query; // Adicionar import
 //import org.springframework.data.repository.query.Param; // Adicionar import
 import org.springframework.stereotype.Repository;
 
@@ -25,4 +25,7 @@ public interface IOrcamentoRepositorio extends JpaRepository<OrcamentoModel, Lon
     long countByDataGeracaoBetween(LocalDate dataInicial, LocalDate dataFinal);
 
     long countByEfetivadoIsTrueAndDataGeracaoBetween(LocalDate dataInicial, LocalDate dataFinal);
+
+@Query("SELECT DISTINCT o.nomeCliente FROM OrcamentoModel o WHERE o.efetivado = true AND o.nomeCliente IS NOT NULL ORDER BY o.nomeCliente ASC")
+    List<String> findDistinctNomesClientesComOrcamentosEfetivados();
 }

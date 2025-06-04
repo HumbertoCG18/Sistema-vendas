@@ -320,6 +320,33 @@
     </div>
 
     <script>
+           async function popularSelectNomesClientes(selectId) {
+        const selectCliente = document.getElementById(selectId);
+        if (!selectCliente) return;
+
+        selectCliente.innerHTML = '<option value="">-- Selecione um Cliente --</option>'; // Opção padrão
+
+        try {
+            const response = await fetch('/gerencial/clientesComCompras'); 
+            const nomesClientes = await handleFetchError(response); // Sua função de tratamento de erro
+
+            if (nomesClientes && nomesClientes.length > 0) {
+                nomesClientes.forEach(nome => {
+                    const option = document.createElement('option');
+                    option.value = nome; // O valor será o próprio nome do cliente
+                    option.textContent = nome;
+                    selectCliente.appendChild(option);
+                });
+            } else {
+                selectCliente.innerHTML = '<option value="">Nenhum cliente com compras encontrado</option>';
+            }
+        } catch (error) {
+            console.error("Erro ao popular select de nomes de clientes:", error);
+            selectCliente.innerHTML = '<option value="">Erro ao carregar clientes</option>';
+        }
+    }
+
+
         async function popularSelectProdutos(selectId) {
     const selectProduto = document.getElementById(selectId);
     if (!selectProduto) return;
@@ -393,14 +420,20 @@
                     containerFiltros.innerHTML += criarInputData('consultaAvancadaDataInicial', 'Data Inicial');
                     containerFiltros.innerHTML += criarInputData('consultaAvancadaDataFinal', 'Data Final');
                     break;
-                case 'perfilCliente':
-                    containerFiltros.innerHTML += criarInputTexto('consultaAvancadaNomeCliente', 'Nome do Cliente', 'Digite o nome completo');
-                    containerFiltros.innerHTML += criarInputData('consultaAvancadaDataInicial', 'Data Inicial (Opcional)', false);
-                    containerFiltros.innerHTML += criarInputData('consultaAvancadaDataFinal', 'Data Final (Opcional)', false);
-                    break;
-                default:
-                    // Nenhum filtro para a opção "-- Selecione uma Consulta --"
-                    break;
+ case 'perfilCliente':
+                // Substitui o criarInputTexto por um select
+                containerFiltros.innerHTML += `
+                    <div style="margin-bottom:10px;">
+                        <label for="consultaAvancadaNomeClienteSelect" style="display:block; margin-bottom:3px;">Nome do Cliente*:</label>
+                        <select id="consultaAvancadaNomeClienteSelect" required style="width:100%; padding:8px;">
+                            <option value="">-- Carregando Clientes... --</option>
+                        </select>
+                    </div>
+                `;
+                containerFiltros.innerHTML += criarInputData('consultaAvancadaDataInicial', 'Data Inicial (Opcional)', false);
+                containerFiltros.innerHTML += criarInputData('consultaAvancadaDataFinal', 'Data Final (Opcional)', false);
+                popularSelectNomesClientes('consultaAvancadaNomeClienteSelect'); // Chama a função para popular
+                break;
             }
         }
 
@@ -422,11 +455,11 @@
             // Coleta os dados dos inputs dinâmicos
             const elDataInicial = document.getElementById('consultaAvancadaDataInicial');
             const elDataFinal = document.getElementById('consultaAvancadaDataFinal');
-            const elNomeCliente = document.getElementById('consultaAvancadaNomeCliente');
+            const elNomeClienteSelect = document.getElementById('consultaAvancadaNomeClienteSelect'); // Novo select
 
             if (elDataInicial) dataInicial = elDataInicial.value;
             if (elDataFinal) dataFinal = elDataFinal.value;
-            if (elNomeCliente) nomeCliente = elNomeCliente.value.trim();
+        if (elNomeClienteSelect) nomeCliente = elNomeClienteSelect.value; // Pega valor do select
 
             // Validações e construção da URL
             switch (tipoConsulta) {
@@ -466,15 +499,15 @@
                     queryParams.append('dataInicial', dataInicial);
                     queryParams.append('dataFinal', dataFinal);
                     break;
-                case 'perfilCliente':
-                    url += 'perfilCliente';
-                    if (!nomeCliente) {
-                        exibirResultadoOperacao(resultDivId, 'Nome do cliente é obrigatório.', 'error'); return;
-                    }
-                    queryParams.append('nomeCliente', nomeCliente);
-                    if (dataInicial) queryParams.append('dataInicial', dataInicial);
-                    if (dataFinal) queryParams.append('dataFinal', dataFinal);
-                    break;
+            case 'perfilCliente':
+                url += 'perfilCliente';
+                if (!nomeCliente) { // Verifica se um cliente foi selecionado
+                    exibirResultadoOperacao(resultDivId, 'Nome do cliente é obrigatório para esta consulta.', 'error'); return;
+                }
+                queryParams.append('nomeCliente', nomeCliente);
+                if (dataInicial) queryParams.append('dataInicial', dataInicial);
+                if (dataFinal) queryParams.append('dataFinal', dataFinal);
+                break;
                 case 'taxaConversao':
                     url += 'taxaConversao';
                     if (!dataInicial || !dataFinal) {

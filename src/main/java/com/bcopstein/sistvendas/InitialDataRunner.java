@@ -56,34 +56,34 @@ public class InitialDataRunner implements CommandLineRunner {
         LocalDate hoje = LocalDate.now();
 
         // Orçamento 1: Hoje, efetivado, SP
-        criarOrcamento("Cliente Feliz SP", "Brasil", "SP", hoje, true,
+        criarOrcamento("Wanderley", "Brasil", "SP", hoje, true,
                 new ItemPedidoSetup(tv, 1),
                 new ItemPedidoSetup(geladeira, 1));
 
         // Orçamento 2: 5 dias atrás, efetivado, RS
-        criarOrcamento("Cliente Gaúcho", "Brasil", "RS", hoje.minusDays(5), true,
+        criarOrcamento("Cleiton", "Brasil", "RS", hoje.minusDays(5), true,
                 new ItemPedidoSetup(fogao, 1));
 
         // Orçamento 3: 10 dias atrás, efetivado, RS
-        criarOrcamento("Outro Cliente RS", "Brasil", "RS", hoje.minusDays(10), true,
+        criarOrcamento("Cleomar", "Brasil", "RS", hoje.minusDays(10), true,
                 new ItemPedidoSetup(lavaLouca, 1));
 
         // Orçamento 4: 20 dias atrás, efetivado, PE
-        criarOrcamento("Cliente Pernambucano", "Brasil", "PE", hoje.minusDays(20), true,
+        criarOrcamento("Balduino", "Brasil", "PE", hoje.minusDays(20), true,
                 new ItemPedidoSetup(lavaRoupas, 1));
 
         // Orçamento 5: 3 dias atrás, PENDENTE, RS
-        criarOrcamento("Cliente Indeciso", "Brasil", "RS", hoje.minusDays(3), false,
+        criarOrcamento("Baltazar", "Brasil", "RS", hoje.minusDays(3), false,
                 new ItemPedidoSetup(microondas, 2) // 2 microondas
         );
 
         // Orçamento 6: Hoje, PENDENTE, SP (para testar taxa de conversão hoje)
-        criarOrcamento("Novo Cliente SP", "Brasil", "SP", hoje, false,
+        criarOrcamento("Hilário", "Brasil", "SP", hoje, false,
                 new ItemPedidoSetup(tv, 1));
 
         // Orçamento 7: 8 dias atrás, efetivado, SP (para testar relatórios
         // semanais/quinzenais)
-        criarOrcamento("Comprador Semanal SP", "Brasil", "SP", hoje.minusDays(8), true,
+        criarOrcamento("Glauco", "Brasil", "SP", hoje.minusDays(8), true,
                 new ItemPedidoSetup(fogao, 1),
                 new ItemPedidoSetup(microondas, 1));
 

@@ -36,8 +36,7 @@ public class ServicoDeVendas {
         LOCAIS_ATENDIDOS = new HashMap<>();
         // Locais atendidos conforme Anexo I do PDF para o Brasil
         LOCAIS_ATENDIDOS.put("BRASIL", Arrays.asList("RS", "SP", "PE"));
-        // Exemplo de como adicionar outros países/regiões:
-        // LOCAIS_ATENDIDOS.put("ARGENTINA", Arrays.asList("BUENOS AIRES", "CORDOBA"));
+
     }
 
     @Autowired
@@ -138,19 +137,6 @@ public class ServicoDeVendas {
             }
             orcamentosConsiderados = orcamentosEfetivadosPorPeriodo(dataInicial, dataFinal);
         } else {
-            // Se as datas não são fornecidas, mas um produto específico é, podemos buscar
-            // todos os orçamentos
-            // efetivados para aquele cliente e depois filtrar os itens do produto.
-            // Ou, se idProdutoEspecifico também for null, lançar erro ou buscar todos os
-            // orçamentos efetivados.
-            // A lógica original sua exigia dataInicial e dataFinal. Vamos manter isso por
-            // enquanto
-            // e assumir que o frontend sempre passará datas, mesmo que amplas, se quiser
-            // "todos os tempos".
-            // Se idProdutoEspecifico for o foco, as datas podem ser opcionais NO FRONTEND,
-            // mas o backend pode usar datas default (ex: desde o início dos tempos até
-            // hoje) se não vierem.
-            // Por simplicidade e para alinhar com o endpoint que já espera datas:
             if (dataInicial == null || dataFinal == null) {
                 throw new IllegalArgumentException(
                         "Data inicial e data final são obrigatórias para esta consulta, mesmo ao filtrar por produto específico.");
@@ -318,8 +304,7 @@ public class ServicoDeVendas {
             System.out.println("ServicoDeVendas: Orçamento ID " + id + " efetivado com sucesso.");
         } else {
             System.out.println("ServicoDeVendas: Orçamento ID " + id + " NÃO efetivado (itens indisponíveis ou erro).");
-            // Considerar lançar uma exceção aqui para indicar falha na efetivação por falta
-            // de estoque
+
             throw new IllegalStateException(
                     "Orçamento ID " + id + " não pode ser efetivado devido à falta de estoque para um ou mais itens.");
         }
@@ -347,6 +332,10 @@ public class ServicoDeVendas {
                 }
             }
         }
+    }
+
+        public List<String> listarNomesClientesComCompras() {
+        return orcamentosRepo.findDistinctNomesClientesComOrcamentosEfetivados();
     }
 
     @Transactional

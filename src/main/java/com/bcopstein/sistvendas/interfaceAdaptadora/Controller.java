@@ -47,6 +47,8 @@ public class Controller {
     private ProdutoPorCodigoUC produtoPorCodigoUC;
     private QtdadeEmEstoqueUC qtdadeEmEstoqueUC;
     private RelistarProdutoUC relistarProdutoUC;
+    private ListarNomesClientesUC listarNomesClientesUC; // Adicionar novo UC
+
     // O ConsultaEstoquePorListaUC foi incorporado ao QtdadeEmEstoqueUC como um
     // método sobrecarregado,
     // então não precisamos de uma nova variável de instância para ele aqui.
@@ -70,7 +72,8 @@ public class Controller {
             ConsultaVendasPorProdutoUC consultaVendasPorProdutoUC,
             ConsultaTaxaConversaoUC consultaTaxaConversaoUC, // Injetar novo UC
             QtdadeEmEstoqueUC qtdadeEmEstoqueUC,
-            ConsultaPerfilClienteUC consultaPerfilClienteUC // Injetar novo UC
+            ConsultaPerfilClienteUC consultaPerfilClienteUC, // Injetar novo UC
+            ListarNomesClientesUC listarNomesClientesUC
 
     ) {
         this.produtosDisponiveisUC = produtosDisponiveisUC;
@@ -91,6 +94,7 @@ public class Controller {
         this.consultaVendasPorProdutoUC = consultaVendasPorProdutoUC;
         this.consultaTaxaConversaoUC = consultaTaxaConversaoUC; // Atribuir novo UC
         this.consultaPerfilClienteUC = consultaPerfilClienteUC; // Atribuir novo UC
+         this.listarNomesClientesUC = listarNomesClientesUC; 
 
     }
 
@@ -108,6 +112,19 @@ public class Controller {
         } catch (Exception e) {
             System.err.println("Controller Erro: /produtos/" + id + "/relistar -> " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao re-listar produto.", e);
+        }
+    }
+
+    @GetMapping("/gerencial/clientesComCompras")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<List<String>> getClientesComCompras() {
+        try {
+            List<String> nomesClientes = listarNomesClientesUC.run();
+            return ResponseEntity.ok(nomesClientes);
+        } catch (Exception e) {
+            System.err.println("Controller Erro: /gerencial/clientesComCompras -> " + e.getMessage());
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao listar nomes de clientes.", e);
         }
     }
 
