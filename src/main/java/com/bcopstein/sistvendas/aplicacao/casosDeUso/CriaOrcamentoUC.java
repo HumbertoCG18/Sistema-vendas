@@ -26,39 +26,33 @@ public class CriaOrcamentoUC {
         this.servicoDeEstoque = servicoDeEstoque;
     }
 
-    // Modified to accept NovoOrcamentoRequestDTO
-    public OrcamentoDTO run(NovoOrcamentoRequestDTO request){
-    List<ItemPedidoDTO> itens = request.getItens();
-    String estadoCliente = request.getEstadoCliente();
-    String paisCliente = request.getPaisCliente(); // OBTER PAÍS
-    String nomeCliente = request.getNomeCliente(); // OBTER NOME DO CLIENTE
+    public OrcamentoDTO run(NovoOrcamentoRequestDTO request){ //
+        List<ItemPedidoDTO> itens = request.getItens();
+        String nomeCliente = request.getNomeCliente();
+        String cpfCliente = request.getCpfCliente();     // Obter CPF
+        String emailCliente = request.getEmailCliente(); // Obter Email
+        String estadoCliente = request.getEstadoCliente();
+        String paisCliente = request.getPaisCliente();
 
-
-        // System.out.println("CriaOrcamentoUC: Recebendo itens para orçamento: " + itens + ", Estado: " + estadoCliente);
-        PedidoModel pedido = new PedidoModel(0); // Pedido ID is transient here
-        
         if (itens == null || itens.isEmpty()) {
             throw new IllegalArgumentException("A lista de itens não pode ser vazia para criar um orçamento.");
         }
 
+        PedidoModel pedido = new PedidoModel(0); 
         for(ItemPedidoDTO item:itens){
-            // System.out.println("CriaOrcamentoUC: Buscando produto com ID: " + item.getIdProduto());
             ProdutoModel produto = servicoDeEstoque.produtoPorCodigo(item.getIdProduto());
-            // System.out.println("CriaOrcamentoUC: Produto encontrado: " + (produto != null ? produto.getId() + " - " + produto.getDescricao() : "NULL"));
-            
             if (produto == null) {
                 throw new RuntimeException("Produto com ID " + item.getIdProduto() + " não encontrado");
             }
             if (item.getQtdade() <= 0) {
                 throw new IllegalArgumentException("Quantidade para o produto ID " + item.getIdProduto() + " deve ser positiva.");
             }
-            
             ItemPedidoModel itemPedido = new ItemPedidoModel(produto, item.getQtdade());
             pedido.addItem(itemPedido);
         }
         
-        // System.out.println("CriaOrcamentoUC: Pedido criado com " + pedido.getItens().size() + " item(ns)");
-    OrcamentoModel orcamento = servicoDeVendas.criaOrcamento(pedido, estadoCliente, paisCliente, nomeCliente, nomeCliente, nomeCliente); // ATUALIZAR CHAMADA
-    return OrcamentoDTO.fromModel(orcamento);
+        // Passe os novos dados do cliente para o serviço
+        OrcamentoModel orcamento = servicoDeVendas.criaOrcamento(pedido, estadoCliente, paisCliente, nomeCliente, cpfCliente, emailCliente); 
+        return OrcamentoDTO.fromModel(orcamento);
     }
 }
