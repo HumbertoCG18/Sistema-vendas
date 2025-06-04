@@ -255,11 +255,19 @@
         <div id="produtoFormGlobalResult" class="result" style="display: none;"></div>
     </div>
 
-    <div class="card">
+        <div class="card">
         <h2>Criar Novo Orçamento</h2>
         <div>
             <label for="nomeCliente" style="display:block; margin-bottom:3px;"><b>Nome do Cliente:</b></label>
-            <input type="text" id="nomeCliente" placeholder="Ex: João Silva" style="margin-bottom:10px;">
+            <input type="text" id="nomeCliente" placeholder="Nome Completo" style="margin-bottom:10px;">
+        </div>
+        <div>
+            <label for="cpfCliente" style="display:block; margin-bottom:3px;"><b>CPF do Cliente (opcional):</b></label>
+            <input type="text" id="cpfCliente" placeholder="Somente números" style="margin-bottom:10px;">
+        </div>
+        <div>
+            <label for="emailCliente" style="display:block; margin-bottom:3px;"><b>E-mail do Cliente (opcional):</b></label>
+            <input type="email" id="emailCliente" placeholder="exemplo@dominio.com" style="margin-bottom:10px;">
         </div>
         <div>
             <label for="paisCliente" style="display:block; margin-bottom:3px;"><b>País do Cliente:</b></label>
@@ -853,7 +861,7 @@
             atualizarTodosOsSeletoresDeProduto(); 
         }
 
-        async function submeterNovoOrcamento() {
+                async function submeterNovoOrcamento() {
             const itens = [];
             document.querySelectorAll('#itensOrcamento .item').forEach(div => {
                 const sel = div.querySelector('.prodId');
@@ -863,15 +871,24 @@
                 }
             });
 
-            // Obter novos campos
             const nomeCliente = document.getElementById('nomeCliente').value.trim();
+            const cpfCliente = document.getElementById('cpfCliente').value.trim(); // Novo campo
+            const emailCliente = document.getElementById('emailCliente').value.trim(); // Novo campo
             const paisCliente = document.getElementById('paisCliente').value.trim();
-            const estadoCliente = document.getElementById('estadoCliente').value.trim(); //
+            const estadoCliente = document.getElementById('estadoCliente').value.trim();
 
-            // Validações
+            // Validações básicas no frontend (podem ser mais elaboradas)
             if (!nomeCliente) {
                 exibirResultadoOperacao('orcamentoResult', 'Por favor, informe o nome do cliente.', 'error'); return;
             }
+            // CPF e Email podem ser opcionais dependendo da sua regra de negócio para criar/encontrar cliente.
+            // Se o CPF for informado, você pode adicionar uma validação de formato básica.
+            // if (cpfCliente && !validarCPF(cpfCliente)) { // Função validarCPF precisaria ser implementada
+            //     exibirResultadoOperacao('orcamentoResult', 'CPF inválido.', 'error'); return;
+            // }
+            // if (emailCliente && !validarEmail(emailCliente)) { // Função validarEmail precisaria ser implementada
+            //     exibirResultadoOperacao('orcamentoResult', 'E-mail inválido.', 'error'); return;
+            // }
             if (!paisCliente) {
                 exibirResultadoOperacao('orcamentoResult', 'Por favor, informe o país do cliente.', 'error'); return;
             }
@@ -884,8 +901,10 @@
             
             const payload = {
                 itens: itens,
-                nomeCliente: nomeCliente, // Adicionar nomeCliente
-                paisCliente: paisCliente,   // Adicionar paisCliente
+                nomeCliente: nomeCliente,
+                cpfCliente: cpfCliente,     // Adicionar cpfCliente
+                emailCliente: emailCliente, // Adicionar emailCliente
+                paisCliente: paisCliente,
                 estadoCliente: estadoCliente
             };
 
@@ -894,32 +913,35 @@
                 const response = await fetch('/novoOrcamento', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
                 });
-                const orcCriado = await handleFetchError(response); // Sua função de tratamento de erro
+                const orcCriado = await handleFetchError(response); 
                 
-                // Atualizar a exibição para o novo formato do OrcamentoDTO
-                // A função formatarComoJson já existe e vai mostrar todos os campos.
-                // Você pode querer uma formatação mais amigável do que apenas o JSON bruto.
                 let displayText = "Orçamento Criado com Sucesso:\n";
                 displayText += `ID: ${orcCriado.id}\n`;
-                displayText += `Cliente: ${orcCriado.nomeCliente}\n`;
+                // O orcCriado.nomeCliente agora virá do ClienteModel associado
+                displayText += `Cliente: ${orcCriado.nomeCliente}\n`; 
+                // Se quiser mostrar CPF/Email do cliente no resultado, adicione-os ao OrcamentoDTO
+                // ou faça uma consulta separada do cliente se necessário.
                 displayText += `Local: ${orcCriado.paisCliente} / ${orcCriado.estadoCliente}\n`;
-                displayText += `Data Geração: ${orcCriado.dataGeracao}\n`; // Assumindo que dataGeracao está no DTO
+                displayText += `Data Geração: ${orcCriado.dataGeracao}\n`;
                 displayText += `SubTotal: R$ ${parseFloat(orcCriado.subTotal).toFixed(2)}\n`;
-                displayText += `Imposto Estadual: ${orcCriado.impostoEstadualFormatado}\n`; // Usando o formatado
-                displayText += `Imposto Federal: ${orcCriado.impostoFederalFormatado}\n`; // Usando o formatado
+                displayText += `Imposto Estadual: ${orcCriado.impostoEstadualFormatado}\n`;
+                displayText += `Imposto Federal: ${orcCriado.impostoFederalFormatado}\n`;
                 displayText += `Desconto Total: R$ ${parseFloat(orcCriado.valorDescontoTotal).toFixed(2)}\n`;
                 displayText += `Custo Consumidor: R$ ${parseFloat(orcCriado.custoConsumidor).toFixed(2)}\n`;
                 displayText += `Efetivado: ${orcCriado.efetivado}\n`;
-                // Adicionar mais detalhes dos itens se desejar
 
-                exibirResultadoOperacao('orcamentoResult', displayText, 'normal_pre'); // 'normal_pre' para manter formatação com <pre>
+                exibirResultadoOperacao('orcamentoResult', displayText, 'normal_pre');
 
-                document.getElementById('itensOrcamento').innerHTML = ''; 
-                document.getElementById('nomeCliente').value = ''; // Limpar campo
-                document.getElementById('paisCliente').value = 'Brasil'; // Resetar para padrão
+                // Limpar campos
+                document.getElementById('nomeCliente').value = '';
+                document.getElementById('cpfCliente').value = '';
+                document.getElementById('emailCliente').value = '';
+                document.getElementById('paisCliente').value = 'Brasil'; 
                 document.getElementById('estadoCliente').value = ''; 
+                document.getElementById('itensOrcamento').innerHTML = ''; 
                 adicionarLinhaDeItemParaOrcamento(); 
                 await carregarTodosOrcamentosParaGerenciamento(); 
+
             } catch (error) {
                 exibirResultadoOperacao('orcamentoResult', 'Erro ao criar orçamento: ' + error.message, 'error');
             }

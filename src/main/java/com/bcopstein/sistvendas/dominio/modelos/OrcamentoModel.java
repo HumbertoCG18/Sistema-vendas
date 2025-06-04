@@ -7,6 +7,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -50,6 +52,25 @@ public class OrcamentoModel {
         this.valorDesconto = BigDecimal.ZERO;
         this.custoConsumidor = BigDecimal.ZERO;
         this.dataGeracao = LocalDate.now();
+    }
+
+    @ManyToOne // Muitos orçamentos para Um cliente
+    @JoinColumn(name = "cliente_id", nullable = true) // Nome da coluna FK no banco.
+                                                      // `nullable = true` se você permitir orçamentos sem cliente
+                                                      // associado,
+                                                      // `nullable = false` se cliente for obrigatório.
+    private ClienteModel cliente;
+
+    public ClienteModel getCliente() {
+        return cliente;
+    }
+
+    public String getNomeClienteDoOrcamento() {
+        return (this.cliente != null) ? this.cliente.getNomeCompleto() : null;
+    }
+
+    public void setCliente(ClienteModel cliente) {
+        this.cliente = cliente;
     }
 
     public LocalDate getDataGeracao() {

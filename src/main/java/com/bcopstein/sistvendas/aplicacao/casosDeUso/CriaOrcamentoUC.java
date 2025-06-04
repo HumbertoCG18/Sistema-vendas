@@ -58,7 +58,7 @@ public class CriaOrcamentoUC {
         }
         
         // System.out.println("CriaOrcamentoUC: Pedido criado com " + pedido.getItens().size() + " item(ns)");
-    OrcamentoModel orcamento = servicoDeVendas.criaOrcamento(pedido, estadoCliente, paisCliente, nomeCliente); // ATUALIZAR CHAMADA
+    OrcamentoModel orcamento = servicoDeVendas.criaOrcamento(pedido, estadoCliente, paisCliente, nomeCliente, nomeCliente, nomeCliente); // ATUALIZAR CHAMADA
     return OrcamentoDTO.fromModel(orcamento);
     }
 }

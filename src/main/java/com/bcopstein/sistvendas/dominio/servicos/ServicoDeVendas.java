@@ -16,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bcopstein.sistvendas.dominio.modelos.OrcamentoModel;
 import com.bcopstein.sistvendas.dominio.modelos.PedidoModel;
 import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
+import com.bcopstein.sistvendas.dominio.modelos.ClienteModel;
 import com.bcopstein.sistvendas.dominio.modelos.ItemPedidoModel;
+import com.bcopstein.sistvendas.dominio.persistencia.IClienteRepositorio;
 import com.bcopstein.sistvendas.dominio.persistencia.IOrcamentoRepositorio;
 import com.bcopstein.sistvendas.aplicacao.dtos.ItemCompradoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.PerfilClienteDTO;
@@ -28,6 +30,8 @@ import com.bcopstein.sistvendas.aplicacao.dtos.VolumeVendasDTO; // Adicionar imp
 public class ServicoDeVendas {
     private IOrcamentoRepositorio orcamentosRepo;
     private ServicoDeEstoque servicoDeEstoque; // Injeta ServicoDeEstoque
+    private IClienteRepositorio clienteRepo; // Adicionar
+
 
     // Definição de locais atendidos
     // No futuro, isso pode vir de um arquivo de configuração ou banco de dados
@@ -40,9 +44,10 @@ public class ServicoDeVendas {
     }
 
     @Autowired
-    public ServicoDeVendas(IOrcamentoRepositorio orcamentos, ServicoDeEstoque servicoDeEstoque) {
+    public ServicoDeVendas(IOrcamentoRepositorio orcamentos, ServicoDeEstoque servicoDeEstoque, IClienteRepositorio clienteRepo) {
         this.orcamentosRepo = orcamentos;
         this.servicoDeEstoque = servicoDeEstoque;
+        this.clienteRepo = clienteRepo;
     }
 
     public List<ProdutoModel> produtosDisponiveis() {
@@ -53,23 +58,26 @@ public class ServicoDeVendas {
         return this.orcamentosRepo.findById(id).orElse(null);
     }
 
-    public PerfilClienteDTO gerarPerfilCliente(String nomeCliente, LocalDate dataInicial, LocalDate dataFinal) {
+     public PerfilClienteDTO gerarPerfilCliente(String nomeCliente, LocalDate dataInicial, LocalDate dataFinal) {
         if (nomeCliente == null || nomeCliente.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome do cliente é obrigatório.");
         }
 
         List<OrcamentoModel> orcamentosCliente;
         if (dataInicial != null && dataFinal != null) {
-            if (dataInicial.isAfter(dataFinal)) {
-                throw new IllegalArgumentException("Data inicial não pode ser posterior à data final.");
-            }
-            orcamentosCliente = orcamentosRepo
-                    .findByNomeClienteAndEfetivadoIsTrueAndDataGeracaoBetweenOrderByDataGeracaoDesc(
-                            nomeCliente, dataInicial, dataFinal);
+            // Atualizar para chamar o método correto do repositório se você o renomeou
+            // Ex: findByClienteNomeCompletoAndEfetivadoIsTrueAndDataGeracaoBetweenOrderByDataGeracaoDesc
+            orcamentosCliente = orcamentosRepo.findByClienteNomeCompletoAndEfetivadoIsTrueAndDataGeracaoBetweenOrderByDataGeracaoDesc(
+                nomeCliente, dataInicial, dataFinal);
         } else {
-            orcamentosCliente = orcamentosRepo.findByNomeClienteAndEfetivadoIsTrueOrderByDataGeracaoDesc(nomeCliente);
+            // Atualizar para chamar o método correto do repositório se você o renomeou
+            // Ex: findByClienteNomeCompletoAndEfetivadoIsTrueOrderByDataGeracaoDesc
+            orcamentosCliente = orcamentosRepo.findByClienteNomeCompletoAndEfetivadoIsTrueOrderByDataGeracaoDesc(nomeCliente);
         }
 
+        // O restante da lógica para construir PerfilClienteDTO permanece o mesmo,
+        // pois ele itera sobre os OrcamentoModel e seus ItemPedidoModel.
+        // ... (lógica de agregação existente para itensAgregados e totalGastoPeloCliente) ...
         BigDecimal totalGastoPeloCliente = BigDecimal.ZERO;
         Map<Long, ItemCompradoDTO> itensAgregados = new HashMap<>();
 
@@ -77,34 +85,36 @@ public class ServicoDeVendas {
             totalGastoPeloCliente = totalGastoPeloCliente.add(orcamento.getCustoConsumidor());
             for (ItemPedidoModel item : orcamento.getItens()) {
                 ProdutoModel produto = item.getProduto();
-                if (produto == null)
-                    continue;
+                if (produto == null) continue;
 
                 long idProduto = produto.getId();
                 BigDecimal valorDoItemNoOrcamento = BigDecimal.valueOf(produto.getPrecoUnitario())
-                        .multiply(new BigDecimal(item.getQuantidade()))
-                        .setScale(2, RoundingMode.HALF_UP);
+                                                        .multiply(new BigDecimal(item.getQuantidade()))
+                                                        .setScale(2, RoundingMode.HALF_UP);
 
-                ItemCompradoDTO itemComprado = itensAgregados.get(idProduto);
-                if (itemComprado == null) {
-                    itensAgregados.put(idProduto, new ItemCompradoDTO(
+                itensAgregados.compute(idProduto, (key, dto) -> {
+                    if (dto == null) {
+                        return new ItemCompradoDTO(
                             idProduto,
                             produto.getDescricao(),
                             item.getQuantidade(),
-                            valorDoItemNoOrcamento));
-                } else {
-                    itensAgregados.put(idProduto, new ItemCompradoDTO(
+                            valorDoItemNoOrcamento
+                        );
+                    } else {
+                        return new ItemCompradoDTO(
                             idProduto,
                             produto.getDescricao(),
-                            itemComprado.getQuantidadeTotalComprada() + item.getQuantidade(),
-                            itemComprado.getValorTotalGastoNoProduto().add(valorDoItemNoOrcamento)));
-                }
+                            dto.getQuantidadeTotalComprada() + item.getQuantidade(),
+                            dto.getValorTotalGastoNoProduto().add(valorDoItemNoOrcamento)
+                        );
+                    }
+                });
             }
         }
         return new PerfilClienteDTO(nomeCliente, dataInicial, dataFinal,
-                totalGastoPeloCliente.setScale(2, RoundingMode.HALF_UP),
-                orcamentosCliente.size(),
-                new ArrayList<>(itensAgregados.values()));
+                                    totalGastoPeloCliente.setScale(2, RoundingMode.HALF_UP),
+                                    orcamentosCliente.size(),
+                                    new ArrayList<>(itensAgregados.values()));
     }
 
     public VolumeVendasDTO calcularVolumeVendasPorPeriodo(LocalDate dataInicial, LocalDate dataFinal) {
@@ -188,12 +198,6 @@ public class ServicoDeVendas {
             }
         }
 
-        // Se um idProdutoEspecifico foi fornecido, o map conterá no máximo uma entrada
-        // (ou nenhuma).
-        // Se idProdutoEspecifico for null, o map conterá todos os produtos vendidos no
-        // período.
-        // A conversão para new ArrayList<>(vendasPorProdutoMap.values()) já lida com
-        // ambos os casos.
         return new ArrayList<>(vendasPorProdutoMap.values());
     }
 
@@ -214,7 +218,8 @@ public class ServicoDeVendas {
     @Transactional
     // Assinatura do método atualizada para incluir paisCliente
     public OrcamentoModel criaOrcamento(PedidoModel pedido, String estadoCliente, String paisCliente,
-            String nomeCliente) {
+            String nomeCliente, String nomeClienteRequest, String cpfClienteRequest) {
+        
         // Validações de entrada do pedido
         if (pedido == null || pedido.getItens() == null || pedido.getItens().isEmpty()) {
             throw new IllegalArgumentException("Pedido inválido: não pode ser nulo ou vazio.");
@@ -250,15 +255,43 @@ public class ServicoDeVendas {
                     "Local de entrega não atendido: País '" + paisCliente + "', Estado '" + estadoCliente + "'.");
         }
 
-        // Criação e configuração do orçamento
-        OrcamentoModel novoOrcamento = new OrcamentoModel();
-        novoOrcamento.setEstadoCliente(estadoCliente.trim());
-        novoOrcamento.setPaisCliente(paisCliente.trim());
-        novoOrcamento.setNomeCliente(nomeCliente.trim()); // DEFINIR NOME DO CLIENTE
-        novoOrcamento.addItensPedido(pedido);
-        novoOrcamento.recalculaTotais();
+ClienteModel clienteAssociado = null;
+    if (cpfClienteRequest != null && !cpfClienteRequest.trim().isEmpty()) {
+        clienteAssociado = clienteRepo.findByCpf(cpfClienteRequest.trim())
+                            .orElse(null);
+    }
 
-        return this.orcamentosRepo.save(novoOrcamento);
+    if (clienteAssociado == null && nomeClienteRequest != null && !nomeClienteRequest.trim().isEmpty()) {
+        // Tenta encontrar por nome se não achou por CPF ou CPF não foi dado
+        clienteAssociado = clienteRepo.findByNomeCompletoIgnoreCase(nomeClienteRequest.trim())
+                            .orElse(null);
+        if (clienteAssociado == null) { // Se ainda não achou, cria um novo
+            // Considerar o que fazer se só o nome foi dado e não existe. Criar sempre? Ou exigir CPF para novo?
+            // Por simplicidade, criaremos se o nome for fornecido e não existir.
+            // Em um sistema real, você pode querer mais dados ou um fluxo de cadastro de cliente separado.
+            System.out.println("INFO: Cliente '" + nomeClienteRequest + "' não encontrado. Criando novo cliente.");
+            clienteAssociado = new ClienteModel(nomeClienteRequest.trim(), 
+                                                (cpfClienteRequest != null ? cpfClienteRequest.trim() : null), 
+                                                null); // Email seria null aqui, precisaria vir do DTO
+            clienteRepo.save(clienteAssociado);
+        }
+    } else if (clienteAssociado == null && (nomeClienteRequest == null || nomeClienteRequest.trim().isEmpty())) {
+        // Se não tem CPF nem nome, não podemos associar/criar cliente.
+        // Você pode lançar uma exceção ou permitir orçamentos sem cliente (se cliente_id for nullable)
+        // Para este exemplo, vamos assumir que um nome de cliente é o mínimo.
+        throw new IllegalArgumentException("Nome do cliente ou CPF deve ser fornecido para criar/associar cliente ao orçamento.");
+    }
+
+
+    OrcamentoModel novoOrcamento = new OrcamentoModel();
+    novoOrcamento.setCliente(clienteAssociado); // ASSOCIA O CLIENTE
+    novoOrcamento.setEstadoCliente(estadoCliente.trim()); 
+    novoOrcamento.setPaisCliente(paisCliente.trim());
+    // O campo nomeCliente no OrcamentoModel foi removido.
+    novoOrcamento.addItensPedido(pedido);
+    novoOrcamento.recalculaTotais();
+
+    return this.orcamentosRepo.save(novoOrcamento);
     }
 
     @Transactional

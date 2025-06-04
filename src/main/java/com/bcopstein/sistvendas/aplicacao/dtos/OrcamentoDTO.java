@@ -15,7 +15,7 @@ public class OrcamentoDTO {
     private long id;
     private List<ItemPedidoDTO> itens;
     private List<Double> precosUnitariosItens; 
-    
+    private String nomeCliente;
     private BigDecimal subTotal; 
 
     private BigDecimal impostoEstadual; 
@@ -30,7 +30,6 @@ public class OrcamentoDTO {
     
     private boolean efetivado;
     private LocalDate dataGeracao; // Adicionado na Fase 2
-    private String nomeCliente;    // Adicionado na Tarefa 5.1
     private String estadoCliente; 
     private String paisCliente; 
 
@@ -139,7 +138,7 @@ public class OrcamentoDTO {
         BigDecimal valorDescontoTotalModel = orcamento.getValorDesconto();
         BigDecimal custoConsumidorModel = orcamento.getCustoConsumidor();
         LocalDate dataGeracaoModel = orcamento.getDataGeracao();
-        String nomeClienteModel = orcamento.getNomeCliente();
+        String nomeClienteModel = (orcamento.getCliente() != null) ? orcamento.getCliente().getNomeCompleto() : null;
         String estadoClienteModel = orcamento.getEstadoCliente();
         String paisClienteModel = orcamento.getPaisCliente();
 
