@@ -3,7 +3,7 @@ package com.bcopstein.sistvendas.dominio.servicos;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays; // Para a lista de locais
-import java.util.Map;    // Para estrutura de locais atendidos
+import java.util.Map; // Para estrutura de locais atendidos
 import java.util.HashMap; // Para estrutura de locais atendidos
 import java.time.LocalDate; // Adicionar import
 import java.math.BigDecimal; // Adicionar import
@@ -24,7 +24,6 @@ import com.bcopstein.sistvendas.aplicacao.dtos.TaxaConversaoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.VendaProdutoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.VolumeVendasDTO; // Adicionar import
 
-
 @Service
 public class ServicoDeVendas {
     private IOrcamentoRepositorio orcamentosRepo;
@@ -36,7 +35,7 @@ public class ServicoDeVendas {
     static {
         LOCAIS_ATENDIDOS = new HashMap<>();
         // Locais atendidos conforme Anexo I do PDF para o Brasil
-        LOCAIS_ATENDIDOS.put("BRASIL", Arrays.asList("RS", "SP", "PE")); 
+        LOCAIS_ATENDIDOS.put("BRASIL", Arrays.asList("RS", "SP", "PE"));
         // Exemplo de como adicionar outros países/regiões:
         // LOCAIS_ATENDIDOS.put("ARGENTINA", Arrays.asList("BUENOS AIRES", "CORDOBA"));
     }
@@ -55,7 +54,7 @@ public class ServicoDeVendas {
         return this.orcamentosRepo.findById(id).orElse(null);
     }
 
-        public PerfilClienteDTO gerarPerfilCliente(String nomeCliente, LocalDate dataInicial, LocalDate dataFinal) {
+    public PerfilClienteDTO gerarPerfilCliente(String nomeCliente, LocalDate dataInicial, LocalDate dataFinal) {
         if (nomeCliente == null || nomeCliente.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome do cliente é obrigatório.");
         }
@@ -65,8 +64,9 @@ public class ServicoDeVendas {
             if (dataInicial.isAfter(dataFinal)) {
                 throw new IllegalArgumentException("Data inicial não pode ser posterior à data final.");
             }
-            orcamentosCliente = orcamentosRepo.findByNomeClienteAndEfetivadoIsTrueAndDataGeracaoBetweenOrderByDataGeracaoDesc(
-                nomeCliente, dataInicial, dataFinal);
+            orcamentosCliente = orcamentosRepo
+                    .findByNomeClienteAndEfetivadoIsTrueAndDataGeracaoBetweenOrderByDataGeracaoDesc(
+                            nomeCliente, dataInicial, dataFinal);
         } else {
             orcamentosCliente = orcamentosRepo.findByNomeClienteAndEfetivadoIsTrueOrderByDataGeracaoDesc(nomeCliente);
         }
@@ -78,35 +78,34 @@ public class ServicoDeVendas {
             totalGastoPeloCliente = totalGastoPeloCliente.add(orcamento.getCustoConsumidor());
             for (ItemPedidoModel item : orcamento.getItens()) {
                 ProdutoModel produto = item.getProduto();
-                if (produto == null) continue;
+                if (produto == null)
+                    continue;
 
                 long idProduto = produto.getId();
                 BigDecimal valorDoItemNoOrcamento = BigDecimal.valueOf(produto.getPrecoUnitario())
-                                                        .multiply(new BigDecimal(item.getQuantidade()))
-                                                        .setScale(2, RoundingMode.HALF_UP);
+                        .multiply(new BigDecimal(item.getQuantidade()))
+                        .setScale(2, RoundingMode.HALF_UP);
 
                 ItemCompradoDTO itemComprado = itensAgregados.get(idProduto);
                 if (itemComprado == null) {
                     itensAgregados.put(idProduto, new ItemCompradoDTO(
-                        idProduto,
-                        produto.getDescricao(),
-                        item.getQuantidade(),
-                        valorDoItemNoOrcamento
-                    ));
+                            idProduto,
+                            produto.getDescricao(),
+                            item.getQuantidade(),
+                            valorDoItemNoOrcamento));
                 } else {
                     itensAgregados.put(idProduto, new ItemCompradoDTO(
-                        idProduto,
-                        produto.getDescricao(),
-                        itemComprado.getQuantidadeTotalComprada() + item.getQuantidade(),
-                        itemComprado.getValorTotalGastoNoProduto().add(valorDoItemNoOrcamento)
-                    ));
+                            idProduto,
+                            produto.getDescricao(),
+                            itemComprado.getQuantidadeTotalComprada() + item.getQuantidade(),
+                            itemComprado.getValorTotalGastoNoProduto().add(valorDoItemNoOrcamento)));
                 }
             }
         }
         return new PerfilClienteDTO(nomeCliente, dataInicial, dataFinal,
-                                    totalGastoPeloCliente.setScale(2, RoundingMode.HALF_UP),
-                                    orcamentosCliente.size(),
-                                    new ArrayList<>(itensAgregados.values()));
+                totalGastoPeloCliente.setScale(2, RoundingMode.HALF_UP),
+                orcamentosCliente.size(),
+                new ArrayList<>(itensAgregados.values()));
     }
 
     public VolumeVendasDTO calcularVolumeVendasPorPeriodo(LocalDate dataInicial, LocalDate dataFinal) {
@@ -127,30 +126,43 @@ public class ServicoDeVendas {
 
         return new VolumeVendasDTO(dataInicial, dataFinal, totalVendas, orcamentosNoPeriodo.size());
     }
-    
-    public List<VendaProdutoDTO> calcularTotalVendasPorProduto(LocalDate dataInicial, LocalDate dataFinal, Long idProduto2) {
+
+    public List<VendaProdutoDTO> calcularTotalVendasPorProduto(LocalDate dataInicial, LocalDate dataFinal,
+            Long idProdutoEspecifico) { // Renomeei idProduto2 para clareza
         List<OrcamentoModel> orcamentosConsiderados;
+
+        // Validação e obtenção de orçamentos (mantendo sua lógica original aqui)
         if (dataInicial != null && dataFinal != null) {
             if (dataInicial.isAfter(dataFinal)) {
                 throw new IllegalArgumentException("Data inicial não pode ser posterior à data final.");
             }
             orcamentosConsiderados = orcamentosEfetivadosPorPeriodo(dataInicial, dataFinal);
         } else {
-            // Se não fornecer período, considera todos os orçamentos efetivados
-            // Para isso, precisaríamos de um método no repositório como:
-            // List<OrcamentoModel> findByEfetivadoIsTrueOrderByIdDesc();
-            // ou adaptar o existente com Pageable muito grande.
-            // Por simplicidade, vamos exigir o período por enquanto, ou você pode
-            // buscar todos usando orcamentosRepo.findAll() e filtrar por efetivado.
-            // Vamos assumir que o período é obrigatório para esta primeira versão.
+            // Se as datas não são fornecidas, mas um produto específico é, podemos buscar
+            // todos os orçamentos
+            // efetivados para aquele cliente e depois filtrar os itens do produto.
+            // Ou, se idProdutoEspecifico também for null, lançar erro ou buscar todos os
+            // orçamentos efetivados.
+            // A lógica original sua exigia dataInicial e dataFinal. Vamos manter isso por
+            // enquanto
+            // e assumir que o frontend sempre passará datas, mesmo que amplas, se quiser
+            // "todos os tempos".
+            // Se idProdutoEspecifico for o foco, as datas podem ser opcionais NO FRONTEND,
+            // mas o backend pode usar datas default (ex: desde o início dos tempos até
+            // hoje) se não vierem.
+            // Por simplicidade e para alinhar com o endpoint que já espera datas:
             if (dataInicial == null || dataFinal == null) {
-                // Ou buscar todos os efetivados se essa for a intenção quando as datas são nulas.
-                // Para este exemplo, vamos tornar as datas obrigatórias para esta consulta,
-                // alinhando com a consulta de volume de vendas.
-                throw new IllegalArgumentException("Data inicial e data final são obrigatórias para esta consulta.");
+                throw new IllegalArgumentException(
+                        "Data inicial e data final são obrigatórias para esta consulta, mesmo ao filtrar por produto específico.");
             }
-            // Esta linha não será alcançada se a validação acima estiver ativa.
-            orcamentosConsiderados = new ArrayList<>(); // Placeholder
+            // Se quiséssemos buscar todos os tempos para um produto específico, a lógica de
+            // busca de orçamentos mudaria:
+            // if (idProdutoEspecifico != null && dataInicial == null && dataFinal == null)
+            // {
+            // orcamentosConsiderados = orcamentosRepo.findByEfetivadoIsTrueOrderByIdDesc();
+            // // Precisaria deste método
+            // } else ...
+            orcamentosConsiderados = new ArrayList<>(); // Deveria ser preenchido pela lógica acima
         }
 
         Map<Long, VendaProdutoDTO> vendasPorProdutoMap = new HashMap<>();
@@ -161,34 +173,45 @@ public class ServicoDeVendas {
                 if (produto == null)
                     continue;
 
-                long idProduto = produto.getId();
+                // >>> APLICAR O FILTRO DO PRODUTO AQUI <<<
+                if (idProdutoEspecifico != null && produto.getId() != idProdutoEspecifico.longValue()) {
+                    continue; // Pula este item se não for o produto específico solicitado
+                }
+
+                long idProdutoAtual = produto.getId(); // Usar uma variável local para clareza
                 String descricao = produto.getDescricao();
                 int quantidadeVendidaItem = item.getQuantidade();
 
-                // O valor do item é (preço unitário do produto * quantidade)
-                // O preço unitário é o que estava no ProdutoModel associado ao ItemPedidoModel
-                // No nosso modelo atual, ItemPedidoModel tem ProdutoModel, que tem o preço.
                 BigDecimal valorItem = BigDecimal.valueOf(produto.getPrecoUnitario())
                         .multiply(new BigDecimal(quantidadeVendidaItem))
                         .setScale(2, RoundingMode.HALF_UP);
 
-                VendaProdutoDTO dto = vendasPorProdutoMap.get(idProduto);
-                if (dto == null) {
-                    dto = new VendaProdutoDTO(idProduto, descricao, quantidadeVendidaItem, valorItem);
-                } else {
-                    dto = new VendaProdutoDTO(
-                            idProduto,
-                            descricao,
-                            dto.getQuantidadeTotalVendida() + quantidadeVendidaItem,
-                            dto.getValorTotalArrecadado().add(valorItem));
-                }
-                vendasPorProdutoMap.put(idProduto, dto);
+                // Agregação no Map
+                vendasPorProdutoMap.compute(idProdutoAtual, (key, dto) -> {
+                    if (dto == null) {
+                        return new VendaProdutoDTO(idProdutoAtual, descricao, quantidadeVendidaItem, valorItem);
+                    } else {
+                        // Atualiza o DTO existente somando a nova quantidade e valor
+                        return new VendaProdutoDTO(
+                                idProdutoAtual,
+                                descricao,
+                                dto.getQuantidadeTotalVendida() + quantidadeVendidaItem,
+                                dto.getValorTotalArrecadado().add(valorItem));
+                    }
+                });
             }
         }
+
+        // Se um idProdutoEspecifico foi fornecido, o map conterá no máximo uma entrada
+        // (ou nenhuma).
+        // Se idProdutoEspecifico for null, o map conterá todos os produtos vendidos no
+        // período.
+        // A conversão para new ArrayList<>(vendasPorProdutoMap.values()) já lida com
+        // ambos os casos.
         return new ArrayList<>(vendasPorProdutoMap.values());
     }
-    
-        public TaxaConversaoDTO calcularTaxaConversaoPorPeriodo(LocalDate dataInicial, LocalDate dataFinal) {
+
+    public TaxaConversaoDTO calcularTaxaConversaoPorPeriodo(LocalDate dataInicial, LocalDate dataFinal) {
         if (dataInicial == null || dataFinal == null) {
             throw new IllegalArgumentException("Data inicial e data final são obrigatórias.");
         }
@@ -198,13 +221,14 @@ public class ServicoDeVendas {
 
         long totalCriados = orcamentosRepo.countByDataGeracaoBetween(dataInicial, dataFinal);
         long totalEfetivados = orcamentosRepo.countByEfetivadoIsTrueAndDataGeracaoBetween(dataInicial, dataFinal);
-        
+
         return new TaxaConversaoDTO(dataInicial, dataFinal, totalCriados, totalEfetivados);
     }
 
     @Transactional
     // Assinatura do método atualizada para incluir paisCliente
-    public OrcamentoModel criaOrcamento(PedidoModel pedido, String estadoCliente, String paisCliente, String nomeCliente) { 
+    public OrcamentoModel criaOrcamento(PedidoModel pedido, String estadoCliente, String paisCliente,
+            String nomeCliente) {
         // Validações de entrada do pedido
         if (pedido == null || pedido.getItens() == null || pedido.getItens().isEmpty()) {
             throw new IllegalArgumentException("Pedido inválido: não pode ser nulo ou vazio.");
@@ -216,9 +240,9 @@ public class ServicoDeVendas {
             if (item.getQuantidade() <= 0) {
                 throw new IllegalArgumentException("Item de pedido inválido: quantidade deve ser positiva.");
             }
-             if (nomeCliente == null || nomeCliente.trim().isEmpty()) {
-                 throw new IllegalArgumentException("Nome do cliente não informado.");
-             }
+            if (nomeCliente == null || nomeCliente.trim().isEmpty()) {
+                throw new IllegalArgumentException("Nome do cliente não informado.");
+            }
         }
 
         // Validações de entrada para país e estado
@@ -230,30 +254,32 @@ public class ServicoDeVendas {
         }
 
         // Validação de local atendido
-            String paisUpper = paisCliente.trim().toUpperCase();
-            String estadoUpper = estadoCliente.trim().toUpperCase();
+        String paisUpper = paisCliente.trim().toUpperCase();
+        String estadoUpper = estadoCliente.trim().toUpperCase();
 
-            List<String> estadosAtendidosNoPais = LOCAIS_ATENDIDOS.get(paisUpper);
+        List<String> estadosAtendidosNoPais = LOCAIS_ATENDIDOS.get(paisUpper);
 
-            if (estadosAtendidosNoPais == null || !estadosAtendidosNoPais.contains(estadoUpper)) {
-                throw new IllegalArgumentException("Local de entrega não atendido: País '" + paisCliente + "', Estado '" + estadoCliente + "'.");
-            }
+        if (estadosAtendidosNoPais == null || !estadosAtendidosNoPais.contains(estadoUpper)) {
+            throw new IllegalArgumentException(
+                    "Local de entrega não atendido: País '" + paisCliente + "', Estado '" + estadoCliente + "'.");
+        }
 
         // Criação e configuração do orçamento
-     OrcamentoModel novoOrcamento = new OrcamentoModel();
-    novoOrcamento.setEstadoCliente(estadoCliente.trim()); 
-    novoOrcamento.setPaisCliente(paisCliente.trim());
-    novoOrcamento.setNomeCliente(nomeCliente.trim()); // DEFINIR NOME DO CLIENTE
-    novoOrcamento.addItensPedido(pedido);
-    novoOrcamento.recalculaTotais();
+        OrcamentoModel novoOrcamento = new OrcamentoModel();
+        novoOrcamento.setEstadoCliente(estadoCliente.trim());
+        novoOrcamento.setPaisCliente(paisCliente.trim());
+        novoOrcamento.setNomeCliente(nomeCliente.trim()); // DEFINIR NOME DO CLIENTE
+        novoOrcamento.addItensPedido(pedido);
+        novoOrcamento.recalculaTotais();
 
-        return this.orcamentosRepo.save(novoOrcamento); 
+        return this.orcamentosRepo.save(novoOrcamento);
     }
 
     @Transactional
     public OrcamentoModel efetivaOrcamento(long id) {
         OrcamentoModel orcamento = this.orcamentosRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Orçamento ID " + id + " não encontrado para efetivação."));
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Orçamento ID " + id + " não encontrado para efetivação."));
 
         if (orcamento.isEfetivado()) {
             System.out.println("ServicoDeVendas: Orçamento ID " + id + " já está efetivado.");
@@ -262,7 +288,8 @@ public class ServicoDeVendas {
 
         // Verificação de validade (21 dias)
         if (orcamento.isVencido()) { //
-            throw new IllegalStateException("Orçamento ID " + id + " está vencido e não pode mais ser efetivado. Data Geração: " + orcamento.getDataGeracao());
+            throw new IllegalStateException("Orçamento ID " + id
+                    + " está vencido e não pode mais ser efetivado. Data Geração: " + orcamento.getDataGeracao());
         }
 
         if (orcamento.getItens() == null || orcamento.getItens().isEmpty()) {
@@ -291,8 +318,10 @@ public class ServicoDeVendas {
             System.out.println("ServicoDeVendas: Orçamento ID " + id + " efetivado com sucesso.");
         } else {
             System.out.println("ServicoDeVendas: Orçamento ID " + id + " NÃO efetivado (itens indisponíveis ou erro).");
-            // Considerar lançar uma exceção aqui para indicar falha na efetivação por falta de estoque
-            throw new IllegalStateException("Orçamento ID " + id + " não pode ser efetivado devido à falta de estoque para um ou mais itens.");
+            // Considerar lançar uma exceção aqui para indicar falha na efetivação por falta
+            // de estoque
+            throw new IllegalStateException(
+                    "Orçamento ID " + id + " não pode ser efetivado devido à falta de estoque para um ou mais itens.");
         }
         return orcamento;
     }
@@ -314,7 +343,7 @@ public class ServicoDeVendas {
             if (!orcamento.isEfetivado()) {
                 boolean itemFoiRemovido = orcamento.removeItemPorProdutoId(produtoIdRemovido);
                 if (itemFoiRemovido) {
-                    orcamentosRepo.save(orcamento); 
+                    orcamentosRepo.save(orcamento);
                 }
             }
         }
@@ -326,7 +355,7 @@ public class ServicoDeVendas {
         if (orcamentoExistente == null) {
             return false;
         }
-        orcamentosRepo.deleteById(orcamentoId); 
+        orcamentosRepo.deleteById(orcamentoId);
         return true;
     }
 }

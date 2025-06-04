@@ -3,7 +3,6 @@ package com.bcopstein.sistvendas.dominio.modelos;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
 public class PedidoModel {
     private long id;
     private List<ItemPedidoModel> itens;

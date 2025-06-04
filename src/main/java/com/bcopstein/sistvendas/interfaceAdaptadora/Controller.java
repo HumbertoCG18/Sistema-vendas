@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.bcopstein.sistvendas.aplicacao.casosDeUso.*; 
-import com.bcopstein.sistvendas.aplicacao.dtos.*; 
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.*;
+import com.bcopstein.sistvendas.aplicacao.dtos.*;
 
 @RestController
 public class Controller {
@@ -41,14 +41,13 @@ public class Controller {
     private ConsultaTaxaConversaoUC consultaTaxaConversaoUC; // Adicionar novo UC
     private ConsultaPerfilClienteUC consultaPerfilClienteUC; // Adicionar novo UC
 
-
-
     // Novos UCs (já existentes no seu código original)
     private BaixaEstoqueUC baixaEstoqueUC;
     private EntradaEstoqueUC entradaEstoqueUC;
     private ProdutoPorCodigoUC produtoPorCodigoUC;
-    private QtdadeEmEstoqueUC qtdadeEmEstoqueUC; 
-    // O ConsultaEstoquePorListaUC foi incorporado ao QtdadeEmEstoqueUC como um método sobrecarregado,
+    private QtdadeEmEstoqueUC qtdadeEmEstoqueUC;
+    // O ConsultaEstoquePorListaUC foi incorporado ao QtdadeEmEstoqueUC como um
+    // método sobrecarregado,
     // então não precisamos de uma nova variável de instância para ele aqui.
 
     @Autowired
@@ -93,8 +92,8 @@ public class Controller {
         this.consultaPerfilClienteUC = consultaPerfilClienteUC; // Atribuir novo UC
 
     }
-    
-       // >>> NOVO ENDPOINT para Perfil de Cliente <<<
+
+    // >>> NOVO ENDPOINT para Perfil de Cliente <<<
     @GetMapping("/gerencial/perfilCliente")
     @CrossOrigin(origins = "*")
     public ResponseEntity<PerfilClienteDTO> getPerfilCliente(
@@ -112,8 +111,8 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao gerar perfil do cliente.", e);
         }
     }
-    
-        @GetMapping("/gerencial/taxaConversao")
+
+    @GetMapping("/gerencial/taxaConversao")
     @CrossOrigin(origins = "*")
     public ResponseEntity<TaxaConversaoDTO> getTaxaConversao(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
@@ -126,32 +125,34 @@ public class Controller {
         } catch (Exception e) {
             System.err.println("Controller Erro: /gerencial/taxaConversao -> " + e.getMessage());
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular taxa de conversão.", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular taxa de conversão.",
+                    e);
         }
     }
-    
-        @GetMapping("/gerencial/vendasPorProduto")
-@CrossOrigin(origins = "*")
-public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
-        @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
-        @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal,
-        @RequestParam(required = false) Long idProduto) { // Parâmetro para ID do produto
 
-    // >>> DEBUG: Verificar o idProduto recebido no Controller <<<
-    System.out.println("CONTROLLER - getVendasPorProduto - idProduto recebido: " + idProduto);
+    @GetMapping("/gerencial/vendasPorProduto")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal,
+            @RequestParam(required = false) Long idProduto) { // Parâmetro para ID do produto
 
-    try {
-        // Passa o idProduto para o UC
-        List<VendaProdutoDTO> vendas = consultaVendasPorProdutoUC.run(dataInicial, dataFinal, idProduto);
-        return ResponseEntity.ok(vendas);
-    } catch (IllegalArgumentException e) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-    } catch (Exception e) {
-        System.err.println("Controller Erro: /gerencial/vendasPorProduto -> " + e.getMessage());
-        e.printStackTrace();
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular vendas por produto.", e);
+        // >>> DEBUG: Verificar o idProduto recebido no Controller <<<
+        System.out.println("CONTROLLER - getVendasPorProduto - idProduto recebido: " + idProduto);
+
+        try {
+            // Passa o idProduto para o UC
+            List<VendaProdutoDTO> vendas = consultaVendasPorProdutoUC.run(dataInicial, dataFinal, idProduto);
+            return ResponseEntity.ok(vendas);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (Exception e) {
+            System.err.println("Controller Erro: /gerencial/vendasPorProduto -> " + e.getMessage());
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular vendas por produto.",
+                    e);
+        }
     }
-}
 
     @GetMapping("")
     @CrossOrigin(origins = "*")
@@ -181,43 +182,43 @@ public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
         } catch (Exception e) {
             System.err.println("Controller Erro: /gerencial/volumeVendas -> " + e.getMessage());
             e.printStackTrace(); // Para mais detalhes do erro no log do servidor
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular volume de vendas.", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular volume de vendas.",
+                    e);
         }
     }
 
     @PostMapping("/novoOrcamento")
     @CrossOrigin(origins = "*")
-    public OrcamentoDTO novoOrcamento(@RequestBody NovoOrcamentoRequestDTO request) { 
+    public OrcamentoDTO novoOrcamento(@RequestBody NovoOrcamentoRequestDTO request) {
         try {
             return criaOrcamentoUC.run(request);
         } catch (IllegalArgumentException | IllegalStateException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (RuntimeException e) {
-             System.err.println("Controller Erro: /novoOrcamento -> " + e.getMessage());
-             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
-        }
-         catch (Exception e) {
+            System.err.println("Controller Erro: /novoOrcamento -> " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        } catch (Exception e) {
             System.err.println("Controller Erro: /novoOrcamento -> " + e.getMessage());
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao criar orçamento.", e);
         }
     }
-    
+
     @GetMapping("/efetivaOrcamento/{id}")
     @CrossOrigin(origins = "*")
     public OrcamentoDTO efetivaOrcamento(@PathVariable(value = "id") long idOrcamento) {
         try {
             OrcamentoDTO orcamento = efetivaOrcamentoUC.run(idOrcamento);
             if (orcamento == null) { // Embora o UC deva lançar exceção se não encontrar ou não efetivar
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Orçamento ID " + idOrcamento + " não encontrado ou não pôde ser efetivado.");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Orçamento ID " + idOrcamento + " não encontrado ou não pôde ser efetivado.");
             }
             return orcamento;
         } catch (IllegalStateException e) { // Captura exceções como orçamento vencido, sem itens, falta de estoque
-             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (IllegalArgumentException e) { // Captura ID não encontrado vindo do findById
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
-        }
-         catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("Controller Erro: /efetivaOrcamento/" + idOrcamento + " -> " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao efetivar orçamento.", e);
         }
@@ -235,10 +236,11 @@ public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (Exception e) {
             System.err.println("Controller Erro: /orcamentosEfetivados -> " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar orçamentos efetivados.", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar orçamentos efetivados.",
+                    e);
         }
     }
-    
+
     @DeleteMapping("/orcamentos/{id}")
     @CrossOrigin(origins = "*")
     public ResponseEntity<Void> removerOrcamento(@PathVariable long id) {
@@ -249,7 +251,7 @@ public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
             } else {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Orçamento ID " + id + " não encontrado.");
             }
-        } catch (IllegalStateException e) { 
+        } catch (IllegalStateException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage(), e);
         } catch (Exception e) {
             System.err.println("Controller Erro: /orcamentos/" + id + " -> " + e.getMessage());
@@ -288,7 +290,7 @@ public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
         try {
             ProdutoDTO produtoAdicionado = adicionarProdutoUC.run(novoProdutoDTO);
             return ResponseEntity.created(URI.create("/produtos/" + produtoAdicionado.getId()))
-                                 .body(produtoAdicionado);
+                    .body(produtoAdicionado);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (Exception e) {
@@ -303,13 +305,13 @@ public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
         try {
             // Adicionar verificação se produtoDTO.getId() == id, se aplicável
             ProdutoDTO produtoEditado = editarProdutoUC.run(id, produtoDTO);
-            if (produtoEditado == null) { 
+            if (produtoEditado == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto ID " + id + " não encontrado.");
             }
             return ResponseEntity.ok(produtoEditado);
-        } catch (IllegalArgumentException e) { 
+        } catch (IllegalArgumentException e) {
             if (e.getMessage() != null && e.getMessage().contains("não encontrado")) {
-                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
             }
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (Exception e) {
@@ -324,9 +326,10 @@ public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
         try {
             boolean desativado = desativarProdutoUC.run(id);
             if (desativado) {
-                return ResponseEntity.noContent().build(); 
+                return ResponseEntity.noContent().build();
             } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto ID " + id + " não encontrado ou falha ao desativar.");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Produto ID " + id + " não encontrado ou falha ao desativar.");
             }
         } catch (Exception e) {
             System.err.println("Controller Erro: /produtos/" + id + " (DELETE) -> " + e.getMessage());
@@ -342,11 +345,12 @@ public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
     public ResponseEntity<Integer> getQtdadeEmEstoque(@PathVariable long id) {
         try {
             // Chama o método run original que aceita um long id
-            int qtd = qtdadeEmEstoqueUC.run(id); 
+            int qtd = qtdadeEmEstoqueUC.run(id);
             return ResponseEntity.ok(qtd);
         } catch (Exception e) { // Idealmente, capturar exceções mais específicas se o UC/Serviço as lançar
             System.err.println("Controller Erro: /produtos/" + id + "/qtdadeEstoque -> " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar quantidade em estoque.", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar quantidade em estoque.",
+                    e);
         }
     }
 
@@ -359,14 +363,14 @@ public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
         }
         try {
             // Chama o método run sobrecarregado que aceita List<Long>
-            List<ProdutoEstoqueDTO> quantidades = qtdadeEmEstoqueUC.run(ids); 
+            List<ProdutoEstoqueDTO> quantidades = qtdadeEmEstoqueUC.run(ids);
             return ResponseEntity.ok(quantidades);
         } catch (Exception e) {
             System.err.println("Controller Erro: /estoque/produtosPorLista -> " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar quantidades em estoque por lista.", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erro ao buscar quantidades em estoque por lista.", e);
         }
     }
-
 
     @PostMapping("/produtos/{id}/baixaEstoque")
     @CrossOrigin(origins = "*")

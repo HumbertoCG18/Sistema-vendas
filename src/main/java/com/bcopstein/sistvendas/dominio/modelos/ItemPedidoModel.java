@@ -31,15 +31,18 @@ public class ItemPedidoModel {
         this.quantidade = quantidade;
     }
 
-    // Getters e Setters
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
-    public ProdutoModel getProduto() { return produto; }
+    //Setters
+    public void setId(long id) { this.id = id;}
     public void setProduto(ProdutoModel produto) { this.produto = produto; }
-    public int getQuantidade() { return quantidade; }
     public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
-    public OrcamentoModel getOrcamento() { return orcamento; }
     public void setOrcamento(OrcamentoModel orcamento) { this.orcamento = orcamento; }
+    
+    // Getters
+    public long getId() { return id; }
+    public ProdutoModel getProduto() { return produto; }
+    public int getQuantidade() { return quantidade; }
+    public OrcamentoModel getOrcamento() { return orcamento; }
+
 
      @Override
     public String toString() {

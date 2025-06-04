@@ -58,21 +58,22 @@ public class ServicoDeEstoque {
         return (item != null && item.isListado()) ? item.getQuantidade() : 0;
     }
 
-        public List<ProdutoEstoqueDTO> quantidadesEmEstoquePorLista(List<Long> idsProdutos) {
+    public List<ProdutoEstoqueDTO> quantidadesEmEstoquePorLista(List<Long> idsProdutos) {
         if (idsProdutos == null || idsProdutos.isEmpty()) {
             return new ArrayList<>();
         }
-        
+
         List<ProdutoEstoqueDTO> resultado = new ArrayList<>();
         for (Long idProduto : idsProdutos) {
             ProdutoModel produto = produtosRepo.findById(idProduto).orElse(null);
-            
+
             if (produto != null) {
                 ItemDeEstoqueModel itemEstoque = estoqueRepo.findByProdutoId(idProduto);
-                // O método fromModels já lida com itemEstoque nulo, criando um DTO com estoque 0 e não listado.
+                // O método fromModels já lida com itemEstoque nulo, criando um DTO com estoque
+                // 0 e não listado.
                 resultado.add(ProdutoEstoqueDTO.fromModels(produto, itemEstoque));
             } else {
-                // Produto não encontrado. Criamos um DTO placeholder.
+                // Produto não encontrado. Criamos um DTO placeholder (ProdutoEstoqueDTO).
                 // Usamos o construtor de ProdutoEstoqueDTO diretamente para este caso.
                 resultado.add(new ProdutoEstoqueDTO(idProduto, "Produto não encontrado", 0.0, 0, false, 0, 0));
             }
@@ -84,40 +85,41 @@ public class ServicoDeEstoque {
     public void baixaEstoque(long idProduto, int qtdade) {
         ItemDeEstoqueModel item = estoqueRepo.findByProdutoId(idProduto);
         if (item == null || !item.isListado()) {
-            throw new IllegalArgumentException("Produto com ID " + idProduto + " não encontrado ou não listado no estoque para dar baixa.");
+            throw new IllegalArgumentException(
+                    "Produto com ID " + idProduto + " não encontrado ou não listado no estoque para dar baixa.");
         }
         if (item.getQuantidade() < qtdade) {
-            throw new IllegalArgumentException("Quantidade em estoque (" + item.getQuantidade() + ") insuficiente para o produto ID " + idProduto + " (solicitado: " + qtdade + ").");
+            throw new IllegalArgumentException("Quantidade em estoque (" + item.getQuantidade()
+                    + ") insuficiente para o produto ID " + idProduto + " (solicitado: " + qtdade + ").");
         }
         item.setQuantidade(item.getQuantidade() - qtdade);
         estoqueRepo.save(item);
     }
 
-    // ==========================================================
-    // == GARANTA QUE ESTE MÉTODO ESTEJA PRESENTE E CORRETO ==
-    // ==========================================================
     @Transactional
     public void entradaEstoque(long idProduto, int qtdade) {
         ItemDeEstoqueModel item = estoqueRepo.findByProdutoId(idProduto);
         if (item == null) {
-            throw new IllegalArgumentException("Produto com ID " + idProduto + " não encontrado no estoque para dar entrada.");
+            throw new IllegalArgumentException(
+                    "Produto com ID " + idProduto + " não encontrado no estoque para dar entrada.");
         }
-         if (qtdade <= 0) {
+        if (qtdade <= 0) {
             throw new IllegalArgumentException("A quantidade de entrada deve ser positiva.");
         }
+
         item.setQuantidade(item.getQuantidade() + qtdade);
         // Garante que o item fique listado ao dar entrada (opcional, mas faz sentido)
-        item.setListado(true); 
+        item.setListado(true);
         estoqueRepo.save(item);
     }
-    // ==========================================================
 
     @Transactional
     public ProdutoModel adicionarNovoProduto(NovoProdutoRequestDTO novoProdutoInfo) {
-        if (novoProdutoInfo == null || novoProdutoInfo.getDescricao() == null || novoProdutoInfo.getDescricao().isEmpty() || novoProdutoInfo.getPrecoUnitario() <= 0) {
-             throw new IllegalArgumentException("Dados inválidos para novo produto.");
+        if (novoProdutoInfo == null || novoProdutoInfo.getDescricao() == null
+                || novoProdutoInfo.getDescricao().isEmpty() || novoProdutoInfo.getPrecoUnitario() <= 0) {
+            throw new IllegalArgumentException("Dados inválidos para novo produto.");
         }
-        
+
         ProdutoModel novoProduto = new ProdutoModel(
                 novoProdutoInfo.getDescricao(),
                 novoProdutoInfo.getPrecoUnitario());
@@ -127,8 +129,7 @@ public class ServicoDeEstoque {
                 produtoCadastrado,
                 novoProdutoInfo.getQuantidadeInicialEstoque(),
                 novoProdutoInfo.getEstoqueMin(),
-                novoProdutoInfo.getEstoqueMax()
-        );
+                novoProdutoInfo.getEstoqueMax());
         estoqueRepo.save(novoItemEstoque);
         return produtoCadastrado;
     }
@@ -136,11 +137,12 @@ public class ServicoDeEstoque {
     @Transactional
     public ProdutoModel editarProduto(long produtoId, ProdutoDTO produtoEditadoInfo) {
         ProdutoModel produtoExistente = produtosRepo.findById(produtoId)
-            .orElseThrow(() -> new IllegalArgumentException("Produto com ID " + produtoId + " não encontrado para edição."));
-            
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Produto com ID " + produtoId + " não encontrado para edição."));
+
         produtoExistente.setDescricao(produtoEditadoInfo.getDescricao());
         produtoExistente.setPrecoUnitario(produtoEditadoInfo.getPrecoUnitario());
-        
+
         return produtosRepo.save(produtoExistente);
     }
 
