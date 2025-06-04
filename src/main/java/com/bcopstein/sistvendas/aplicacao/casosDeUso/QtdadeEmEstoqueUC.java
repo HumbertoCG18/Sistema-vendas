@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.bcopstein.sistvendas.dominio.servicos.ServicoDeEstoque;
+import com.bcopstein.sistvendas.aplicacao.dtos.ProdutoEstoqueDTO; // Adicionar import
+import java.util.List; // Adicionar import
 
 @Component
 public class QtdadeEmEstoqueUC {
@@ -14,7 +16,14 @@ public class QtdadeEmEstoqueUC {
         this.servicoDeEstoque = servicoDeEstoque;
     }
 
-    public int run(long id) {
+    // Método run existente para um único ID
+    public int run(long id) { //
         return servicoDeEstoque.qtdadeEmEstoque(id);
     }
+
+    // >>> NOVO MÉTODO run SOBRECARREGADO para uma lista de IDs <<<
+    public List<ProdutoEstoqueDTO> run(List<Long> idsProdutos) {
+        return servicoDeEstoque.quantidadesEmEstoquePorLista(idsProdutos);
+    }
+    // >>> FIM DO NOVO MÉTODO run <<<
 }

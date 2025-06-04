@@ -1,5 +1,6 @@
 package com.bcopstein.sistvendas.dominio.servicos;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,28 @@ public class ServicoDeEstoque {
     public int qtdadeEmEstoque(long idProduto) {
         ItemDeEstoqueModel item = estoqueRepo.findByProdutoId(idProduto);
         return (item != null && item.isListado()) ? item.getQuantidade() : 0;
+    }
+
+        public List<ProdutoEstoqueDTO> quantidadesEmEstoquePorLista(List<Long> idsProdutos) {
+        if (idsProdutos == null || idsProdutos.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        List<ProdutoEstoqueDTO> resultado = new ArrayList<>();
+        for (Long idProduto : idsProdutos) {
+            ProdutoModel produto = produtosRepo.findById(idProduto).orElse(null);
+            
+            if (produto != null) {
+                ItemDeEstoqueModel itemEstoque = estoqueRepo.findByProdutoId(idProduto);
+                // O método fromModels já lida com itemEstoque nulo, criando um DTO com estoque 0 e não listado.
+                resultado.add(ProdutoEstoqueDTO.fromModels(produto, itemEstoque));
+            } else {
+                // Produto não encontrado. Criamos um DTO placeholder.
+                // Usamos o construtor de ProdutoEstoqueDTO diretamente para este caso.
+                resultado.add(new ProdutoEstoqueDTO(idProduto, "Produto não encontrado", 0.0, 0, false, 0, 0));
+            }
+        }
+        return resultado;
     }
 
     @Transactional

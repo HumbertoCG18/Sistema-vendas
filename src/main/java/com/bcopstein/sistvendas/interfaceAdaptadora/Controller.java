@@ -1,5 +1,6 @@
 package com.bcopstein.sistvendas.interfaceAdaptadora;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.net.URI;
 
@@ -83,8 +84,6 @@ public class Controller {
                 .build();
     }
 
-    // --- Endpoints de Orçamento (Mantidos) ---
-    // ... (Mantenha os endpoints existentes de orçamento) ...
     @GetMapping("/todosOrcamentos")
     @CrossOrigin(origins = "*")
     public List<OrcamentoDTO> todosOrcamentos() {
@@ -270,4 +269,24 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao dar entrada no estoque.", e);
         }
     }
+
+      @GetMapping("/estoque/produtosPorLista")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<List<ProdutoEstoqueDTO>> getQtdadeEmEstoquePorLista(@RequestParam List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            // Retorna 200 OK com lista vazia em vez de 400 Bad Request, pode ser mais amigável.
+            // Se preferir Bad Request: return ResponseEntity.badRequest().body(new ArrayList<>());
+            return ResponseEntity.ok(new ArrayList<>());
+        }
+        try {
+            // Chama o método run sobrecarregado que aceita List<Long>
+            List<ProdutoEstoqueDTO> quantidades = qtdadeEmEstoqueUC.run(ids); 
+            return ResponseEntity.ok(quantidades);
+        } catch (Exception e) {
+            System.err.println("Controller Erro: /estoque/produtosPorLista -> " + e.getMessage());
+            // Considerar um tratamento de erro mais específico ou log
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Retorna 500 sem corpo
+        }
+    }
+
 }
