@@ -255,8 +255,16 @@
         <div id="produtoFormGlobalResult" class="result" style="display: none;"></div>
     </div>
 
-<div class="card">
+    <div class="card">
         <h2>Criar Novo Orçamento</h2>
+        <div>
+            <label for="nomeCliente" style="display:block; margin-bottom:3px;"><b>Nome do Cliente:</b></label>
+            <input type="text" id="nomeCliente" placeholder="Ex: João Silva" style="margin-bottom:10px;">
+        </div>
+        <div>
+            <label for="paisCliente" style="display:block; margin-bottom:3px;"><b>País do Cliente:</b></label>
+            <input type="text" id="paisCliente" placeholder="Ex: Brasil" value="Brasil" style="width: 150px; margin-bottom:10px;">
+        </div>
         <div>
             <label for="estadoCliente" style="display:block; margin-bottom:3px;"><b>Estado do Cliente (UF):</b></label>
             <input type="text" id="estadoCliente" placeholder="Ex: RS" style="width: 100px; margin-bottom:10px;">
@@ -541,17 +549,29 @@
                 }
             });
 
-            const estadoCliente = document.getElementById('estadoCliente').value.trim();
+            // Obter novos campos
+            const nomeCliente = document.getElementById('nomeCliente').value.trim();
+            const paisCliente = document.getElementById('paisCliente').value.trim();
+            const estadoCliente = document.getElementById('estadoCliente').value.trim(); //
+
+            // Validações
+            if (!nomeCliente) {
+                exibirResultadoOperacao('orcamentoResult', 'Por favor, informe o nome do cliente.', 'error'); return;
+            }
+            if (!paisCliente) {
+                exibirResultadoOperacao('orcamentoResult', 'Por favor, informe o país do cliente.', 'error'); return;
+            }
             if (!estadoCliente) {
                 exibirResultadoOperacao('orcamentoResult', 'Por favor, informe o estado do cliente (Ex: RS).', 'error'); return;
             }
-
             if (itens.length === 0) {
                 exibirResultadoOperacao('orcamentoResult', 'Adicione itens válidos ao orçamento.', 'error'); return;
             }
             
             const payload = {
                 itens: itens,
+                nomeCliente: nomeCliente, // Adicionar nomeCliente
+                paisCliente: paisCliente,   // Adicionar paisCliente
                 estadoCliente: estadoCliente
             };
 
@@ -560,14 +580,56 @@
                 const response = await fetch('/novoOrcamento', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
                 });
-                const orcCriado = await handleFetchError(response);
-                exibirResultadoOperacao('orcamentoResult', orcCriado);
+                const orcCriado = await handleFetchError(response); // Sua função de tratamento de erro
+                
+                // Atualizar a exibição para o novo formato do OrcamentoDTO
+                // A função formatarComoJson já existe e vai mostrar todos os campos.
+                // Você pode querer uma formatação mais amigável do que apenas o JSON bruto.
+                let displayText = "Orçamento Criado com Sucesso:\n";
+                displayText += `ID: ${orcCriado.id}\n`;
+                displayText += `Cliente: ${orcCriado.nomeCliente}\n`;
+                displayText += `Local: ${orcCriado.paisCliente} / ${orcCriado.estadoCliente}\n`;
+                displayText += `Data Geração: ${orcCriado.dataGeracao}\n`; // Assumindo que dataGeracao está no DTO
+                displayText += `SubTotal: R$ ${parseFloat(orcCriado.subTotal).toFixed(2)}\n`;
+                displayText += `Imposto Estadual: ${orcCriado.impostoEstadualFormatado}\n`; // Usando o formatado
+                displayText += `Imposto Federal: ${orcCriado.impostoFederalFormatado}\n`; // Usando o formatado
+                displayText += `Desconto Total: R$ ${parseFloat(orcCriado.valorDescontoTotal).toFixed(2)}\n`;
+                displayText += `Custo Consumidor: R$ ${parseFloat(orcCriado.custoConsumidor).toFixed(2)}\n`;
+                displayText += `Efetivado: ${orcCriado.efetivado}\n`;
+                // Adicionar mais detalhes dos itens se desejar
+
+                exibirResultadoOperacao('orcamentoResult', displayText, 'normal_pre'); // 'normal_pre' para manter formatação com <pre>
+
                 document.getElementById('itensOrcamento').innerHTML = ''; 
+                document.getElementById('nomeCliente').value = ''; // Limpar campo
+                document.getElementById('paisCliente').value = 'Brasil'; // Resetar para padrão
                 document.getElementById('estadoCliente').value = ''; 
                 adicionarLinhaDeItemParaOrcamento(); 
                 await carregarTodosOrcamentosParaGerenciamento(); 
             } catch (error) {
                 exibirResultadoOperacao('orcamentoResult', 'Erro ao criar orçamento: ' + error.message, 'error');
+            }
+        }
+
+        // Modificar exibirResultadoOperacao para aceitar um tipo 'normal_pre'
+        function exibirResultadoOperacao(elementId, data, tipo = 'normal') {
+            const el = document.getElementById(elementId);
+            if (!el) { console.error("Elemento de resultado não encontrado:", elementId); return; }
+            el.style.display = 'block';
+            el.className = 'result'; // Reset classes
+            el.classList.remove('loading', 'error'); // Remove classes específicas
+
+            if (tipo === 'loading') {
+                el.classList.add('loading');
+                el.innerHTML = typeof data === 'string' ? data : 'Processando...';
+            } else if (tipo === 'error') {
+                el.classList.add('error');
+                el.innerHTML = typeof data === 'string' ? data : 'Ocorreu um erro.';
+            } else if (tipo === 'normal_pre') { // Novo tipo para usar <pre>
+                el.innerHTML = `<pre>${(typeof data === 'object' && data !== null) ? formatarComoJson(data) : (data === null ? 'Operação concluída.' : data)}</pre>`;
+            } 
+            else { // tipo 'normal'
+                el.innerHTML = (typeof data === 'object' && data !== null) ? formatarComoJson(data) : (data === null ? 'Operação concluída.' : data);
             }
         }
 
