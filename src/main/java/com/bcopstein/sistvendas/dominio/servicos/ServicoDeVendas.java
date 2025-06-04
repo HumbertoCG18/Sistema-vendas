@@ -1,10 +1,13 @@
 package com.bcopstein.sistvendas.dominio.servicos;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Arrays; // Para a lista de locais
 import java.util.Map;    // Para estrutura de locais atendidos
 import java.util.HashMap; // Para estrutura de locais atendidos
 import java.time.LocalDate; // Adicionar import
+import java.math.BigDecimal; // Adicionar import
+import java.math.RoundingMode;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,10 @@ import com.bcopstein.sistvendas.dominio.modelos.PedidoModel;
 import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
 import com.bcopstein.sistvendas.dominio.modelos.ItemPedidoModel;
 import com.bcopstein.sistvendas.dominio.persistencia.IOrcamentoRepositorio;
+import com.bcopstein.sistvendas.aplicacao.dtos.TaxaConversaoDTO;
+import com.bcopstein.sistvendas.aplicacao.dtos.VendaProdutoDTO;
+import com.bcopstein.sistvendas.aplicacao.dtos.VolumeVendasDTO; // Adicionar import
+
 
 @Service
 public class ServicoDeVendas {
@@ -46,9 +53,102 @@ public class ServicoDeVendas {
         return this.orcamentosRepo.findById(id).orElse(null);
     }
 
+    public VolumeVendasDTO calcularVolumeVendasPorPeriodo(LocalDate dataInicial, LocalDate dataFinal) {
+        if (dataInicial == null || dataFinal == null) {
+            throw new IllegalArgumentException("Data inicial e data final são obrigatórias.");
+        }
+        if (dataInicial.isAfter(dataFinal)) {
+            throw new IllegalArgumentException("Data inicial não pode ser posterior à data final.");
+        }
+
+        List<OrcamentoModel> orcamentosNoPeriodo = orcamentosEfetivadosPorPeriodo(dataInicial, dataFinal);
+
+        BigDecimal totalVendas = BigDecimal.ZERO;
+        for (OrcamentoModel orcamento : orcamentosNoPeriodo) {
+            // Usar o getter que já retorna BigDecimal escalado
+            totalVendas = totalVendas.add(orcamento.getCustoConsumidor());
+        }
+
+        return new VolumeVendasDTO(dataInicial, dataFinal, totalVendas, orcamentosNoPeriodo.size());
+    }
+    
+    public List<VendaProdutoDTO> calcularTotalVendasPorProduto(LocalDate dataInicial, LocalDate dataFinal) {
+        List<OrcamentoModel> orcamentosConsiderados;
+        if (dataInicial != null && dataFinal != null) {
+            if (dataInicial.isAfter(dataFinal)) {
+                throw new IllegalArgumentException("Data inicial não pode ser posterior à data final.");
+            }
+            orcamentosConsiderados = orcamentosEfetivadosPorPeriodo(dataInicial, dataFinal);
+        } else {
+            // Se não fornecer período, considera todos os orçamentos efetivados
+            // Para isso, precisaríamos de um método no repositório como:
+            // List<OrcamentoModel> findByEfetivadoIsTrueOrderByIdDesc();
+            // ou adaptar o existente com Pageable muito grande.
+            // Por simplicidade, vamos exigir o período por enquanto, ou você pode
+            // buscar todos usando orcamentosRepo.findAll() e filtrar por efetivado.
+            // Vamos assumir que o período é obrigatório para esta primeira versão.
+            if (dataInicial == null || dataFinal == null) {
+                // Ou buscar todos os efetivados se essa for a intenção quando as datas são nulas.
+                // Para este exemplo, vamos tornar as datas obrigatórias para esta consulta,
+                // alinhando com a consulta de volume de vendas.
+                throw new IllegalArgumentException("Data inicial e data final são obrigatórias para esta consulta.");
+            }
+            // Esta linha não será alcançada se a validação acima estiver ativa.
+            orcamentosConsiderados = new ArrayList<>(); // Placeholder
+        }
+
+        Map<Long, VendaProdutoDTO> vendasPorProdutoMap = new HashMap<>();
+
+        for (OrcamentoModel orcamento : orcamentosConsiderados) {
+            for (ItemPedidoModel item : orcamento.getItens()) {
+                ProdutoModel produto = item.getProduto();
+                if (produto == null)
+                    continue;
+
+                long idProduto = produto.getId();
+                String descricao = produto.getDescricao();
+                int quantidadeVendidaItem = item.getQuantidade();
+
+                // O valor do item é (preço unitário do produto * quantidade)
+                // O preço unitário é o que estava no ProdutoModel associado ao ItemPedidoModel
+                // No nosso modelo atual, ItemPedidoModel tem ProdutoModel, que tem o preço.
+                BigDecimal valorItem = BigDecimal.valueOf(produto.getPrecoUnitario())
+                        .multiply(new BigDecimal(quantidadeVendidaItem))
+                        .setScale(2, RoundingMode.HALF_UP);
+
+                VendaProdutoDTO dto = vendasPorProdutoMap.get(idProduto);
+                if (dto == null) {
+                    dto = new VendaProdutoDTO(idProduto, descricao, quantidadeVendidaItem, valorItem);
+                } else {
+                    dto = new VendaProdutoDTO(
+                            idProduto,
+                            descricao,
+                            dto.getQuantidadeTotalVendida() + quantidadeVendidaItem,
+                            dto.getValorTotalArrecadado().add(valorItem));
+                }
+                vendasPorProdutoMap.put(idProduto, dto);
+            }
+        }
+        return new ArrayList<>(vendasPorProdutoMap.values());
+    }
+    
+        public TaxaConversaoDTO calcularTaxaConversaoPorPeriodo(LocalDate dataInicial, LocalDate dataFinal) {
+        if (dataInicial == null || dataFinal == null) {
+            throw new IllegalArgumentException("Data inicial e data final são obrigatórias.");
+        }
+        if (dataInicial.isAfter(dataFinal)) {
+            throw new IllegalArgumentException("Data inicial não pode ser posterior à data final.");
+        }
+
+        long totalCriados = orcamentosRepo.countByDataGeracaoBetween(dataInicial, dataFinal);
+        long totalEfetivados = orcamentosRepo.countByEfetivadoIsTrueAndDataGeracaoBetween(dataInicial, dataFinal);
+        
+        return new TaxaConversaoDTO(dataInicial, dataFinal, totalCriados, totalEfetivados);
+    }
+
     @Transactional
     // Assinatura do método atualizada para incluir paisCliente
-    public OrcamentoModel criaOrcamento(PedidoModel pedido, String estadoCliente, String paisCliente) { 
+    public OrcamentoModel criaOrcamento(PedidoModel pedido, String estadoCliente, String paisCliente, String nomeCliente) { 
         // Validações de entrada do pedido
         if (pedido == null || pedido.getItens() == null || pedido.getItens().isEmpty()) {
             throw new IllegalArgumentException("Pedido inválido: não pode ser nulo ou vazio.");
@@ -60,6 +160,9 @@ public class ServicoDeVendas {
             if (item.getQuantidade() <= 0) {
                 throw new IllegalArgumentException("Item de pedido inválido: quantidade deve ser positiva.");
             }
+             if (nomeCliente == null || nomeCliente.trim().isEmpty()) {
+                 throw new IllegalArgumentException("Nome do cliente não informado.");
+             }
         }
 
         // Validações de entrada para país e estado
@@ -81,12 +184,12 @@ public class ServicoDeVendas {
             }
 
         // Criação e configuração do orçamento
-        OrcamentoModel novoOrcamento = new OrcamentoModel();
-        novoOrcamento.setEstadoCliente(estadoCliente.trim()); 
-        novoOrcamento.setPaisCliente(paisCliente.trim());     
-        novoOrcamento.addItensPedido(pedido); 
-
-        novoOrcamento.recalculaTotais();
+     OrcamentoModel novoOrcamento = new OrcamentoModel();
+    novoOrcamento.setEstadoCliente(estadoCliente.trim()); 
+    novoOrcamento.setPaisCliente(paisCliente.trim());
+    novoOrcamento.setNomeCliente(nomeCliente.trim()); // DEFINIR NOME DO CLIENTE
+    novoOrcamento.addItensPedido(pedido);
+    novoOrcamento.recalculaTotais();
 
         return this.orcamentosRepo.save(novoOrcamento); 
     }

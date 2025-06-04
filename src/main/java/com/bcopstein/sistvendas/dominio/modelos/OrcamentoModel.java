@@ -36,10 +36,10 @@ public class OrcamentoModel {
     private BigDecimal custoConsumidor; // Custo final
     private LocalDate dataGeracao; // Novo atributo
     private String paisCliente;
-
-
     private boolean efetivado;
     private String estadoCliente;
+    private String nomeCliente; // NOVO ATRIBUTO
+
     // private double aliquotaImpostoAplicada; // Removido, substituído por aliquotaImpostoEstadualAplicada
 
     // Construtor padrão (sem argumentos) - Usado pelo JPA e pelo código
@@ -55,16 +55,13 @@ public class OrcamentoModel {
         this.dataGeracao = LocalDate.now();
     }
 
-
-    //Setters
-    
-
-
     public LocalDate getDataGeracao() {
         return dataGeracao;
     }
 
-
+    public String getNomeCliente() { return nomeCliente; } // NOVO GETTER
+    public void setNomeCliente(String nomeCliente) { this.nomeCliente = nomeCliente; } // NOVO SETTER
+    
     public boolean isVencido() {
         if (this.dataGeracao == null) {
             return true; // Se não tem data de geração, considera-se inválido/vencido por precaução
@@ -296,6 +293,7 @@ private void calcularDescontosInterno() {
     public String toString() {
         return "OrcamentoModel{" +
                 "id=" + id +
+                "nomeCliente='" + nomeCliente + '\'' +
                 ", dataGeracao=" + dataGeracao + 
                 ", itens=" + (itens != null ? itens.size() : 0) + " itens" +
                 "paisCliente='" + paisCliente + '\'' +

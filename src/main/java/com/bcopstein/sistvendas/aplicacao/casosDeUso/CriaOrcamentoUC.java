@@ -8,10 +8,6 @@ import com.bcopstein.sistvendas.dominio.servicos.ServicoDeVendas;
 
 import com.bcopstein.sistvendas.aplicacao.dtos.ItemPedidoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.OrcamentoDTO;
-// Novo DTO para request não é necessário aqui se o Controller passa os N parâmetros.
-// Mas se o Controller usar NovoOrcamentoRequestDTO, então este UC o receberia.
-// For simplicity with the current structure, let's assume Controller extracts and passes.
-// OR, let this UC take the NovoOrcamentoRequestDTO. Let's update it to take the DTO.
 import com.bcopstein.sistvendas.aplicacao.dtos.NovoOrcamentoRequestDTO;
 import com.bcopstein.sistvendas.dominio.modelos.ItemPedidoModel;
 import com.bcopstein.sistvendas.dominio.modelos.OrcamentoModel;
@@ -35,6 +31,8 @@ public class CriaOrcamentoUC {
     List<ItemPedidoDTO> itens = request.getItens();
     String estadoCliente = request.getEstadoCliente();
     String paisCliente = request.getPaisCliente(); // OBTER PAÍS
+    String nomeCliente = request.getNomeCliente(); // OBTER NOME DO CLIENTE
+
 
         // System.out.println("CriaOrcamentoUC: Recebendo itens para orçamento: " + itens + ", Estado: " + estadoCliente);
         PedidoModel pedido = new PedidoModel(0); // Pedido ID is transient here
@@ -60,7 +58,7 @@ public class CriaOrcamentoUC {
         }
         
         // System.out.println("CriaOrcamentoUC: Pedido criado com " + pedido.getItens().size() + " item(ns)");
-        OrcamentoModel orcamento = servicoDeVendas.criaOrcamento(pedido, estadoCliente, paisCliente); // Pass estadoCliente
-        return OrcamentoDTO.fromModel(orcamento);
+    OrcamentoModel orcamento = servicoDeVendas.criaOrcamento(pedido, estadoCliente, paisCliente, nomeCliente); // ATUALIZAR CHAMADA
+    return OrcamentoDTO.fromModel(orcamento);
     }
 }

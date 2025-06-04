@@ -30,13 +30,16 @@ public class Controller {
     private TodosProdutosStatusUC todosProdutosStatusUC;
     private CriaOrcamentoUC criaOrcamentoUC;
     private EfetivaOrcamentoUC efetivaOrcamentoUC;
-    // private UltimosOrcamentosEfetivadosUC ultimosOrcamentosEfetivadosUC; // Substituído
+    private ConsultaVolumeVendasUC consultaVolumeVendasUC; // Adicionar novo UC
     private ConsultaOrcamentosEfetivadosUC consultaOrcamentosEfetivadosUC; // Novo UC para orçamentos por período
     private TodosOrcamentosUC todosOrcamentosUC;
     private AdicionarProdutoUC adicionarProdutoUC;
     private EditarProdutoUC editarProdutoUC;
     private RemoverOrcamentoUC removerOrcamentoUC;
     private DesativarProdutoUC desativarProdutoUC;
+    private ConsultaVendasPorProdutoUC consultaVendasPorProdutoUC;
+    private ConsultaTaxaConversaoUC consultaTaxaConversaoUC; // Adicionar novo UC
+
 
     // Novos UCs (já existentes no seu código original)
     private BaixaEstoqueUC baixaEstoqueUC;
@@ -52,7 +55,6 @@ public class Controller {
             TodosProdutosStatusUC todosProdutosStatusUC,
             CriaOrcamentoUC criaOrcamentoUC,
             EfetivaOrcamentoUC efetivaOrcamentoUC,
-            // UltimosOrcamentosEfetivadosUC ultimosOrcamentosEfetivadosUC, // Substituído
             ConsultaOrcamentosEfetivadosUC consultaOrcamentosEfetivadosUC, // Injetar novo UC
             TodosOrcamentosUC todosOrcamentosUC,
             AdicionarProdutoUC adicionarProdutoUC,
@@ -62,13 +64,15 @@ public class Controller {
             BaixaEstoqueUC baixaEstoqueUC,
             EntradaEstoqueUC entradaEstoqueUC,
             ProdutoPorCodigoUC produtoPorCodigoUC,
+            ConsultaVolumeVendasUC consultaVolumeVendasUC,
+            ConsultaVendasPorProdutoUC consultaVendasPorProdutoUC,
+            ConsultaTaxaConversaoUC consultaTaxaConversaoUC, // Injetar novo UC
             QtdadeEmEstoqueUC qtdadeEmEstoqueUC
-            ) {
+    ) {
         this.produtosDisponiveisUC = produtosDisponiveisUC;
         this.todosProdutosStatusUC = todosProdutosStatusUC;
         this.criaOrcamentoUC = criaOrcamentoUC;
         this.efetivaOrcamentoUC = efetivaOrcamentoUC;
-        // this.ultimosOrcamentosEfetivadosUC = ultimosOrcamentosEfetivadosUC; // Substituído
         this.consultaOrcamentosEfetivadosUC = consultaOrcamentosEfetivadosUC; // Atribuir novo UC
         this.todosOrcamentosUC = todosOrcamentosUC;
         this.adicionarProdutoUC = adicionarProdutoUC;
@@ -79,6 +83,44 @@ public class Controller {
         this.entradaEstoqueUC = entradaEstoqueUC;
         this.produtoPorCodigoUC = produtoPorCodigoUC;
         this.qtdadeEmEstoqueUC = qtdadeEmEstoqueUC;
+        this.consultaVolumeVendasUC = consultaVolumeVendasUC;
+        this.consultaVendasPorProdutoUC = consultaVendasPorProdutoUC;
+        this.consultaTaxaConversaoUC = consultaTaxaConversaoUC; // Atribuir novo UC
+
+    }
+    
+        @GetMapping("/gerencial/taxaConversao")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<TaxaConversaoDTO> getTaxaConversao(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
+        try {
+            TaxaConversaoDTO taxaConversao = consultaTaxaConversaoUC.run(dataInicial, dataFinal);
+            return ResponseEntity.ok(taxaConversao);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (Exception e) {
+            System.err.println("Controller Erro: /gerencial/taxaConversao -> " + e.getMessage());
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular taxa de conversão.", e);
+        }
+    }
+    
+        @GetMapping("/gerencial/vendasPorProduto")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<List<VendaProdutoDTO>> getVendasPorProduto(
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
+        try {
+            List<VendaProdutoDTO> vendas = consultaVendasPorProdutoUC.run(dataInicial, dataFinal);
+            return ResponseEntity.ok(vendas);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (Exception e) {
+            System.err.println("Controller Erro: /gerencial/vendasPorProduto -> " + e.getMessage());
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular vendas por produto.", e);
+        }
     }
 
     @GetMapping("")
@@ -94,6 +136,23 @@ public class Controller {
     @CrossOrigin(origins = "*")
     public List<OrcamentoDTO> todosOrcamentos() {
         return todosOrcamentosUC.run();
+    }
+
+    @GetMapping("/gerencial/volumeVendas")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<VolumeVendasDTO> getVolumeVendas(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
+        try {
+            VolumeVendasDTO volumeVendas = consultaVolumeVendasUC.run(dataInicial, dataFinal);
+            return ResponseEntity.ok(volumeVendas);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (Exception e) {
+            System.err.println("Controller Erro: /gerencial/volumeVendas -> " + e.getMessage());
+            e.printStackTrace(); // Para mais detalhes do erro no log do servidor
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular volume de vendas.", e);
+        }
     }
 
     @PostMapping("/novoOrcamento")
