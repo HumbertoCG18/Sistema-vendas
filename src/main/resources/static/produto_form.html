@@ -145,7 +145,7 @@
                 document.getElementById('produtoIdFormPopup').value = produtoIdToEdit;
                 // Para edição, oculte o estoque inicial. O gerenciamento de estoque pode ser um recurso separado ou parte da edição.
                 // Para simplificar, agora, a edição de descrição/preço. Se você quiser editar detalhes do estoque, mostre esses campos.
-                document.getElementById('estoqueDivPopup').style.display = 'none'; 
+                document.getElementById('estoqueDivPopup').value = produto; 
                 
                 // Fetch product details to populate form
                 fetchProductDetails(produtoIdToEdit);
