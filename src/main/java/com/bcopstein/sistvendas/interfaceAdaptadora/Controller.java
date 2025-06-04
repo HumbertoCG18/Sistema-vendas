@@ -39,6 +39,8 @@ public class Controller {
     private DesativarProdutoUC desativarProdutoUC;
     private ConsultaVendasPorProdutoUC consultaVendasPorProdutoUC;
     private ConsultaTaxaConversaoUC consultaTaxaConversaoUC; // Adicionar novo UC
+    private ConsultaPerfilClienteUC consultaPerfilClienteUC; // Adicionar novo UC
+
 
 
     // Novos UCs (já existentes no seu código original)
@@ -67,7 +69,9 @@ public class Controller {
             ConsultaVolumeVendasUC consultaVolumeVendasUC,
             ConsultaVendasPorProdutoUC consultaVendasPorProdutoUC,
             ConsultaTaxaConversaoUC consultaTaxaConversaoUC, // Injetar novo UC
-            QtdadeEmEstoqueUC qtdadeEmEstoqueUC
+            QtdadeEmEstoqueUC qtdadeEmEstoqueUC,
+            ConsultaPerfilClienteUC consultaPerfilClienteUC // Injetar novo UC
+
     ) {
         this.produtosDisponiveisUC = produtosDisponiveisUC;
         this.todosProdutosStatusUC = todosProdutosStatusUC;
@@ -86,7 +90,27 @@ public class Controller {
         this.consultaVolumeVendasUC = consultaVolumeVendasUC;
         this.consultaVendasPorProdutoUC = consultaVendasPorProdutoUC;
         this.consultaTaxaConversaoUC = consultaTaxaConversaoUC; // Atribuir novo UC
+        this.consultaPerfilClienteUC = consultaPerfilClienteUC; // Atribuir novo UC
 
+    }
+    
+       // >>> NOVO ENDPOINT para Perfil de Cliente <<<
+    @GetMapping("/gerencial/perfilCliente")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<PerfilClienteDTO> getPerfilCliente(
+            @RequestParam String nomeCliente,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
+        try {
+            PerfilClienteDTO perfil = consultaPerfilClienteUC.run(nomeCliente, dataInicial, dataFinal);
+            return ResponseEntity.ok(perfil);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (Exception e) {
+            System.err.println("Controller Erro: /gerencial/perfilCliente -> " + e.getMessage());
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao gerar perfil do cliente.", e);
+        }
     }
     
         @GetMapping("/gerencial/taxaConversao")

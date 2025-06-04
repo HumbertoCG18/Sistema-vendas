@@ -18,6 +18,8 @@ import com.bcopstein.sistvendas.dominio.modelos.PedidoModel;
 import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
 import com.bcopstein.sistvendas.dominio.modelos.ItemPedidoModel;
 import com.bcopstein.sistvendas.dominio.persistencia.IOrcamentoRepositorio;
+import com.bcopstein.sistvendas.aplicacao.dtos.ItemCompradoDTO;
+import com.bcopstein.sistvendas.aplicacao.dtos.PerfilClienteDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.TaxaConversaoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.VendaProdutoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.VolumeVendasDTO; // Adicionar import
@@ -51,6 +53,60 @@ public class ServicoDeVendas {
 
     public OrcamentoModel recuperaOrcamentoPorId(long id) {
         return this.orcamentosRepo.findById(id).orElse(null);
+    }
+
+        public PerfilClienteDTO gerarPerfilCliente(String nomeCliente, LocalDate dataInicial, LocalDate dataFinal) {
+        if (nomeCliente == null || nomeCliente.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome do cliente é obrigatório.");
+        }
+
+        List<OrcamentoModel> orcamentosCliente;
+        if (dataInicial != null && dataFinal != null) {
+            if (dataInicial.isAfter(dataFinal)) {
+                throw new IllegalArgumentException("Data inicial não pode ser posterior à data final.");
+            }
+            orcamentosCliente = orcamentosRepo.findByNomeClienteAndEfetivadoIsTrueAndDataGeracaoBetweenOrderByDataGeracaoDesc(
+                nomeCliente, dataInicial, dataFinal);
+        } else {
+            orcamentosCliente = orcamentosRepo.findByNomeClienteAndEfetivadoIsTrueOrderByDataGeracaoDesc(nomeCliente);
+        }
+
+        BigDecimal totalGastoPeloCliente = BigDecimal.ZERO;
+        Map<Long, ItemCompradoDTO> itensAgregados = new HashMap<>();
+
+        for (OrcamentoModel orcamento : orcamentosCliente) {
+            totalGastoPeloCliente = totalGastoPeloCliente.add(orcamento.getCustoConsumidor());
+            for (ItemPedidoModel item : orcamento.getItens()) {
+                ProdutoModel produto = item.getProduto();
+                if (produto == null) continue;
+
+                long idProduto = produto.getId();
+                BigDecimal valorDoItemNoOrcamento = BigDecimal.valueOf(produto.getPrecoUnitario())
+                                                        .multiply(new BigDecimal(item.getQuantidade()))
+                                                        .setScale(2, RoundingMode.HALF_UP);
+
+                ItemCompradoDTO itemComprado = itensAgregados.get(idProduto);
+                if (itemComprado == null) {
+                    itensAgregados.put(idProduto, new ItemCompradoDTO(
+                        idProduto,
+                        produto.getDescricao(),
+                        item.getQuantidade(),
+                        valorDoItemNoOrcamento
+                    ));
+                } else {
+                    itensAgregados.put(idProduto, new ItemCompradoDTO(
+                        idProduto,
+                        produto.getDescricao(),
+                        itemComprado.getQuantidadeTotalComprada() + item.getQuantidade(),
+                        itemComprado.getValorTotalGastoNoProduto().add(valorDoItemNoOrcamento)
+                    ));
+                }
+            }
+        }
+        return new PerfilClienteDTO(nomeCliente, dataInicial, dataFinal,
+                                    totalGastoPeloCliente.setScale(2, RoundingMode.HALF_UP),
+                                    orcamentosCliente.size(),
+                                    new ArrayList<>(itensAgregados.values()));
     }
 
     public VolumeVendasDTO calcularVolumeVendasPorPeriodo(LocalDate dataInicial, LocalDate dataFinal) {

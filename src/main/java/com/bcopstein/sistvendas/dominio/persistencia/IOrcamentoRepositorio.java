@@ -13,8 +13,11 @@ import org.springframework.stereotype.Repository;
 public interface IOrcamentoRepositorio extends JpaRepository<OrcamentoModel, Long> {
     // ... (métodos existentes) ...
     List<OrcamentoModel> findByEfetivadoIsTrueAndDataGeracaoBetweenOrderByIdDesc(LocalDate dataInicial, LocalDate dataFinal);
-    List<OrcamentoModel> findByNomeClienteAndEfetivadoIsTrueAndDataGeracaoBetween(String nomeCliente, LocalDate dataInicial, LocalDate dataFinal);
+    List<OrcamentoModel> findByNomeClienteAndEfetivadoIsTrueAndDataGeracaoBetweenOrderByDataGeracaoDesc(
+            String nomeCliente, LocalDate dataInicial, LocalDate dataFinal);
     List<OrcamentoModel> findByNomeClienteAndEfetivadoIsTrue(String nomeCliente);
+        List<OrcamentoModel> findByNomeClienteAndEfetivadoIsTrueOrderByDataGeracaoDesc(String nomeCliente);
+
 
 
     // >>> NOVOS MÉTODOS para contagem <<<
