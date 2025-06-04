@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Arrays; // Para a lista de locais
 import java.util.Map;    // Para estrutura de locais atendidos
 import java.util.HashMap; // Para estrutura de locais atendidos
+import java.time.LocalDate; // Adicionar import
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -138,8 +138,14 @@ public class ServicoDeVendas {
         return orcamento;
     }
 
-    public List<OrcamentoModel> ultimosOrcamentosEfetivados(int n) {
-        return this.orcamentosRepo.findByEfetivadoIsTrueOrderByIdDesc(PageRequest.of(0, n));
+    public List<OrcamentoModel> orcamentosEfetivadosPorPeriodo(LocalDate dataInicial, LocalDate dataFinal) {
+        if (dataInicial == null || dataFinal == null) {
+            throw new IllegalArgumentException("Data inicial e data final são obrigatórias.");
+        }
+        if (dataInicial.isAfter(dataFinal)) {
+            throw new IllegalArgumentException("Data inicial não pode ser posterior à data final.");
+        }
+        return this.orcamentosRepo.findByEfetivadoIsTrueAndDataGeracaoBetweenOrderByIdDesc(dataInicial, dataFinal);
     }
 
     @Transactional

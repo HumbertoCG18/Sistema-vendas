@@ -1,6 +1,7 @@
 package com.bcopstein.sistvendas.aplicacao.casosDeUso;
 
 import java.util.List;
+import java.time.LocalDate; // Adicionar import
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +11,17 @@ import com.bcopstein.sistvendas.aplicacao.dtos.OrcamentoDTO;
 import com.bcopstein.sistvendas.dominio.servicos.ServicoDeVendas;
 
 @Component
-public class UltimosOrcamentosEfetivadosUC {
+public class ConsultaOrcamentosEfetivadosUC { // Nome da classe atualizado
     private ServicoDeVendas servicoDeVendas;
 
     @Autowired
-    public UltimosOrcamentosEfetivadosUC(ServicoDeVendas servicoDeVendas) {
+    public ConsultaOrcamentosEfetivadosUC(ServicoDeVendas servicoDeVendas) { // Construtor atualizado se necessário
         this.servicoDeVendas = servicoDeVendas;
     }
 
-    public List<OrcamentoDTO> run(int n) {
-        return servicoDeVendas.ultimosOrcamentosEfetivados(n)
+    // Método run atualizado para aceitar período
+    public List<OrcamentoDTO> run(LocalDate dataInicial, LocalDate dataFinal) {
+        return servicoDeVendas.orcamentosEfetivadosPorPeriodo(dataInicial, dataFinal)
             .stream()
             .map(OrcamentoDTO::fromModel)
             .collect(Collectors.toList());
