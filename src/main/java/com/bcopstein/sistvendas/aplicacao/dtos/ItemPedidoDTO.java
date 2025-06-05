@@ -17,13 +17,9 @@ public class ItemPedidoDTO {
         this.qtdade = qtdade;
     }
 
-    public long getIdProduto() {
-        return idProduto;
-    }
-
-    public int getQtdade() {
-        return qtdade;
-    }
+    //Getters
+    public long getIdProduto() { return idProduto;}
+    public int getQtdade() { return qtdade;}
 
     @Override
     public String toString() {

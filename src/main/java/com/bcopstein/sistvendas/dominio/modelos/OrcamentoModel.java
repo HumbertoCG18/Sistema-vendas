@@ -213,7 +213,6 @@ public class OrcamentoModel {
 
         if (this.estadoCliente == null || this.estadoCliente.trim().isEmpty()) {
             // Na Fase 2, isso deve ser tratado como erro de validação antes de chegar aqui.
-            // Por ora, imposto zero se estado não informado.
             return;
         }
 

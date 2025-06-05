@@ -18,7 +18,7 @@ public class EditarProdutoUC {
     public ProdutoDTO run(long produtoId, ProdutoDTO produtoDTO) {
         ProdutoModel produtoEditado = servicoDeEstoque.editarProduto(produtoId, produtoDTO);
         if (produtoEditado == null) {
-            return null; 
+            return null;
         }
         return ProdutoDTO.fromModel(produtoEditado);
     }

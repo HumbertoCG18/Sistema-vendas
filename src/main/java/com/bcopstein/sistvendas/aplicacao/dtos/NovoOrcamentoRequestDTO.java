@@ -5,8 +5,8 @@ import java.util.List;
 public class NovoOrcamentoRequestDTO {
     private List<ItemPedidoDTO> itens;
     private String nomeCliente;
-    private String cpfCliente;  // ADICIONAR
-    private String emailCliente; // ADICIONAR
+    private String cpfCliente; 
+    private String emailCliente; 
     private String estadoCliente;
     private String paisCliente;
 
@@ -23,22 +23,20 @@ public class NovoOrcamentoRequestDTO {
         this.paisCliente = paisCliente;
     }
 
-    // Getters e Setters para todos os campos...
+    // Getters
     public List<ItemPedidoDTO> getItens() { return itens; }
-    public void setItens(List<ItemPedidoDTO> itens) { this.itens = itens; }
-
     public String getNomeCliente() { return nomeCliente; }
-    public void setNomeCliente(String nomeCliente) { this.nomeCliente = nomeCliente; }
-
-    public String getCpfCliente() { return cpfCliente; } // ADICIONAR
-    public void setCpfCliente(String cpfCliente) { this.cpfCliente = cpfCliente; } // ADICIONAR
-
-    public String getEmailCliente() { return emailCliente; } // ADICIONAR
-    public void setEmailCliente(String emailCliente) { this.emailCliente = emailCliente; } // ADICIONAR
-
-    public String getEstadoCliente() { return estadoCliente; }
-    public void setEstadoCliente(String estadoCliente) { this.estadoCliente = estadoCliente; }
-
+    public String getCpfCliente() { return cpfCliente; }
+    public String getEmailCliente() { return emailCliente; }
+    public String getEstadoCliente() { return estadoCliente;}
     public String getPaisCliente() { return paisCliente; }
-    public void setPaisCliente(String paisCliente) { this.paisCliente = paisCliente; }
+
+    //Setters
+    public void setEstadoCliente(String estadoCliente) { this.estadoCliente = estadoCliente;}
+    public void setNomeCliente(String nomeCliente) { this.nomeCliente = nomeCliente; }
+    public void setCpfCliente(String cpfCliente) { this.cpfCliente = cpfCliente; }
+    public void setItens(List<ItemPedidoDTO> itens) { this.itens = itens; }
+    public void setPaisCliente(String paisCliente) { this.paisCliente = paisCliente;}
+    public void setEmailCliente(String emailCliente) { this.emailCliente = emailCliente; }
+
 }

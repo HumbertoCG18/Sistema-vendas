@@ -8,7 +8,8 @@ public class VendaProdutoDTO {
     private int quantidadeTotalVendida;
     private BigDecimal valorTotalArrecadado; // Valor baseado no preço do item no orçamento
 
-    public VendaProdutoDTO(long idProduto, String descricaoProduto, int quantidadeTotalVendida, BigDecimal valorTotalArrecadado) {
+    public VendaProdutoDTO(long idProduto, String descricaoProduto, int quantidadeTotalVendida,
+            BigDecimal valorTotalArrecadado) {
         this.idProduto = idProduto;
         this.descricaoProduto = descricaoProduto;
         this.quantidadeTotalVendida = quantidadeTotalVendida;
@@ -16,10 +17,20 @@ public class VendaProdutoDTO {
     }
 
     // Getters
-    public long getIdProduto() { return idProduto; }
-    public String getDescricaoProduto() { return descricaoProduto; }
-    public int getQuantidadeTotalVendida() { return quantidadeTotalVendida; }
-    public BigDecimal getValorTotalArrecadado() { return valorTotalArrecadado; }
+    public long getIdProduto() {
+        return idProduto;
+    }
 
-    // Setters (opcional)
+    public String getDescricaoProduto() {
+        return descricaoProduto;
+    }
+
+    public int getQuantidadeTotalVendida() {
+        return quantidadeTotalVendida;
+    }
+
+    public BigDecimal getValorTotalArrecadado() {
+        return valorTotalArrecadado;
+    }
+
 }

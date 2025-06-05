@@ -22,8 +22,8 @@ public class ConsultaOrcamentosEfetivadosUC { // Nome da classe atualizado
     // Método run atualizado para aceitar período
     public List<OrcamentoDTO> run(LocalDate dataInicial, LocalDate dataFinal) {
         return servicoDeVendas.orcamentosEfetivadosPorPeriodo(dataInicial, dataFinal)
-            .stream()
-            .map(OrcamentoDTO::fromModel)
-            .collect(Collectors.toList());
+                .stream()
+                .map(OrcamentoDTO::fromModel)
+                .collect(Collectors.toList());
     }
 }

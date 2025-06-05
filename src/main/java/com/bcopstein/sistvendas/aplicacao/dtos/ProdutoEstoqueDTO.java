@@ -12,7 +12,8 @@ public class ProdutoEstoqueDTO {
     private int estoqueMin; // Added for UI
     private int estoqueMax; // Added for UI
 
-    public ProdutoEstoqueDTO(long id, String descricao, double precoUnitario, int quantidadeEmEstoque, boolean listado, int estoqueMin, int estoqueMax) {
+    public ProdutoEstoqueDTO(long id, String descricao, double precoUnitario, int quantidadeEmEstoque, boolean listado,
+            int estoqueMin, int estoqueMax) {
         this.id = id;
         this.descricao = descricao;
         this.precoUnitario = precoUnitario;
@@ -23,32 +24,49 @@ public class ProdutoEstoqueDTO {
     }
 
     // Getters
-    public long getId() { return id; }
-    public String getDescricao() { return descricao; }
-    public double getPrecoUnitario() { return precoUnitario; }
-    public int getQuantidadeEmEstoque() { return quantidadeEmEstoque; }
-    public boolean isListado() { return listado; }
-    public int getEstoqueMin() { return estoqueMin; }
-    public int getEstoqueMax() { return estoqueMax; }
+    public long getId() {
+        return id;
+    }
 
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public double getPrecoUnitario() {
+        return precoUnitario;
+    }
+
+    public int getQuantidadeEmEstoque() {
+        return quantidadeEmEstoque;
+    }
+
+    public boolean isListado() {
+        return listado;
+    }
+
+    public int getEstoqueMin() {
+        return estoqueMin;
+    }
+
+    public int getEstoqueMax() {
+        return estoqueMax;
+    }
 
     public static ProdutoEstoqueDTO fromModels(ProdutoModel produto, ItemDeEstoqueModel itemEstoque) {
         if (produto == null || itemEstoque == null) {
-            // Handle case where itemEstoque might not exist for a product (though ideally all products have an ItemDeEstoqueModel)
-            // Or if a product exists without a corresponding stock entry (should be rare with current setup)
-             if (produto != null) {
-                 return new ProdutoEstoqueDTO(produto.getId(), produto.getDescricao(), produto.getPrecoUnitario(), 0, false,0,0);
-             }
-             return new ProdutoEstoqueDTO(0, "Produto Inválido", 0,0,false,0,0);
+            if (produto != null) {
+                return new ProdutoEstoqueDTO(produto.getId(), produto.getDescricao(), produto.getPrecoUnitario(), 0,
+                        false, 0, 0);
+            }
+            return new ProdutoEstoqueDTO(0, "Produto Inválido", 0, 0, false, 0, 0);
         }
         return new ProdutoEstoqueDTO(
-            produto.getId(),
-            produto.getDescricao(),
-            produto.getPrecoUnitario(),
-            itemEstoque.getQuantidade(),
-            itemEstoque.isListado(),
-            itemEstoque.getEstoqueMin(),
-            itemEstoque.getEstoqueMax()
-        );
+                produto.getId(),
+                produto.getDescricao(),
+                produto.getPrecoUnitario(),
+                itemEstoque.getQuantidade(),
+                itemEstoque.isListado(),
+                itemEstoque.getEstoqueMin(),
+                itemEstoque.getEstoqueMax());
     }
 }

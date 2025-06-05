@@ -5,9 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
-// import jakarta.persistence.OneToMany; // Se quiser listar orçamentos a partir do cliente
-// import java.util.List;
-
 @Entity
 public class ClienteModel {
     @Id
@@ -19,9 +16,7 @@ public class ClienteModel {
 
     @Column(unique = true) // CPF pode ser único, se desejado
     private String cpf;
-
     private String email;
-    // Adicione outros campos conforme necessário (telefone, endereço etc.)
 
     // Construtor padrão para JPA
     protected ClienteModel() {}
@@ -44,7 +39,4 @@ public class ClienteModel {
     public void setCpf(String cpf) { this.cpf = cpf; }
     public void setEmail(String email) { this.email = email; }
 
-    // Se quiser ter uma lista de orçamentos associados diretamente no cliente:
-    // @OneToMany(mappedBy = "cliente") // "cliente" é o nome do campo em OrcamentoModel
-    // private List<OrcamentoModel> orcamentos;
 }

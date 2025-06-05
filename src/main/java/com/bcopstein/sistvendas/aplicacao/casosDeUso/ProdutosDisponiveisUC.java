@@ -13,13 +13,13 @@ public class ProdutosDisponiveisUC {
     private ServicoDeEstoque servicoEstoque;
 
     @Autowired
-    public ProdutosDisponiveisUC(ServicoDeEstoque servicoEstoque){
+    public ProdutosDisponiveisUC(ServicoDeEstoque servicoEstoque) {
         this.servicoEstoque = servicoEstoque;
     }
 
-    public List<ProdutoDTO> run(){
+    public List<ProdutoDTO> run() {
         return servicoEstoque.produtosDisponiveis().stream()
-            .map(p->ProdutoDTO.fromModel(p))
-            .toList();
+                .map(p -> ProdutoDTO.fromModel(p))
+                .toList();
     }
 }

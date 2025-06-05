@@ -2,7 +2,7 @@ package com.bcopstein.sistvendas.aplicacao.dtos;
 
 import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
 
-public class ProdutoDTO{
+public class ProdutoDTO {
     private long id;
     private String descricao;
     private double precoUnitario;
@@ -25,8 +25,7 @@ public class ProdutoDTO{
         return this.precoUnitario;
     }
 
-    public static ProdutoDTO fromModel(ProdutoModel produto){
+    public static ProdutoDTO fromModel(ProdutoModel produto) {
         return new ProdutoDTO(produto.getId(), produto.getDescricao(), produto.getPrecoUnitario());
     }
 }
-

@@ -27,7 +27,6 @@ public class ItemDeEstoqueModel {
     // Construtor padrão para JPA
     protected ItemDeEstoqueModel() {}
 
-    // Construtor para novos itens (sem ID) - ADICIONADO/GARANTIDO
     public ItemDeEstoqueModel(ProdutoModel produto, int quantidade, int estoqueMin, int estoqueMax) {
         this.produto = produto;
         this.quantidade = quantidade;
@@ -36,7 +35,6 @@ public class ItemDeEstoqueModel {
         this.listado = true;
     }
     
-    // Construtor com ID (mantido para flexibilidade/data.sql)
     public ItemDeEstoqueModel(long id, ProdutoModel produto, int quantidade, int estoqueMin, int estoqueMax) {
         this.id = id;
         this.produto = produto;

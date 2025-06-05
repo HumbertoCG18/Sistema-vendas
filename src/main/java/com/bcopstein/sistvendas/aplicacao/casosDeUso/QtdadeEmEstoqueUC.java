@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.bcopstein.sistvendas.dominio.servicos.ServicoDeEstoque;
-import com.bcopstein.sistvendas.aplicacao.dtos.ProdutoEstoqueDTO; // Adicionar import
-import java.util.List; // Adicionar import
+import com.bcopstein.sistvendas.aplicacao.dtos.ProdutoEstoqueDTO;
+import java.util.List;
 
 @Component
 public class QtdadeEmEstoqueUC {
@@ -25,5 +25,4 @@ public class QtdadeEmEstoqueUC {
     public List<ProdutoEstoqueDTO> run(List<Long> idsProdutos) {
         return servicoDeEstoque.quantidadesEmEstoquePorLista(idsProdutos);
     }
-    // >>> FIM DO NOVO MÉTODO run <<<
 }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 // Importa o modelo correto e o DTO
 import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
-import com.bcopstein.sistvendas.aplicacao.dtos.ProdutoDTO; 
+import com.bcopstein.sistvendas.aplicacao.dtos.ProdutoDTO;
 import com.bcopstein.sistvendas.dominio.servicos.ServicoDeEstoque;
 
 @Component

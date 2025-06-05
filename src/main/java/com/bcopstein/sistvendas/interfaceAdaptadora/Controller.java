@@ -94,7 +94,7 @@ public class Controller {
         this.consultaVendasPorProdutoUC = consultaVendasPorProdutoUC;
         this.consultaTaxaConversaoUC = consultaTaxaConversaoUC; // Atribuir novo UC
         this.consultaPerfilClienteUC = consultaPerfilClienteUC; // Atribuir novo UC
-         this.listarNomesClientesUC = listarNomesClientesUC; 
+        this.listarNomesClientesUC = listarNomesClientesUC;
 
     }
 
