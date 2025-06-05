@@ -12,11 +12,7 @@ import com.bcopstein.sistvendas.dominio.persistencia.IProdutoRepositorio;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
-// Removido import de java.util.ArrayList; e java.util.List; se não forem mais usados diretamente aqui
-// para criar a lista de itens, pois o método auxiliar fará isso.
-
 @Component
 public class InitialDataRunner implements CommandLineRunner {
 

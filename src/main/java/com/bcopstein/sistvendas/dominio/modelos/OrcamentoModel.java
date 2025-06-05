@@ -61,82 +61,39 @@ public class OrcamentoModel {
                                                       // `nullable = false` se cliente for obrigatório.
     private ClienteModel cliente;
 
-    public ClienteModel getCliente() {
-        return cliente;
-    }
-
-    public String getNomeClienteDoOrcamento() {
-        return (this.cliente != null) ? this.cliente.getNomeCompleto() : null;
-    }
-
-    public void setCliente(ClienteModel cliente) {
-        this.cliente = cliente;
-    }
-
-    public LocalDate getDataGeracao() {
-        return dataGeracao;
-    }
-
-    public String getNomeCliente() {
-        return nomeCliente;
-    } // NOVO GETTER
-
-    public void setNomeCliente(String nomeCliente) {
-        this.nomeCliente = nomeCliente;
-    } // NOVO SETTER
-
-    public void setDataGeracao(LocalDate dataGeracao) {
-        this.dataGeracao = dataGeracao;
-    }
-
+    //Getters
+    public ClienteModel getCliente() {return cliente;}
+    public String getNomeClienteDoOrcamento() { return (this.cliente != null) ? this.cliente.getNomeCompleto() : null; }
+    public LocalDate getDataGeracao() {return dataGeracao;}
+    public String getNomeCliente() { return nomeCliente;}
+    public BigDecimal getCustoItens() {return custoItens.setScale(2, RoundingMode.HALF_UP);}
+    public BigDecimal getImpostoEstadual() {return impostoEstadual.setScale(2, RoundingMode.HALF_UP);}
+    public BigDecimal getAliquotaImpostoEstadualAplicada() {return aliquotaImpostoEstadualAplicada;} 
+    public BigDecimal getImpostoFederal() {return impostoFederal.setScale(2, RoundingMode.HALF_UP);}
+    public BigDecimal getValorDesconto() {return valorDesconto.setScale(2, RoundingMode.HALF_UP);}
+    public BigDecimal getCustoConsumidor() {return custoConsumidor.setScale(2, RoundingMode.HALF_UP);}
+    public String getPaisCliente() {return paisCliente;}
+    public String getEstadoCliente() { return estadoCliente;}
+    public List<ItemPedidoModel> getItens() {return this.itens;}
+    
+    //Setters
+    public void setNomeCliente(String nomeCliente) { this.nomeCliente = nomeCliente;} 
+    public void setDataGeracao(LocalDate dataGeracao) { this.dataGeracao = dataGeracao;}
+    public void setCliente(ClienteModel cliente) {this.cliente = cliente;}
+    public void setEstadoCliente(String estadoCliente) { this.estadoCliente = estadoCliente;}
+    public void setPaisCliente(String paisCliente) { this.paisCliente = paisCliente;}
+    public long getId() {return id;}
+    public void setId(long id) {this.id = id;}
+    public void setCustoItens(BigDecimal custoItens) { this.custoItens = custoItens;} // Para JPA e testes
+    public void setCustoConsumidor(BigDecimal custoConsumidor) { this.custoConsumidor = custoConsumidor;} // Para JPA e testes
+    public void setItens(List<ItemPedidoModel> itens) { this.itens = itens;}
+    
     public boolean isVencido() {
         if (this.dataGeracao == null) {
             return true; // Se não tem data de geração, considera-se inválido/vencido por precaução
         }
         // Os orçamentos possuem validade de 21 dias a partir da sua geração
         return LocalDate.now().isAfter(this.dataGeracao.plusDays(21));
-    }
-
-    // Setters
-    public void setEstadoCliente(String estadoCliente) {
-        this.estadoCliente = estadoCliente;
-    }
-
-    public void setPaisCliente(String paisCliente) {
-        this.paisCliente = paisCliente;
-    } // NOVO SETTER
-
-    // Getters para os campos BigDecimal (arredondados para exibição ou uso)
-    public BigDecimal getCustoItens() {
-        return custoItens.setScale(2, RoundingMode.HALF_UP);
-    }
-
-    public BigDecimal getImpostoEstadual() {
-        return impostoEstadual.setScale(2, RoundingMode.HALF_UP);
-    }
-
-    public BigDecimal getAliquotaImpostoEstadualAplicada() {
-        return aliquotaImpostoEstadualAplicada;
-    } // Geralmente não é arredondada
-
-    public BigDecimal getImpostoFederal() {
-        return impostoFederal.setScale(2, RoundingMode.HALF_UP);
-    }
-
-    public BigDecimal getValorDesconto() {
-        return valorDesconto.setScale(2, RoundingMode.HALF_UP);
-    }
-
-    public BigDecimal getCustoConsumidor() {
-        return custoConsumidor.setScale(2, RoundingMode.HALF_UP);
-    }
-
-    public String getPaisCliente() {
-        return paisCliente;
-    } // NOVO GETTER
-
-    public String getEstadoCliente() {
-        return estadoCliente;
     }
 
     public void addItensPedido(PedidoModel pedido) {
@@ -150,9 +107,7 @@ public class OrcamentoModel {
         }
     }
 
-    public List<ItemPedidoModel> getItens() {
-        return this.itens;
-    }
+
 
     public boolean removeItemPorProdutoId(long produtoId) {
         if (this.isEfetivado()) {
@@ -239,8 +194,7 @@ public class OrcamentoModel {
                 this.impostoEstadual = this.custoItens.multiply(this.aliquotaImpostoEstadualAplicada);
                 break;
             case "PE": // Pernambuco
-                // Alíquota única de 15% sobre todos os produtos menos aqueles considerados
-                // essenciais que tem uma alíquota de 5%.
+                // Alíquota única de 15% sobre todos os produtos menos aqueles considerados essenciais que tem uma alíquota de 5%.
                 // Produtos essenciais tem um "*" ao final da descrição do produto.
                 BigDecimal impostoEssenciais = BigDecimal.ZERO;
                 BigDecimal impostoNaoEssenciais = BigDecimal.ZERO;
@@ -273,8 +227,7 @@ public class OrcamentoModel {
                 }
                 break;
             default:
-                // Para estados não listados, imposto estadual é zero.
-                // A recusa do pedido por local não atendido será na Fase 2.
+                // Para estados não listados, imposto estadual é zero. A recusa do pedido por local não atendido será na Fase 2.
                 this.impostoEstadual = BigDecimal.ZERO;
                 this.aliquotaImpostoEstadualAplicada = BigDecimal.ZERO;
                 throw new IllegalArgumentException(
@@ -293,8 +246,7 @@ public class OrcamentoModel {
         System.out.println("DEBUG: Entrando em calcularDescontosInterno()");
         System.out.println("DEBUG: CustoItens ANTES dos descontos: " + this.custoItens.toPlainString());
 
-        // 1. Desconto por item cuja quantidade solicitada seja superior a três unidades
-        // (5%)
+        // 1. Desconto por item cuja quantidade solicitada seja superior a três unidades (5%)
         if (this.itens != null) {
             System.out.println("DEBUG: Verificando desconto por item. Número de itens na lista: " + this.itens.size());
             for (ItemPedidoModel item : this.itens) {
@@ -319,8 +271,7 @@ public class OrcamentoModel {
             System.out.println("DEBUG: Lista de itens é nula. Nenhum desconto por item a ser calculado.");
         }
 
-        // 2. Desconto sobre o valor total do orçamento quando este contiver mais de dez
-        // itens (10%)
+        // 2. Desconto sobre o valor total do orçamento quando este contiver mais de dez itens (10%)
         System.out.println("DEBUG: Verificando desconto por volume. Número de linhas de itens: "
                 + (this.itens != null ? this.itens.size() : "N/A - lista nula"));
         if (this.itens != null && this.itens.size() > 10) {
@@ -339,23 +290,6 @@ public class OrcamentoModel {
                 + this.valorDesconto.toPlainString());
     }
 
-    // Getters e Setters básicos
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setCustoItens(BigDecimal custoItens) {
-        this.custoItens = custoItens;
-    } // Para JPA e testes
-
-    public void setCustoConsumidor(BigDecimal custoConsumidor) {
-        this.custoConsumidor = custoConsumidor;
-    } // Para JPA e testes
-
     public boolean isEfetivado() {
         return efetivado;
     }
@@ -363,12 +297,7 @@ public class OrcamentoModel {
     public void efetiva() {
         if (!this.efetivado) {
             this.efetivado = true;
-            // Não recalcular totais após efetivação
         }
-    }
-
-    public void setItens(List<ItemPedidoModel> itens) {
-        this.itens = itens;
     }
 
     @Override

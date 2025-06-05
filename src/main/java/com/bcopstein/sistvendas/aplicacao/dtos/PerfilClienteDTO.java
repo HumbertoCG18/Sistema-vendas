@@ -12,9 +12,7 @@ public class PerfilClienteDTO {
     private int totalOrcamentosEfetivadosConsiderados;
     private List<ItemCompradoDTO> itensComprados;
 
-    public PerfilClienteDTO(String nomeCliente, LocalDate dataInicialFiltro, LocalDate dataFinalFiltro,
-                            BigDecimal totalGastoPeloCliente, int totalOrcamentosEfetivadosConsiderados,
-                            List<ItemCompradoDTO> itensComprados) {
+    public PerfilClienteDTO(String nomeCliente, LocalDate dataInicialFiltro, LocalDate dataFinalFiltro, BigDecimal totalGastoPeloCliente, int totalOrcamentosEfetivadosConsiderados, List<ItemCompradoDTO> itensComprados) {
         this.nomeCliente = nomeCliente;
         this.dataInicialFiltro = dataInicialFiltro;
         this.dataFinalFiltro = dataFinalFiltro;

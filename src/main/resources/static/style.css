@@ -1,0 +1,297 @@
+      body {
+          font-family: Arial, sans-serif;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          line-height: 1.6;
+          background-color: #919191;
+      }
+
+      h1 {
+          color: #2c3e50;
+          text-align: center;
+          margin-bottom: 30px;
+      }
+
+      .card {
+          border: 1px solid #000000;
+          border-radius: 8px;
+          padding: 20px;
+          margin-bottom: 25px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          background-color: #fff;
+      }
+
+      label {
+          display: block;
+          margin-top: 10px;
+          color: #555;
+      }
+
+      .toggle-button-group button {
+          /* Estilo para botões de toggle */
+          background-color: #ddd;
+          color: #333;
+          border: 1px solid #ccc;
+      }
+
+      .toggle-button-group button.active {
+          background-color: #5cb85c;
+          /* Verde para ativo/listado */
+          color: white;
+          border-color: #4cae4c;
+      }
+
+      .toggle-button-group button.inactive {
+          background-color: #f0ad4e;
+          /* Laranja para inativo/de-listado */
+          color: white;
+          border-color: #eea236;
+      }
+
+      h2 {
+          margin-top: 0;
+          color: #3498db;
+          border-bottom: 2px solid #3498db;
+          padding-bottom: 10px;
+      }
+
+      button {
+          background-color: #3498db;
+          color: white;
+          padding: 10px 15px;
+          border: 1px solid #2980b9;
+          border-radius: 4px;
+          cursor: pointer;
+          margin: 5px 0;
+          /* Margin padrão */
+          transition: background-color 0.3s, transform 0.1s;
+          font-weight: bold;
+          display: inline-block;
+          text-align: center;
+      }
+
+      button:hover {
+          background-color: #2980b9;
+      }
+
+      button:active {
+          transform: scale(0.98);
+      }
+
+      button.remove {
+          background-color: #e74c3c;
+          border-color: #c0392b;
+      }
+
+      button.remove:hover {
+          background-color: #c0392b;
+      }
+
+      button.add {
+          background-color: #2ecc71;
+          border-color: #27ae60;
+      }
+
+      button.add:hover {
+          background-color: #27ae60;
+      }
+
+      .success {
+          background-color: #d4edda;
+          color: #155724;
+          border: 1px solid #c3e6cb;
+      }
+
+      .result {
+          background-color: #e9ecef;
+          border: 1px solid #000000;
+          border-radius: 4px;
+          padding: 15px;
+          margin-top: 15px;
+          overflow: auto;
+          max-height: 300px;
+          white-space: pre-wrap;
+          font-family: 'Courier New', Courier, monospace;
+          font-size: 0.9em;
+      }
+
+      input,
+      select {
+          padding: 10px;
+          margin: 5px 0 10px 0;
+          border: 1px solid #000000;
+          border-radius: 4px;
+          box-sizing: border-box;
+          width: 100%;
+      }
+
+      input[type="number"] {
+          width: calc(100% - 22px);
+          padding: 10px;
+          margin-top: 5px;
+          border: 1px solid black;
+          border-radius: 4px;
+          box-sizing: border-box;
+      }
+
+
+      input[type="checkbox"] {
+          width: auto;
+          /* As caixas de seleção não devem ter largura total */
+          margin-right: 5px;
+      }
+
+      .item {
+          margin-bottom: 10px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+      }
+
+      .item select.prodId {
+          flex-grow: 1;
+      }
+
+      .item input.prodQtd {
+          width: 70px;
+          flex-shrink: 0;
+      }
+
+      .item button.remove {
+          flex-shrink: 0;
+      }
+
+      .actions {
+          margin-top: 15px;
+      }
+
+      .loading {
+          background-color: #e2e3e5;
+          color: #383d41;
+          border: 1px solid #d6d8db;
+      }
+
+      .error {
+          color: #e74c3c;
+          font-weight: bold;
+          background-color: #f8d7da;
+          padding: 10px;
+          border-radius: 4px;
+          border: 1px solid #e74c3c;
+      }
+
+      .product-list {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+          gap: 15px;
+          margin-top: 15px;
+      }
+
+      button.cancel {
+          background-color: #f0ad4e;
+      }
+
+      button.cancel:hover {
+          background-color: #eea236;
+      }
+
+      .product-card {
+          border: 1px solid #000000;
+          border-radius: 5px;
+          padding: 15px;
+          background-color: #f8f9fa;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+      }
+
+      .product-card p {
+          margin: 8px 0;
+      }
+
+      .product-id {
+          font-weight: bold;
+          color: #007bff;
+      }
+
+      .product-price {
+          color: #28a745;
+          font-weight: bold;
+          font-size: 1.1em;
+      }
+
+      .btn {
+          display: inline-block;
+          background-color: #3498db;
+          color: white;
+          padding: 10px 20px;
+          border-radius: 4px;
+          text-decoration: none;
+          margin-top: 20px;
+          font-weight: bold;
+          transition: background-color 0.3s;
+      }
+
+      .btn:hover {
+          background-color: #2980b9;
+      }
+
+      .button-group {
+          display: flex;
+          /* justify-content: flex-start; Padrão */
+          align-items: center;
+          gap: 10px;
+          margin-top: 10px;
+          flex-wrap: wrap;
+      }
+
+      .product-actions-group {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          margin-top: 10px;
+          margin-bottom: 15px;
+      }
+
+      .product-actions-group label {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          margin: 0;
+          font-weight: normal;
+      }
+
+      .product-actions-group button {
+          margin: 0;
+      }
+
+
+      #listaOrcamentosParaGerenciar ul {
+          list-style-type: none;
+          padding: 0;
+          border: 1px solid black;
+      }
+
+      #listaOrcamentosParaGerenciar li {
+          margin-bottom: 10px;
+          padding: 10px;
+          border: 1px solid #eee;
+          border-radius: 4px;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          align-items: center;
+      }
+
+      #listaOrcamentosParaGerenciar li .orc-info {
+          flex-grow: 1;
+          margin-right: 10px;
+          min-width: 200px;
+      }
+
+      #listaOrcamentosParaGerenciar li .orc-actions {
+          display: flex;
+          gap: 5px;
+          flex-shrink: 0;
+      }

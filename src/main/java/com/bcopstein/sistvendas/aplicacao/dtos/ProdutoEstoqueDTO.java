@@ -24,32 +24,15 @@ public class ProdutoEstoqueDTO {
     }
 
     // Getters
-    public long getId() {
-        return id;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public double getPrecoUnitario() {
-        return precoUnitario;
-    }
-
-    public int getQuantidadeEmEstoque() {
-        return quantidadeEmEstoque;
-    }
+    public long getId() { return id; }
+    public String getDescricao() { return descricao;}
+    public double getPrecoUnitario() { return precoUnitario;}
+    public int getQuantidadeEmEstoque() { return quantidadeEmEstoque;}
+    public int getEstoqueMin() { return estoqueMin;}
+    public int getEstoqueMax() { return estoqueMax;}
 
     public boolean isListado() {
         return listado;
-    }
-
-    public int getEstoqueMin() {
-        return estoqueMin;
-    }
-
-    public int getEstoqueMax() {
-        return estoqueMax;
     }
 
     public static ProdutoEstoqueDTO fromModels(ProdutoModel produto, ItemDeEstoqueModel itemEstoque) {

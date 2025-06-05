@@ -13,7 +13,7 @@ public class NovoOrcamentoRequestDTO {
     // Construtor padrão
     public NovoOrcamentoRequestDTO() {}
 
-    // Construtor completo (ou use setters)
+    // Construtor completo
     public NovoOrcamentoRequestDTO(List<ItemPedidoDTO> itens, String nomeCliente, String cpfCliente, String emailCliente, String estadoCliente, String paisCliente) {
         this.itens = itens;
         this.nomeCliente = nomeCliente;

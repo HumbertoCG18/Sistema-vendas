@@ -25,33 +25,26 @@ import com.bcopstein.sistvendas.aplicacao.dtos.*;
 
 @RestController
 public class Controller {
-    // UCs existentes
     private ProdutosDisponiveisUC produtosDisponiveisUC;
     private TodosProdutosStatusUC todosProdutosStatusUC;
     private CriaOrcamentoUC criaOrcamentoUC;
     private EfetivaOrcamentoUC efetivaOrcamentoUC;
-    private ConsultaVolumeVendasUC consultaVolumeVendasUC; // Adicionar novo UC
-    private ConsultaOrcamentosEfetivadosUC consultaOrcamentosEfetivadosUC; // Novo UC para orçamentos por período
+    private ConsultaVolumeVendasUC consultaVolumeVendasUC;
+    private ConsultaOrcamentosEfetivadosUC consultaOrcamentosEfetivadosUC;
     private TodosOrcamentosUC todosOrcamentosUC;
     private AdicionarProdutoUC adicionarProdutoUC;
     private EditarProdutoUC editarProdutoUC;
     private RemoverOrcamentoUC removerOrcamentoUC;
     private DesativarProdutoUC desativarProdutoUC;
     private ConsultaVendasPorProdutoUC consultaVendasPorProdutoUC;
-    private ConsultaTaxaConversaoUC consultaTaxaConversaoUC; // Adicionar novo UC
-    private ConsultaPerfilClienteUC consultaPerfilClienteUC; // Adicionar novo UC
-
-    // Novos UCs (já existentes no seu código original)
+    private ConsultaTaxaConversaoUC consultaTaxaConversaoUC;
+    private ConsultaPerfilClienteUC consultaPerfilClienteUC; 
     private BaixaEstoqueUC baixaEstoqueUC;
     private EntradaEstoqueUC entradaEstoqueUC;
     private ProdutoPorCodigoUC produtoPorCodigoUC;
     private QtdadeEmEstoqueUC qtdadeEmEstoqueUC;
     private RelistarProdutoUC relistarProdutoUC;
-    private ListarNomesClientesUC listarNomesClientesUC; // Adicionar novo UC
-
-    // O ConsultaEstoquePorListaUC foi incorporado ao QtdadeEmEstoqueUC como um
-    // método sobrecarregado,
-    // então não precisamos de uma nova variável de instância para ele aqui.
+    private ListarNomesClientesUC listarNomesClientesUC;
 
     @Autowired
     public Controller(
@@ -59,7 +52,7 @@ public class Controller {
             TodosProdutosStatusUC todosProdutosStatusUC,
             CriaOrcamentoUC criaOrcamentoUC,
             EfetivaOrcamentoUC efetivaOrcamentoUC,
-            ConsultaOrcamentosEfetivadosUC consultaOrcamentosEfetivadosUC, // Injetar novo UC
+            ConsultaOrcamentosEfetivadosUC consultaOrcamentosEfetivadosUC,
             TodosOrcamentosUC todosOrcamentosUC,
             AdicionarProdutoUC adicionarProdutoUC,
             EditarProdutoUC editarProdutoUC,
@@ -70,9 +63,9 @@ public class Controller {
             ProdutoPorCodigoUC produtoPorCodigoUC,
             ConsultaVolumeVendasUC consultaVolumeVendasUC,
             ConsultaVendasPorProdutoUC consultaVendasPorProdutoUC,
-            ConsultaTaxaConversaoUC consultaTaxaConversaoUC, // Injetar novo UC
+            ConsultaTaxaConversaoUC consultaTaxaConversaoUC,
             QtdadeEmEstoqueUC qtdadeEmEstoqueUC,
-            ConsultaPerfilClienteUC consultaPerfilClienteUC, // Injetar novo UC
+            ConsultaPerfilClienteUC consultaPerfilClienteUC, 
             ListarNomesClientesUC listarNomesClientesUC
 
     ) {
@@ -80,7 +73,7 @@ public class Controller {
         this.todosProdutosStatusUC = todosProdutosStatusUC;
         this.criaOrcamentoUC = criaOrcamentoUC;
         this.efetivaOrcamentoUC = efetivaOrcamentoUC;
-        this.consultaOrcamentosEfetivadosUC = consultaOrcamentosEfetivadosUC; // Atribuir novo UC
+        this.consultaOrcamentosEfetivadosUC = consultaOrcamentosEfetivadosUC;
         this.todosOrcamentosUC = todosOrcamentosUC;
         this.adicionarProdutoUC = adicionarProdutoUC;
         this.editarProdutoUC = editarProdutoUC;
@@ -92,10 +85,9 @@ public class Controller {
         this.qtdadeEmEstoqueUC = qtdadeEmEstoqueUC;
         this.consultaVolumeVendasUC = consultaVolumeVendasUC;
         this.consultaVendasPorProdutoUC = consultaVendasPorProdutoUC;
-        this.consultaTaxaConversaoUC = consultaTaxaConversaoUC; // Atribuir novo UC
-        this.consultaPerfilClienteUC = consultaPerfilClienteUC; // Atribuir novo UC
+        this.consultaTaxaConversaoUC = consultaTaxaConversaoUC; 
+        this.consultaPerfilClienteUC = consultaPerfilClienteUC;
         this.listarNomesClientesUC = listarNomesClientesUC;
-
     }
 
     @PostMapping("/produtos/{id}/relistar")
@@ -128,7 +120,6 @@ public class Controller {
         }
     }
 
-    // >>> NOVO ENDPOINT para Perfil de Cliente <<<
     @GetMapping("/gerencial/perfilCliente")
     @CrossOrigin(origins = "*")
     public ResponseEntity<PerfilClienteDTO> getPerfilCliente(
@@ -259,7 +250,6 @@ public class Controller {
         }
     }
 
-    // Endpoint MODIFICADO para aceitar período
     @GetMapping("/orcamentosEfetivados")
     @CrossOrigin(origins = "*")
     public List<OrcamentoDTO> consultaOrcamentosEfetivados(
@@ -334,11 +324,11 @@ public class Controller {
         }
     }
 
+    //Editar Produto
     @PutMapping("/produtos/{id}")
     @CrossOrigin(origins = "*")
     public ResponseEntity<ProdutoDTO> editarProduto(@PathVariable long id, @RequestBody ProdutoDTO produtoDTO) {
         try {
-            // Adicionar verificação se produtoDTO.getId() == id, se aplicável
             ProdutoDTO produtoEditado = editarProdutoUC.run(id, produtoDTO);
             if (produtoEditado == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto ID " + id + " não encontrado.");
@@ -355,6 +345,7 @@ public class Controller {
         }
     }
 
+    //Delistar Produto
     @DeleteMapping("/produtos/{id}")
     @CrossOrigin(origins = "*")
     public ResponseEntity<Void> desativarProduto(@PathVariable long id) {
@@ -389,7 +380,6 @@ public class Controller {
         }
     }
 
-    // NOVO ENDPOINT para quantidade de uma lista de produtos
     @GetMapping("/estoque/produtosPorLista")
     @CrossOrigin(origins = "*")
     public ResponseEntity<List<ProdutoEstoqueDTO>> getQtdadeEmEstoquePorLista(@RequestParam List<Long> ids) {

@@ -27,7 +27,6 @@ import com.bcopstein.sistvendas.aplicacao.dtos.TaxaConversaoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.VendaProdutoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.VolumeVendasDTO;
 
-
 @Service
 public class ServicoDeVendas {
     private IOrcamentoRepositorio orcamentosRepo;
@@ -41,9 +40,7 @@ public class ServicoDeVendas {
     }
 
     @Autowired
-    public ServicoDeVendas(IOrcamentoRepositorio orcamentos, 
-                           ServicoDeEstoque servicoDeEstoque,
-                           IClienteRepositorio clienteRepo) { // Injetar IClienteRepositorio
+    public ServicoDeVendas(IOrcamentoRepositorio orcamentos, ServicoDeEstoque servicoDeEstoque, IClienteRepositorio clienteRepo) {
         this.orcamentosRepo = orcamentos;
         this.servicoDeEstoque = servicoDeEstoque;
         this.clienteRepo = clienteRepo; // Atribuir
@@ -58,15 +55,16 @@ public class ServicoDeVendas {
     }
 
     @Transactional
-    public OrcamentoModel criaOrcamento(PedidoModel pedido, String estadoCliente, String paisCliente, 
-                                        String nomeClienteRequest, String cpfClienteRequest, String emailClienteRequest) {
-        
+    public OrcamentoModel criaOrcamento(PedidoModel pedido, String estadoCliente, String paisCliente, String nomeClienteRequest, String cpfClienteRequest, String emailClienteRequest) {
+
         if (pedido == null || pedido.getItens() == null || pedido.getItens().isEmpty()) {
             throw new IllegalArgumentException("Pedido inválido: não pode ser nulo ou vazio.");
         }
         for (ItemPedidoModel item : pedido.getItens()) {
-            if (item.getProduto() == null) throw new IllegalArgumentException("Item de pedido inválido: produto não pode ser nulo.");
-            if (item.getQuantidade() <= 0) throw new IllegalArgumentException("Item de pedido inválido: quantidade deve ser positiva.");
+            if (item.getProduto() == null)
+                throw new IllegalArgumentException("Item de pedido inválido: produto não pode ser nulo.");
+            if (item.getQuantidade() <= 0)
+                throw new IllegalArgumentException("Item de pedido inválido: quantidade deve ser positiva.");
         }
         if (nomeClienteRequest == null || nomeClienteRequest.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome do cliente não informado.");
@@ -82,71 +80,67 @@ public class ServicoDeVendas {
         String estadoUpper = estadoCliente.trim().toUpperCase();
         List<String> estadosAtendidosNoPais = LOCAIS_ATENDIDOS.get(paisUpper);
         if (estadosAtendidosNoPais == null || !estadosAtendidosNoPais.contains(estadoUpper)) {
-            throw new IllegalArgumentException("Local de entrega não atendido: País '" + paisCliente + "', Estado '" + estadoCliente + "'.");
+            throw new IllegalArgumentException(
+                    "Local de entrega não atendido: País '" + paisCliente + "', Estado '" + estadoCliente + "'.");
         }
 
         ClienteModel clienteAssociado = null;
-        String cpfLimpo = (cpfClienteRequest != null && !cpfClienteRequest.trim().isEmpty()) ? cpfClienteRequest.trim().replaceAll("[^0-9]", "") : null;
-        String emailLimpo = (emailClienteRequest != null && !emailClienteRequest.trim().isEmpty()) ? emailClienteRequest.trim().toLowerCase() : null;
+        String cpfLimpo = (cpfClienteRequest != null && !cpfClienteRequest.trim().isEmpty())
+                ? cpfClienteRequest.trim().replaceAll("[^0-9]", "")
+                : null;
+        String emailLimpo = (emailClienteRequest != null && !emailClienteRequest.trim().isEmpty())
+                ? emailClienteRequest.trim().toLowerCase()
+                : null;
 
         if (cpfLimpo != null) {
             Optional<ClienteModel> clientePorCpf = clienteRepo.findByCpf(cpfLimpo);
             if (clientePorCpf.isPresent()) {
                 clienteAssociado = clientePorCpf.get();
-                 boolean precisaAtualizar = false;
-                 if (!clienteAssociado.getNomeCompleto().equalsIgnoreCase(nomeClienteRequest.trim())) {
-                     clienteAssociado.setNomeCompleto(nomeClienteRequest.trim());
-                     precisaAtualizar = true;
-                 }
-                 if (emailLimpo != null && (clienteAssociado.getEmail() == null || !clienteAssociado.getEmail().equalsIgnoreCase(emailLimpo))) {
-                     clienteAssociado.setEmail(emailLimpo);
-                     precisaAtualizar = true;
-                 }
-                 if (precisaAtualizar) clienteRepo.save(clienteAssociado);
+                boolean precisaAtualizar = false;
+                if (!clienteAssociado.getNomeCompleto().equalsIgnoreCase(nomeClienteRequest.trim())) {
+                    clienteAssociado.setNomeCompleto(nomeClienteRequest.trim());
+                    precisaAtualizar = true;
+                }
+                if (emailLimpo != null && (clienteAssociado.getEmail() == null
+                        || !clienteAssociado.getEmail().equalsIgnoreCase(emailLimpo))) {
+                    clienteAssociado.setEmail(emailLimpo);
+                    precisaAtualizar = true;
+                }
+                if (precisaAtualizar)
+                    clienteRepo.save(clienteAssociado);
             }
         }
-        
-        // Se não encontrou por CPF, e um e-mail foi fornecido, poderia tentar por e-mail
-        // (necessitaria de findByEmailIgnoreCase no IClienteRepositorio e que ele seja único)
-        // if (clienteAssociado == null && emailLimpo != null) {
-        //     Optional<ClienteModel> clientePorEmail = clienteRepo.findByEmailIgnoreCase(emailLimpo); // Supondo que exista
-        //     if (clientePorEmail.isPresent()) {
-        //         clienteAssociado = clientePorEmail.get();
-        //     }
-        // }
 
         if (clienteAssociado == null) {
-            // Se não encontrou por identificadores únicos (CPF/Email),
-            // cria um novo cliente com os dados fornecidos.
-            // Poderia adicionar uma busca por nome completo aqui para tentar evitar duplicidade,
-            // mas nomes não são garantidamente únicos.
-            System.out.println("INFO: Cliente '" + nomeClienteRequest + (cpfLimpo != null ? ", CPF: " + cpfLimpo : "") + "' não encontrado por identificadores únicos. Criando novo cliente.");
+            System.out.println("INFO: Cliente '" + nomeClienteRequest + (cpfLimpo != null ? ", CPF: " + cpfLimpo : "")
+                    + "' não encontrado por identificadores únicos. Criando novo cliente.");
             clienteAssociado = new ClienteModel(nomeClienteRequest.trim(), cpfLimpo, emailLimpo);
             clienteRepo.save(clienteAssociado); // Salva o novo cliente
         }
-        
+
         OrcamentoModel novoOrcamento = new OrcamentoModel();
         novoOrcamento.setCliente(clienteAssociado); // Associa a entidade ClienteModel
-        novoOrcamento.setEstadoCliente(estadoCliente.trim()); 
+        novoOrcamento.setEstadoCliente(estadoCliente.trim());
         novoOrcamento.setPaisCliente(paisCliente.trim());
-        
-        novoOrcamento.addItensPedido(pedido); 
+        novoOrcamento.addItensPedido(pedido);
         novoOrcamento.recalculaTotais();
 
-        return this.orcamentosRepo.save(novoOrcamento); 
+        return this.orcamentosRepo.save(novoOrcamento);
     }
 
     @Transactional
     public OrcamentoModel efetivaOrcamento(long id) {
         OrcamentoModel orcamento = this.orcamentosRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Orçamento ID " + id + " não encontrado para efetivação."));
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Orçamento ID " + id + " não encontrado para efetivação."));
 
         if (orcamento.isEfetivado()) {
             System.out.println("ServicoDeVendas: Orçamento ID " + id + " já está efetivado.");
             return orcamento;
         }
         if (orcamento.isVencido()) {
-            throw new IllegalStateException("Orçamento ID " + id + " está vencido e não pode mais ser efetivado. Data Geração: " + orcamento.getDataGeracao());
+            throw new IllegalStateException("Orçamento ID " + id
+                    + " está vencido e não pode mais ser efetivado. Data Geração: " + orcamento.getDataGeracao());
         }
         if (orcamento.getItens() == null || orcamento.getItens().isEmpty()) {
             throw new IllegalStateException("Orçamento ID " + id + " não pode ser efetivado pois não contém itens.");
@@ -154,9 +148,15 @@ public class ServicoDeVendas {
 
         boolean todosDisponiveis = true;
         for (var item : orcamento.getItens()) {
-            if (item.getProduto() == null) { todosDisponiveis = false; break; }
+            if (item.getProduto() == null) {
+                todosDisponiveis = false;
+                break;
+            }
             int quantidadeEmEstoque = servicoDeEstoque.qtdadeEmEstoque(item.getProduto().getId());
-            if (quantidadeEmEstoque < item.getQuantidade()) { todosDisponiveis = false; break; }
+            if (quantidadeEmEstoque < item.getQuantidade()) {
+                todosDisponiveis = false;
+                break;
+            }
         }
 
         if (todosDisponiveis) {
@@ -168,7 +168,8 @@ public class ServicoDeVendas {
             System.out.println("ServicoDeVendas: Orçamento ID " + id + " efetivado com sucesso.");
         } else {
             System.out.println("ServicoDeVendas: Orçamento ID " + id + " NÃO efetivado (itens indisponíveis ou erro).");
-            throw new IllegalStateException("Orçamento ID " + id + " não pode ser efetivado devido à falta de estoque para um ou mais itens.");
+            throw new IllegalStateException(
+                    "Orçamento ID " + id + " não pode ser efetivado devido à falta de estoque para um ou mais itens.");
         }
         return orcamento;
     }
@@ -182,60 +183,66 @@ public class ServicoDeVendas {
         }
         return this.orcamentosRepo.findByEfetivadoIsTrueAndDataGeracaoBetweenOrderByIdDesc(dataInicial, dataFinal);
     }
-    
+
     public VolumeVendasDTO calcularVolumeVendasPorPeriodo(LocalDate dataInicial, LocalDate dataFinal) {
         if (dataInicial == null || dataFinal == null) {
-            throw new IllegalArgumentException("Data inicial e data final são obrigatórias para calcular o volume de vendas.");
+            throw new IllegalArgumentException(
+                    "Data inicial e data final são obrigatórias para calcular o volume de vendas.");
         }
         if (dataInicial.isAfter(dataFinal)) {
-            throw new IllegalArgumentException("Data inicial não pode ser posterior à data final para calcular o volume de vendas.");
+            throw new IllegalArgumentException(
+                    "Data inicial não pode ser posterior à data final para calcular o volume de vendas.");
         }
         List<OrcamentoModel> orcamentosNoPeriodo = orcamentosEfetivadosPorPeriodo(dataInicial, dataFinal);
         BigDecimal totalVendas = BigDecimal.ZERO;
         for (OrcamentoModel orcamento : orcamentosNoPeriodo) {
             totalVendas = totalVendas.add(orcamento.getCustoConsumidor());
         }
-        return new VolumeVendasDTO(dataInicial, dataFinal, totalVendas.setScale(2, RoundingMode.HALF_UP), orcamentosNoPeriodo.size());
+        return new VolumeVendasDTO(dataInicial, dataFinal, totalVendas.setScale(2, RoundingMode.HALF_UP),
+                orcamentosNoPeriodo.size());
     }
-    
-    public List<VendaProdutoDTO> calcularTotalVendasPorProduto(LocalDate dataInicial, LocalDate dataFinal, Long idProdutoEspecifico) {
+
+    public List<VendaProdutoDTO> calcularTotalVendasPorProduto(LocalDate dataInicial, LocalDate dataFinal,
+            Long idProdutoEspecifico) {
         List<OrcamentoModel> orcamentosConsiderados;
         if (dataInicial == null || dataFinal == null) { // Tornando datas obrigatórias para esta consulta também
-            throw new IllegalArgumentException("Data inicial e data final são obrigatórias para consulta de vendas por produto.");
+            throw new IllegalArgumentException(
+                    "Data inicial e data final são obrigatórias para consulta de vendas por produto.");
         }
         if (dataInicial.isAfter(dataFinal)) {
             throw new IllegalArgumentException("Data inicial não pode ser posterior à data final.");
         }
         orcamentosConsiderados = orcamentosEfetivadosPorPeriodo(dataInicial, dataFinal);
-        
+
         Map<Long, VendaProdutoDTO> vendasPorProdutoMap = new HashMap<>();
         for (OrcamentoModel orcamento : orcamentosConsiderados) {
             for (ItemPedidoModel item : orcamento.getItens()) {
                 ProdutoModel produto = item.getProduto();
-                if (produto == null) continue;
+                if (produto == null)
+                    continue;
                 if (idProdutoEspecifico != null && produto.getId() != idProdutoEspecifico.longValue()) {
-                    continue; 
+                    continue;
                 }
                 long idProdutoAtual = produto.getId();
                 String descricao = produto.getDescricao();
                 int quantidadeVendidaItem = item.getQuantidade();
                 BigDecimal valorItem = BigDecimal.valueOf(produto.getPrecoUnitario())
-                                           .multiply(new BigDecimal(quantidadeVendidaItem))
-                                           .setScale(2, RoundingMode.HALF_UP);
+                        .multiply(new BigDecimal(quantidadeVendidaItem))
+                        .setScale(2, RoundingMode.HALF_UP);
                 vendasPorProdutoMap.compute(idProdutoAtual, (key, dto) -> {
                     if (dto == null) {
                         return new VendaProdutoDTO(idProdutoAtual, descricao, quantidadeVendidaItem, valorItem);
                     } else {
-                        return new VendaProdutoDTO(idProdutoAtual, descricao, 
-                                                   dto.getQuantidadeTotalVendida() + quantidadeVendidaItem, 
-                                                   dto.getValorTotalArrecadado().add(valorItem));
+                        return new VendaProdutoDTO(idProdutoAtual, descricao,
+                                dto.getQuantidadeTotalVendida() + quantidadeVendidaItem,
+                                dto.getValorTotalArrecadado().add(valorItem));
                     }
                 });
             }
         }
         return new ArrayList<>(vendasPorProdutoMap.values());
     }
-    
+
     public PerfilClienteDTO gerarPerfilCliente(String nomeCliente, LocalDate dataInicial, LocalDate dataFinal) {
         if (nomeCliente == null || nomeCliente.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome do cliente é obrigatório.");
@@ -246,10 +253,12 @@ public class ServicoDeVendas {
             if (dataInicial.isAfter(dataFinal)) {
                 throw new IllegalArgumentException("Data inicial não pode ser posterior à data final.");
             }
-            orcamentosCliente = orcamentosRepo.findByClienteNomeCompletoAndEfetivadoIsTrueAndDataGeracaoBetweenOrderByDataGeracaoDesc(
-                nomeCliente.trim(), dataInicial, dataFinal);
+            orcamentosCliente = orcamentosRepo
+                    .findByClienteNomeCompletoAndEfetivadoIsTrueAndDataGeracaoBetweenOrderByDataGeracaoDesc(
+                            nomeCliente.trim(), dataInicial, dataFinal);
         } else {
-            orcamentosCliente = orcamentosRepo.findByClienteNomeCompletoAndEfetivadoIsTrueOrderByDataGeracaoDesc(nomeCliente.trim());
+            orcamentosCliente = orcamentosRepo
+                    .findByClienteNomeCompletoAndEfetivadoIsTrueOrderByDataGeracaoDesc(nomeCliente.trim());
         }
 
         BigDecimal totalGastoPeloCliente = BigDecimal.ZERO;
@@ -258,21 +267,25 @@ public class ServicoDeVendas {
             totalGastoPeloCliente = totalGastoPeloCliente.add(orcamento.getCustoConsumidor());
             for (ItemPedidoModel item : orcamento.getItens()) {
                 ProdutoModel produto = item.getProduto();
-                if (produto == null) continue;
+                if (produto == null)
+                    continue;
                 long idProduto = produto.getId();
                 BigDecimal valorDoItemNoOrcamento = BigDecimal.valueOf(produto.getPrecoUnitario())
-                                                        .multiply(new BigDecimal(item.getQuantidade()))
-                                                        .setScale(2, RoundingMode.HALF_UP);
-                itensAgregados.compute(idProduto, (key, dto) -> 
-                    (dto == null) ? new ItemCompradoDTO(idProduto, produto.getDescricao(), item.getQuantidade(), valorDoItemNoOrcamento) :
-                                    new ItemCompradoDTO(idProduto, produto.getDescricao(), dto.getQuantidadeTotalComprada() + item.getQuantidade(), dto.getValorTotalGastoNoProduto().add(valorDoItemNoOrcamento))
-                );
+                        .multiply(new BigDecimal(item.getQuantidade()))
+                        .setScale(2, RoundingMode.HALF_UP);
+                itensAgregados.compute(idProduto,
+                        (key, dto) -> (dto == null)
+                                ? new ItemCompradoDTO(idProduto, produto.getDescricao(), item.getQuantidade(),
+                                        valorDoItemNoOrcamento)
+                                : new ItemCompradoDTO(idProduto, produto.getDescricao(),
+                                        dto.getQuantidadeTotalComprada() + item.getQuantidade(),
+                                        dto.getValorTotalGastoNoProduto().add(valorDoItemNoOrcamento)));
             }
         }
-        return new PerfilClienteDTO(nomeCliente, dataInicial, dataFinal, 
-                                    totalGastoPeloCliente.setScale(2, RoundingMode.HALF_UP), 
-                                    orcamentosCliente.size(), 
-                                    new ArrayList<>(itensAgregados.values()));
+        return new PerfilClienteDTO(nomeCliente, dataInicial, dataFinal,
+                totalGastoPeloCliente.setScale(2, RoundingMode.HALF_UP),
+                orcamentosCliente.size(),
+                new ArrayList<>(itensAgregados.values()));
     }
 
     public List<String> listarNomesClientesComCompras() {
@@ -299,7 +312,7 @@ public class ServicoDeVendas {
             if (!orcamento.isEfetivado()) {
                 boolean itemFoiRemovido = orcamento.removeItemPorProdutoId(produtoIdRemovido);
                 if (itemFoiRemovido) {
-                    orcamentosRepo.save(orcamento); 
+                    orcamentosRepo.save(orcamento);
                 }
             }
         }
@@ -311,7 +324,7 @@ public class ServicoDeVendas {
         if (orcamentoExistente == null) {
             return false;
         }
-        orcamentosRepo.deleteById(orcamentoId); 
+        orcamentosRepo.deleteById(orcamentoId);
         return true;
     }
 }

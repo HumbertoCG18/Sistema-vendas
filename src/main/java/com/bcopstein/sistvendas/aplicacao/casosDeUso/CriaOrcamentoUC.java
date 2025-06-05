@@ -26,7 +26,7 @@ public class CriaOrcamentoUC {
         this.servicoDeEstoque = servicoDeEstoque;
     }
 
-    public OrcamentoDTO run(NovoOrcamentoRequestDTO request) { //
+    public OrcamentoDTO run(NovoOrcamentoRequestDTO request) { 
         List<ItemPedidoDTO> itens = request.getItens();
         String nomeCliente = request.getNomeCliente();
         String cpfCliente = request.getCpfCliente(); // Obter CPF
@@ -52,7 +52,7 @@ public class CriaOrcamentoUC {
             pedido.addItem(itemPedido);
         }
 
-        // Passe os novos dados do cliente para o serviço
+        // Envia os novos dados do cliente para o serviço
         OrcamentoModel orcamento = servicoDeVendas.criaOrcamento(pedido, estadoCliente, paisCliente, nomeCliente,
                 cpfCliente, emailCliente);
         return OrcamentoDTO.fromModel(orcamento);

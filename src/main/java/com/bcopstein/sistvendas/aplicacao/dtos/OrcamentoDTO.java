@@ -17,19 +17,15 @@ public class OrcamentoDTO {
     private List<Double> precosUnitariosItens;
     private String nomeCliente;
     private BigDecimal subTotal;
-
     private BigDecimal impostoEstadual;
     private String impostoEstadualFormatado;
-
     private BigDecimal impostoFederal;
     private String impostoFederalFormatado;
-
     private BigDecimal valorDescontoTotal;
-
     private BigDecimal custoConsumidor;
 
     private boolean efetivado;
-    private LocalDate dataGeracao; // Adicionado na Fase 2
+    private LocalDate dataGeracao;
     private String estadoCliente;
     private String paisCliente;
 
@@ -45,8 +41,6 @@ public class OrcamentoDTO {
         this.valorDescontoTotal = BigDecimal.ZERO;
         this.custoConsumidor = BigDecimal.ZERO;
         this.efetivado = false;
-        // dataGeracao, nomeCliente, estadoCliente, paisCliente são inicializados como
-        // null por padrão
     }
 
     // Construtor completo atualizado

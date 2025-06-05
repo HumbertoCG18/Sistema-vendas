@@ -44,19 +44,22 @@ public class ItemDeEstoqueModel {
         this.listado = true;
     }
 
-    // Getters e Setters
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
-    public ProdutoModel getProduto() { return produto; }
-    public void setProduto(ProdutoModel produto) { this.produto = produto; }
-    public int getQuantidade() { return quantidade; }
-    public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
-    public int getEstoqueMin() { return estoqueMin; }
+    //Setters
+    public void setId(long id) { this.id = id;}
+    public void setQuantidade(int quantidade) { this.quantidade = quantidade;}
+    public void setProduto(ProdutoModel produto) { this.produto = produto;}
+    public void setEstoqueMax(int estoqueMax) { this.estoqueMax = estoqueMax;}
+    public void setListado(boolean listado) { this.listado = listado;}
     public void setEstoqueMin(int estoqueMin) { this.estoqueMin = estoqueMin; }
-    public int getEstoqueMax() { return estoqueMax; }
-    public void setEstoqueMax(int estoqueMax) { this.estoqueMax = estoqueMax; }
+
+    // Getters
+    public long getId() { return id; }
+    public ProdutoModel getProduto() { return produto; }
+    public int getQuantidade() { return quantidade; }
+    public int getEstoqueMin() { return estoqueMin; }
+    public int getEstoqueMax() { return estoqueMax;}
+    
     public boolean isListado() { return listado; }
-    public void setListado(boolean listado) { this.listado = listado; }
 
     @Override
     public String toString() {

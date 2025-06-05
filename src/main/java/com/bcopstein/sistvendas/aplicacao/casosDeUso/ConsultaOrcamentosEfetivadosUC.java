@@ -11,11 +11,11 @@ import com.bcopstein.sistvendas.aplicacao.dtos.OrcamentoDTO;
 import com.bcopstein.sistvendas.dominio.servicos.ServicoDeVendas;
 
 @Component
-public class ConsultaOrcamentosEfetivadosUC { // Nome da classe atualizado
+public class ConsultaOrcamentosEfetivadosUC {
     private ServicoDeVendas servicoDeVendas;
 
     @Autowired
-    public ConsultaOrcamentosEfetivadosUC(ServicoDeVendas servicoDeVendas) { // Construtor atualizado se necessário
+    public ConsultaOrcamentosEfetivadosUC(ServicoDeVendas servicoDeVendas) {
         this.servicoDeVendas = servicoDeVendas;
     }
 

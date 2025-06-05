@@ -11,14 +11,10 @@ public class PedidoModel {
         this.id = id;
         this.itens = new LinkedList<>();
     }
-
-    public long getId() {
-        return id;
-    }
-
-    public List<ItemPedidoModel> getItens() {
-        return new ArrayList<ItemPedidoModel>(itens);
-    }
+    
+    //Getters
+    public long getId() { return id;}
+    public List<ItemPedidoModel> getItens() { return new ArrayList<ItemPedidoModel>(itens);}
 
     public void addItem(ItemPedidoModel item) {
         itens.add(item);

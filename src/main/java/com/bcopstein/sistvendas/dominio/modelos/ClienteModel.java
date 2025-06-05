@@ -13,7 +13,7 @@ public class ClienteModel {
 
     @Column(nullable = false) // Nome não pode ser nulo
     private String nomeCompleto;
-
+    
     @Column(unique = true) // CPF pode ser único, se desejado
     private String cpf;
     private String email;

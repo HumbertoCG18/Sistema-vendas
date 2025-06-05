@@ -12,18 +12,10 @@ public class ProdutoDTO {
         this.descricao = descricao;
         this.precoUnitario = precoUnitario;
     }
-
-    public long getId() {
-        return this.id;
-    }
-
-    public String getDescricao() {
-        return this.descricao;
-    }
-
-    public double getPrecoUnitario() {
-        return this.precoUnitario;
-    }
+//Getters
+    public long getId() { return this.id;}
+    public String getDescricao() { return this.descricao;}
+    public double getPrecoUnitario() { return this.precoUnitario;}
 
     public static ProdutoDTO fromModel(ProdutoModel produto) {
         return new ProdutoDTO(produto.getId(), produto.getDescricao(), produto.getPrecoUnitario());

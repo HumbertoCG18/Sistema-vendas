@@ -21,7 +21,6 @@ public class QtdadeEmEstoqueUC {
         return servicoDeEstoque.qtdadeEmEstoque(id);
     }
 
-    // >>> NOVO MÉTODO run SOBRECARREGADO para uma lista de IDs <<<
     public List<ProdutoEstoqueDTO> run(List<Long> idsProdutos) {
         return servicoDeEstoque.quantidadesEmEstoquePorLista(idsProdutos);
     }

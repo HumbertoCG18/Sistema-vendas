@@ -35,15 +35,15 @@ public class ServicoDeEstoque {
     }
 
     @Transactional
-public boolean relistarProduto(long produtoId) {
-    ItemDeEstoqueModel item = estoqueRepo.findByProdutoId(produtoId);
-    if (item != null) {
-        item.setListado(true);
-        estoqueRepo.save(item);
-        return true;
+    public boolean relistarProduto(long produtoId) {
+        ItemDeEstoqueModel item = estoqueRepo.findByProdutoId(produtoId);
+        if (item != null) {
+            item.setListado(true);
+            estoqueRepo.save(item);
+            return true;
+        }
+        return false; // Produto ou item de estoque não encontrado
     }
-    return false; // Produto ou item de estoque não encontrado
-}
 
     public List<ProdutoEstoqueDTO> getTodosProdutosComStatusEstoque() {
         List<ProdutoModel> todosProdutosCatalogados = produtosRepo.findAll();

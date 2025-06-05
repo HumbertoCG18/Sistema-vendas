@@ -11,8 +11,7 @@ public class TaxaConversaoDTO {
     private long totalOrcamentosEfetivados;
     private BigDecimal percentualConversao; // Usar BigDecimal para precisão
 
-    public TaxaConversaoDTO(LocalDate dataInicialPeriodo, LocalDate dataFinalPeriodo,
-            long totalOrcamentosCriados, long totalOrcamentosEfetivados) {
+    public TaxaConversaoDTO(LocalDate dataInicialPeriodo, LocalDate dataFinalPeriodo, long totalOrcamentosCriados, long totalOrcamentosEfetivados) {
         this.dataInicialPeriodo = dataInicialPeriodo;
         this.dataFinalPeriodo = dataFinalPeriodo;
         this.totalOrcamentosCriados = totalOrcamentosCriados;
@@ -27,24 +26,9 @@ public class TaxaConversaoDTO {
     }
 
     // Getters
-    public LocalDate getDataInicialPeriodo() {
-        return dataInicialPeriodo;
-    }
-
-    public LocalDate getDataFinalPeriodo() {
-        return dataFinalPeriodo;
-    }
-
-    public long getTotalOrcamentosCriados() {
-        return totalOrcamentosCriados;
-    }
-
-    public long getTotalOrcamentosEfetivados() {
-        return totalOrcamentosEfetivados;
-    }
-
-    public BigDecimal getPercentualConversao() {
-        return percentualConversao;
-    }
-
+    public LocalDate getDataInicialPeriodo() { return dataInicialPeriodo;}
+    public LocalDate getDataFinalPeriodo() { return dataFinalPeriodo;}
+    public long getTotalOrcamentosCriados() { return totalOrcamentosCriados;}
+    public long getTotalOrcamentosEfetivados() { return totalOrcamentosEfetivados;}
+    public BigDecimal getPercentualConversao() { return percentualConversao;}
 }

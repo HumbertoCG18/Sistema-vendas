@@ -17,20 +17,8 @@ public class VendaProdutoDTO {
     }
 
     // Getters
-    public long getIdProduto() {
-        return idProduto;
-    }
-
-    public String getDescricaoProduto() {
-        return descricaoProduto;
-    }
-
-    public int getQuantidadeTotalVendida() {
-        return quantidadeTotalVendida;
-    }
-
-    public BigDecimal getValorTotalArrecadado() {
-        return valorTotalArrecadado;
-    }
-
+    public long getIdProduto() { return idProduto;}
+    public String getDescricaoProduto() { return descricaoProduto; }
+    public int getQuantidadeTotalVendida() { return quantidadeTotalVendida;}
+    public BigDecimal getValorTotalArrecadado() { return valorTotalArrecadado;}
 }

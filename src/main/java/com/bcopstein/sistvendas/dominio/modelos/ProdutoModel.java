@@ -30,30 +30,15 @@ public class ProdutoModel {
         this.precoUnitario = precoUnitario;
     }
 
-    // Getters e Setters
-    public long getId() {
-        return this.id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getDescricao() {
-        return this.descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public double getPrecoUnitario() {
-        return this.precoUnitario;
-    }
-
-    public void setPrecoUnitario(double precoUnitario) {
-        this.precoUnitario = precoUnitario;
-    }
+    // Getters
+    public long getId() {return this.id;}
+    public double getPrecoUnitario() {return this.precoUnitario;}
+    public String getDescricao() {return this.descricao;}
+    
+    //Setters
+    public void setId(long id) {this.id = id;}
+    public void setDescricao(String descricao) { this.descricao = descricao;}
+    public void setPrecoUnitario(double precoUnitario) { this.precoUnitario = precoUnitario;}
 
     @Override
     public String toString() {
