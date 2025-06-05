@@ -1,10 +1,10 @@
 INSERT INTO produto (id,descricao,preco_unitario) VALUES (10,'Televisor',2000.0);
 INSERT INTO produto (id,descricao,preco_unitario) VALUES (20,'Geladeira',3500.0);
-INSERT INTO produto (id,descricao,preco_unitario) VALUES (30,'Fogao',1200.0);
-INSERT INTO produto (id,descricao,preco_unitario) VALUES (40,'Lava-louça',1800.0);
-INSERT INTO produto (id,descricao,preco_unitario) VALUES (50,'lava-roupas',2870.0);
+INSERT INTO produto (id,descricao,preco_unitario) VALUES (30,'Fogão',1200.0);
+INSERT INTO produto (id,descricao,preco_unitario) VALUES (40,'Lava louça',1800.0);
+INSERT INTO produto (id,descricao,preco_unitario) VALUES (50,'Lava roupas',2870.0);
 -- Novos Produtos
-INSERT INTO produto (id,descricao,preco_unitario) VALUES (60,'Micro-ondas',600.0);
+INSERT INTO produto (id,descricao,preco_unitario) VALUES (60,'Micro ondas',600.0);
 INSERT INTO produto (id,descricao,preco_unitario) VALUES (70,'Ar Condicionado',2200.0);
 INSERT INTO produto (id,descricao,preco_unitario) VALUES (80,'Aspirador de Pó Robô',1500.0);
 INSERT INTO produto (id,descricao,preco_unitario) VALUES (90,'Cafeteira Expressa',850.0);
