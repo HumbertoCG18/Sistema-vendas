@@ -16,7 +16,5 @@ public class PedidoModel {
     public long getId() { return id;}
     public List<ItemPedidoModel> getItens() { return new ArrayList<ItemPedidoModel>(itens);}
 
-    public void addItem(ItemPedidoModel item) {
-        itens.add(item);
-    }
+    public void addItem(ItemPedidoModel item) { itens.add(item); }
 }

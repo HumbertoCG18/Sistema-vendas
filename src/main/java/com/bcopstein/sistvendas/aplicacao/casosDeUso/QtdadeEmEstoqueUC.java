@@ -16,7 +16,6 @@ public class QtdadeEmEstoqueUC {
         this.servicoDeEstoque = servicoDeEstoque;
     }
 
-    // Método run existente para um único ID
     public int run(long id) { //
         return servicoDeEstoque.qtdadeEmEstoque(id);
     }

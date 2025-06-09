@@ -11,7 +11,6 @@ public interface IEstoqueRepositorio extends JpaRepository<ItemDeEstoqueModel, L
     ItemDeEstoqueModel findByProdutoId(long produtoId);
     List<ItemDeEstoqueModel> findByListadoTrueAndQuantidadeGreaterThan(int quantidade);
 
-    // >>> NOVO MÉTODO para buscar produtos com baixo estoque <<<
     // A query JPQL 'e.quantidade < e.estoqueMin' compara os campos da entidade.
     @Query("SELECT e FROM ItemDeEstoqueModel e WHERE e.quantidade < e.estoqueMin ORDER BY e.produto.descricao ASC")
     List<ItemDeEstoqueModel> findItensComEstoqueBaixo();

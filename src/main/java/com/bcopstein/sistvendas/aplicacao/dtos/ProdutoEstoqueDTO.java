@@ -9,8 +9,8 @@ public class ProdutoEstoqueDTO {
     private double precoUnitario;
     private int quantidadeEmEstoque;
     private boolean listado;
-    private int estoqueMin; // Added for UI
-    private int estoqueMax; // Added for UI
+    private int estoqueMin;
+    private int estoqueMax;
 
     public ProdutoEstoqueDTO(long id, String descricao, double precoUnitario, int quantidadeEmEstoque, boolean listado,
             int estoqueMin, int estoqueMax) {

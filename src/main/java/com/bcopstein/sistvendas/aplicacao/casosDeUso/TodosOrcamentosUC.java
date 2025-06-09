@@ -20,11 +20,10 @@ public class TodosOrcamentosUC {
     }
 
     public List<OrcamentoDTO> run() {
-        // Altera a chamada de todos() para findAll()
         List<OrcamentoModel> orcamentos = orcamentoRepositorio.findAll();
 
         return orcamentos.stream()
-                .map(OrcamentoDTO::fromModel) // Usa o fromModel atualizado
+                .map(OrcamentoDTO::fromModel)
                 .collect(Collectors.toList());
     }
 }

@@ -16,12 +16,11 @@ public class ProdutoPorCodigoUC {
         this.servicoDeEstoque = servicoDeEstoque;
     }
 
-    // Retorna um DTO para consistência e desacoplamento
     public ProdutoDTO run(long id) {
         ProdutoModel produto = servicoDeEstoque.produtoPorCodigo(id);
         if (produto != null) {
             return ProdutoDTO.fromModel(produto);
         }
-        return null; // Retorna nulo se não encontrar
+        return null;
     }
 }

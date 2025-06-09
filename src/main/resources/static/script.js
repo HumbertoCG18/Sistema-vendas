@@ -1,6 +1,6 @@
 let editMode = false;
 let produtoIdToEdit = null;
-let produtoOriginal = null; // Para guardar os dados originais do produto em edição
+let produtoOriginal = null;
 
 window.onload = function () {
   const params = new URLSearchParams(window.location.search);
@@ -84,11 +84,11 @@ function atualizarDisplayStatusProduto(listado) {
     statusSpan.style.color = "green";
     btnRelistar.classList.add("active");
     btnDelistar.classList.remove("active");
-    btnDelistar.classList.remove("inactive"); // Garante que não fique com as duas
+    btnDelistar.classList.remove("inactive");
   } else {
     statusSpan.textContent = "DE-LISTADO (Indisponível para venda)";
     statusSpan.style.color = "orange";
-    btnDelistar.classList.add("active"); // Ou 'inactive' para visual
+    btnDelistar.classList.add("active");
     btnDelistar.classList.add("inactive");
     btnRelistar.classList.remove("active");
   }
@@ -124,7 +124,7 @@ async function definirStatusProduto(listar) {
       );
     }
     exibirResultadoPopup(`Produto ${acao} com sucesso!`, "success");
-    produtoOriginal.listado = listar; // Atualiza estado local
+    produtoOriginal.listado = listar;
     atualizarDisplayStatusProduto(listar);
     notificarAlteracaoProduto();
   } catch (error) {
@@ -193,8 +193,8 @@ async function submeterFormularioProdutoPopup() {
       await responseEdicao.json();
       mensagensSucesso.push("Descrição/Preço atualizados.");
       operacoesConcluidas++;
-      if (produtoOriginal) produtoOriginal.descricao = descricao; // Atualiza local
-      if (produtoOriginal) produtoOriginal.precoUnitario = preco; // Atualiza local
+      if (produtoOriginal) produtoOriginal.descricao = descricao; 
+      if (produtoOriginal) produtoOriginal.precoUnitario = preco; 
     } catch (error) {
       mensagensErro.push(`Erro ao atualizar Descrição/Preço: ${error.message}`);
       operacoesFalhas++;
@@ -423,20 +423,6 @@ function renderizarFiltrosConsultaAvancada() {
                 `;
   };
 
-  // Helper para criar input de texto
-  const criarInputTexto = (id, label, placeholder, obrigatorio = true) => {
-    return `
-                    <div style="margin-bottom:10px;">
-                        <label for="${id}" style="display:block; margin-bottom:3px;">${label}${
-      obrigatorio ? "*" : ""
-    }:</label>
-                        <input type="text" id="${id}" placeholder="${placeholder}" ${
-      obrigatorio ? "required" : ""
-    } style="width: calc(100% - 22px);">
-                    </div>
-                `;
-  };
-
   switch (tipoConsulta) {
     case "vendasPorProduto":
       containerFiltros.innerHTML += `
@@ -493,7 +479,7 @@ function renderizarFiltrosConsultaAvancada() {
       break;
     case "baixoEstoque":
       // NENHUM FILTRO NECESSÁRIO PARA ESTE RELATÓRIO
-      containerFiltros.innerHTML
+      containerFiltros.innerHTML;
       break;
     default:
   }
@@ -504,7 +490,7 @@ async function executarConsultaGerencialAvancada() {
     "tipoConsultaGerencialAvancada"
   ).value;
   const resultDivId = "resultadoConsultaAvancada";
-  exibirResultadoOperacao(resultDivId, "", "normal"); // Limpa resultado anterior e esconde
+  exibirResultadoOperacao(resultDivId, "", "normal"); // Limpa resultado anterior
 
   if (!tipoConsulta) {
     exibirResultadoOperacao(
@@ -516,7 +502,7 @@ async function executarConsultaGerencialAvancada() {
   }
 
   let dataInicial, dataFinal, nomeCliente, idProdutoSelecionado;
-  let url;
+  let url = "/gerencial/"; // <<< CORREÇÃO: Inicializa a variável url com o caminho base
   let queryParams = new URLSearchParams();
 
   // Coleta os dados dos inputs dinâmicos
@@ -531,10 +517,24 @@ async function executarConsultaGerencialAvancada() {
   if (elDataFinal) dataFinal = elDataFinal.value;
   if (elNomeClienteSelect) nomeCliente = elNomeClienteSelect.value;
   if (elProdutoId) idProdutoSelecionado = elProdutoId.value;
-  // Validações e construção da URL
+
+  // Validações e construção do restante da URL
   switch (tipoConsulta) {
+    case "volumeVendas":
+      url += "volumeVendas"; // Concatena: '/gerencial/' + 'volumeVendas'
+      if (!dataInicial || !dataFinal) {
+        exibirResultadoOperacao(
+          resultDivId,
+          "Data inicial e final são obrigatórias.",
+          "error"
+        );
+        return;
+      }
+      queryParams.append("dataInicial", dataInicial);
+      queryParams.append("dataFinal", dataFinal);
+      break;
     case "vendasPorProduto":
-      url = "/gerencial/vendasPorProduto";
+      url += "vendasPorProduto"; // Concatena
       if (!dataInicial || !dataFinal) {
         exibirResultadoOperacao(
           resultDivId,
@@ -549,40 +549,12 @@ async function executarConsultaGerencialAvancada() {
         queryParams.append("idProduto", idProdutoSelecionado);
       }
       break;
-
-    case "volumeVendas":
-      url += "volumeVendas";
-      if (!dataInicial || !dataFinal) {
-        exibirResultadoOperacao(
-          resultDivId,
-          "Data inicial e final são obrigatórias.",
-          "error"
-        );
-        return;
-      }
-      queryParams.append("dataInicial", dataInicial);
-      queryParams.append("dataFinal", dataFinal);
-      break;
-    case "vendasPorProduto":
-      url += "vendasPorProduto";
-      if (!dataInicial || !dataFinal) {
-        exibirResultadoOperacao(
-          resultDivId,
-          "Data inicial e final são obrigatórias.",
-          "error"
-        );
-        return;
-      }
-      queryParams.append("dataInicial", dataInicial);
-      queryParams.append("dataFinal", dataFinal);
-      break;
     case "perfilCliente":
-      url += "perfilCliente";
+      url += "perfilCliente"; // Concatena
       if (!nomeCliente) {
-        // Verifica se um cliente foi selecionado
         exibirResultadoOperacao(
           resultDivId,
-          "Nome do cliente é obrigatório para esta consulta.",
+          "Nome do cliente é obrigatório.",
           "error"
         );
         return;
@@ -592,7 +564,7 @@ async function executarConsultaGerencialAvancada() {
       if (dataFinal) queryParams.append("dataFinal", dataFinal);
       break;
     case "taxaConversao":
-      url += "taxaConversao";
+      url += "taxaConversao"; // Concatena
       if (!dataInicial || !dataFinal) {
         exibirResultadoOperacao(
           resultDivId,
@@ -605,8 +577,7 @@ async function executarConsultaGerencialAvancada() {
       queryParams.append("dataFinal", dataFinal);
       break;
     case "baixoEstoque":
-      url = "/gerencial/relatorioEstoqueBaixo";
-      // Não há parâmetros para adicionar
+      url += "relatorioEstoqueBaixo"; // Concatena
       break;
     default:
       exibirResultadoOperacao(
@@ -617,7 +588,6 @@ async function executarConsultaGerencialAvancada() {
       return;
   }
 
-  // Validação de período para datas, se ambas existirem
   if (dataInicial && dataFinal && new Date(dataInicial) > new Date(dataFinal)) {
     exibirResultadoOperacao(
       resultDivId,
@@ -642,16 +612,15 @@ async function executarConsultaGerencialAvancada() {
   try {
     const response = await fetch(fullUrl);
 
-    // Tratar erro primeiro (comum a todos os tipos de resposta)
     if (!response.ok) {
       let errorMsg = `Erro ${response.status}: ${response.statusText}`;
+      const textError = await response.text();
       try {
-        const errorData = await response.json();
+        const errorData = JSON.parse(textError);
         errorMsg = `Erro ${response.status}: ${
           errorData.message || response.statusText
         }`;
       } catch (e) {
-        const textError = await response.text();
         errorMsg = `Erro ${response.status}: ${
           textError || response.statusText
         }`;
@@ -659,28 +628,14 @@ async function executarConsultaGerencialAvancada() {
       throw new Error(errorMsg);
     }
 
-    // Tratar a resposta baseando-se no tipo de consulta
     if (tipoConsulta === "baixoEstoque") {
       const dadosTexto = await response.text();
       exibirResultadoOperacao(resultDivId, dadosTexto, "normal_pre");
     } else {
-      // Lógica para as outras consultas que retornam JSON
-      if (response.status === 204) {
-        exibirResultadoOperacao(
-          resultDivId,
-          "Nenhum resultado encontrado.",
-          "normal"
-        );
-        return;
-      }
       const dadosJson = await response.json();
-
       if (
         dadosJson === null ||
-        (Array.isArray(dadosJson) && dadosJson.length === 0) ||
-        (typeof dadosJson === "object" &&
-          Object.keys(dadosJson).length === 0 &&
-          !Array.isArray(dadosJson))
+        (Array.isArray(dadosJson) && dadosJson.length === 0)
       ) {
         exibirResultadoOperacao(
           resultDivId,
@@ -688,20 +643,29 @@ async function executarConsultaGerencialAvancada() {
           "normal"
         );
       } else {
-        if (tipoConsulta === "vendasPorProduto" && Array.isArray(dadosJson)) {
+        // Lógica de formatação existente
+        if (tipoConsulta === "vendasPorProduto") {
           exibirResultadoOperacao(
             resultDivId,
             formatarVendasPorProduto(dadosJson),
             "normal_pre"
           );
-        } else if (
-          tipoConsulta === "perfilCliente" &&
-          typeof dadosJson === "object" &&
-          dadosJson.nomeCliente
-        ) {
+        } else if (tipoConsulta === "perfilCliente") {
           exibirResultadoOperacao(
             resultDivId,
             formatarPerfilCliente(dadosJson),
+            "normal_pre"
+          );
+        } else if (tipoConsulta === "volumeVendas") {
+          exibirResultadoOperacao(
+            resultDivId,
+            formatarVolumeVendas(dadosJson),
+            "normal_pre"
+          );
+        } else if (tipoConsulta === "taxaConversao") {
+          exibirResultadoOperacao(
+            resultDivId,
+            formatarTaxaConversao(dadosJson),
             "normal_pre"
           );
         } else {
@@ -815,8 +779,7 @@ async function handleFetchError(response) {
       errorMsg = `Erro ${response.status}: ${
         errorData.message || response.statusText
       }`;
-    } catch (e) {
-    }
+    } catch (e) {}
     throw new Error(errorMsg);
   }
   if (response.status === 204) return null;
@@ -1136,8 +1099,8 @@ async function submeterNovoOrcamento() {
   });
 
   const nomeCliente = document.getElementById("nomeCliente").value.trim();
-  const cpfCliente = document.getElementById("cpfCliente").value.trim(); // Novo campo
-  const emailCliente = document.getElementById("emailCliente").value.trim(); // Novo campo
+  const cpfCliente = document.getElementById("cpfCliente").value.trim();
+  const emailCliente = document.getElementById("emailCliente").value.trim();
   const paisCliente = document.getElementById("paisCliente").value.trim();
   const estadoCliente = document.getElementById("estadoCliente").value.trim();
 
@@ -1187,7 +1150,7 @@ async function submeterNovoOrcamento() {
     itens: itens,
     nomeCliente: nomeCliente,
     cpfCliente: cpfCliente,
-    emailCliente: emailCliente, 
+    emailCliente: emailCliente,
     paisCliente: paisCliente,
     estadoCliente: estadoCliente,
   };

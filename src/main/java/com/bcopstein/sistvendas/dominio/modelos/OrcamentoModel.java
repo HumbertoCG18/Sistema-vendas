@@ -55,10 +55,7 @@ public class OrcamentoModel {
     }
 
     @ManyToOne // Muitos orçamentos para Um cliente
-    @JoinColumn(name = "cliente_id", nullable = true) // Nome da coluna FK no banco.
-                                                      // `nullable = true` se você permitir orçamentos sem cliente
-                                                      // associado,
-                                                      // `nullable = false` se cliente for obrigatório.
+    @JoinColumn(name = "cliente_id", nullable = true) 
     private ClienteModel cliente;
 
     //Getters
@@ -322,7 +319,7 @@ public class OrcamentoModel {
                 + ")" +
                 ", impostoFederal="
                 + (impostoFederal != null ? impostoFederal.setScale(2, RoundingMode.HALF_UP).toPlainString() : "0.00")
-                + " (15.00%)" + // Imposto Federal é 15% [cite: 82]
+                + " (15.00%)" + // Imposto Federal é 15%
                 ", valorDesconto="
                 + (valorDesconto != null ? valorDesconto.setScale(2, RoundingMode.HALF_UP).toPlainString() : "0.00") +
                 ", custoConsumidor="

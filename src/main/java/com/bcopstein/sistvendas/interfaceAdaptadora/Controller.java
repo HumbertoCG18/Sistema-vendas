@@ -3,12 +3,12 @@ package com.bcopstein.sistvendas.interfaceAdaptadora;
 import java.util.List;
 import java.util.ArrayList;
 import java.net.URI;
-import java.time.LocalDate; // Adicionado para os parâmetros de data
+import java.time.LocalDate;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat; // Adicionado para formatação de data
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.MediaType; // Adicionar import
+import org.springframework.http.MediaType;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.bcopstein.sistvendas.aplicacao.casosDeUso.*;
@@ -46,8 +46,7 @@ public class Controller {
     private QtdadeEmEstoqueUC qtdadeEmEstoqueUC;
     private RelistarProdutoUC relistarProdutoUC;
     private ListarNomesClientesUC listarNomesClientesUC;
-    private RelatorioEstoqueBaixoUC relatorioEstoqueBaixoUC; // Adicionar novo UC
-
+    private RelatorioEstoqueBaixoUC relatorioEstoqueBaixoUC;
 
     @Autowired
     public Controller(
@@ -70,10 +69,8 @@ public class Controller {
             QtdadeEmEstoqueUC qtdadeEmEstoqueUC,
             ConsultaPerfilClienteUC consultaPerfilClienteUC, 
             ListarNomesClientesUC listarNomesClientesUC,
-            RelatorioEstoqueBaixoUC relatorioEstoqueBaixoUC // Injetar novo UC
-
-
-    ) {
+            RelatorioEstoqueBaixoUC relatorioEstoqueBaixoUC) 
+    {
         this.produtosDisponiveisUC = produtosDisponiveisUC;
         this.todosProdutosStatusUC = todosProdutosStatusUC;
         this.criaOrcamentoUC = criaOrcamentoUC;
@@ -93,17 +90,16 @@ public class Controller {
         this.consultaTaxaConversaoUC = consultaTaxaConversaoUC;
         this.consultaPerfilClienteUC = consultaPerfilClienteUC;
         this.listarNomesClientesUC = listarNomesClientesUC;
-        this.relatorioEstoqueBaixoUC = relatorioEstoqueBaixoUC; // Atribuir novo UC
-
+        this.relatorioEstoqueBaixoUC = relatorioEstoqueBaixoUC;
     }
 
-      @GetMapping(value = "/gerencial/relatorioEstoqueBaixo", produces = MediaType.TEXT_PLAIN_VALUE)
+    @GetMapping(value = "/gerencial/relatorioEstoqueBaixo", produces = MediaType.TEXT_PLAIN_VALUE)
     @CrossOrigin(origins = "*")
     public ResponseEntity<String> getRelatorioEstoqueBaixo() {
         try {
             String relatorio = relatorioEstoqueBaixoUC.run();
             return ResponseEntity.ok()
-                    .header("Content-Disposition", "attachment; filename=\"relatorio_estoque_baixo.txt\"") // Sugere download
+                    .header("Content-Disposition", "attachment; filename=\"relatorio_estoque_baixo.txt\"")
                     .body(relatorio);
         } catch (Exception e) {
             System.err.println("Controller Erro: /gerencial/relatorioEstoqueBaixo -> " + e.getMessage());
@@ -186,7 +182,6 @@ public class Controller {
             @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal,
             @RequestParam(required = false) Long idProduto) { // Parâmetro para ID do produto
 
-        // >>> DEBUG: Verificar o idProduto recebido no Controller <<<
         System.out.println("CONTROLLER - getVendasPorProduto - idProduto recebido: " + idProduto);
 
         try {
@@ -211,7 +206,6 @@ public class Controller {
                 .build();
     }
 
-    // --- Endpoints de Orçamento ---
     @GetMapping("/todosOrcamentos")
     @CrossOrigin(origins = "*")
     public List<OrcamentoDTO> todosOrcamentos() {
@@ -230,7 +224,7 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (Exception e) {
             System.err.println("Controller Erro: /gerencial/volumeVendas -> " + e.getMessage());
-            e.printStackTrace(); // Para mais detalhes do erro no log do servidor
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular volume de vendas.",
                     e);
         }
@@ -258,14 +252,14 @@ public class Controller {
     public OrcamentoDTO efetivaOrcamento(@PathVariable(value = "id") long idOrcamento) {
         try {
             OrcamentoDTO orcamento = efetivaOrcamentoUC.run(idOrcamento);
-            if (orcamento == null) { // Embora o UC deva lançar exceção se não encontrar ou não efetivar
+            if (orcamento == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Orçamento ID " + idOrcamento + " não encontrado ou não pôde ser efetivado.");
             }
             return orcamento;
-        } catch (IllegalStateException e) { // Captura exceções como orçamento vencido, sem itens, falta de estoque
+        } catch (IllegalStateException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        } catch (IllegalArgumentException e) { // Captura ID não encontrado vindo do findById
+        } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         } catch (Exception e) {
             System.err.println("Controller Erro: /efetivaOrcamento/" + idOrcamento + " -> " + e.getMessage());
@@ -280,12 +274,11 @@ public class Controller {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
         try {
             return consultaOrcamentosEfetivadosUC.run(dataInicial, dataFinal);
-        } catch (IllegalArgumentException e) { // Captura validações de data do serviço/UC
+        } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (Exception e) {
             System.err.println("Controller Erro: /orcamentosEfetivados -> " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar orçamentos efetivados.",
-                    e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar orçamentos efetivados.",e);
         }
     }
 
@@ -327,7 +320,6 @@ public class Controller {
         if (produto != null) {
             return ResponseEntity.ok(produto);
         } else {
-            // Poderia lançar ResponseStatusException(HttpStatus.NOT_FOUND) aqui também
             return ResponseEntity.notFound().build();
         }
     }
@@ -393,10 +385,9 @@ public class Controller {
     @CrossOrigin(origins = "*")
     public ResponseEntity<Integer> getQtdadeEmEstoque(@PathVariable long id) {
         try {
-            // Chama o método run original que aceita um long id
             int qtd = qtdadeEmEstoqueUC.run(id);
             return ResponseEntity.ok(qtd);
-        } catch (Exception e) { // Idealmente, capturar exceções mais específicas se o UC/Serviço as lançar
+        } catch (Exception e) {
             System.err.println("Controller Erro: /produtos/" + id + "/qtdadeEstoque -> " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar quantidade em estoque.",
                     e);
@@ -407,10 +398,9 @@ public class Controller {
     @CrossOrigin(origins = "*")
     public ResponseEntity<List<ProdutoEstoqueDTO>> getQtdadeEmEstoquePorLista(@RequestParam List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
-            return ResponseEntity.ok(new ArrayList<>()); // Retorna lista vazia com status OK
+            return ResponseEntity.ok(new ArrayList<>());
         }
         try {
-            // Chama o método run sobrecarregado que aceita List<Long>
             List<ProdutoEstoqueDTO> quantidades = qtdadeEmEstoqueUC.run(ids);
             return ResponseEntity.ok(quantidades);
         } catch (Exception e) {

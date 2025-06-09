@@ -139,12 +139,8 @@ public class OrcamentoDTO {
         String estadoClienteModel = orcamento.getEstadoCliente();
         String paisClienteModel = orcamento.getPaisCliente();
 
-        String impostoEstadualFmt = String.format(Locale.US, "%.2f (%.2f%%)",
-                impostoEstadualModel,
-                aliquotaEstadualModel.multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP));
-
-        String impostoFederalFmt = String.format(Locale.US, "%.2f (15.00%%)",
-                impostoFederalModel);
+        String impostoEstadualFmt = String.format(Locale.US, "%.2f (%.2f%%)", impostoEstadualModel, aliquotaEstadualModel.multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP));
+        String impostoFederalFmt = String.format(Locale.US, "%.2f (15.00%%)",impostoFederalModel);
 
         return new OrcamentoDTO(
                 orcamento.getId(),

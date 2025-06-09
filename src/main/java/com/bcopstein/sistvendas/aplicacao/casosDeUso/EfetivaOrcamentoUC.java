@@ -21,7 +21,6 @@ public class EfetivaOrcamentoUC {
         if (orcamento == null) {
             return null; // Orçamento não encontrado
         }
-        // O OrcamentoDTO.fromModel irá refletir o estado de 'efetivado' do OrcamentoModel
         return OrcamentoDTO.fromModel(orcamento);
     }
 }

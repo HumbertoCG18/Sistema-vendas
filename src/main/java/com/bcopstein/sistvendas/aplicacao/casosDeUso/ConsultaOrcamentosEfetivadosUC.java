@@ -1,7 +1,7 @@
 package com.bcopstein.sistvendas.aplicacao.casosDeUso;
 
 import java.util.List;
-import java.time.LocalDate; // Adicionar import
+import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;

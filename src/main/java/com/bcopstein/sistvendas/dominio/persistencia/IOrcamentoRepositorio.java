@@ -14,8 +14,7 @@ public interface IOrcamentoRepositorio extends JpaRepository<OrcamentoModel, Lon
 
     List<OrcamentoModel> findByEfetivadoIsTrueOrderByIdDesc(Pageable pageable);
 
-    List<OrcamentoModel> findByEfetivadoIsTrueAndDataGeracaoBetweenOrderByIdDesc(LocalDate dataInicial,
-            LocalDate dataFinal);
+    List<OrcamentoModel> findByEfetivadoIsTrueAndDataGeracaoBetweenOrderByIdDesc(LocalDate dataInicial,LocalDate dataFinal);
 
     @Query("SELECT DISTINCT o.cliente.nomeCompleto FROM OrcamentoModel o WHERE o.efetivado = true AND o.cliente IS NOT NULL AND o.cliente.nomeCompleto IS NOT NULL ORDER BY o.cliente.nomeCompleto ASC")
     List<String> findDistinctNomesClientesComOrcamentosEfetivados(); // Nome do método mantido, query atualizada
@@ -31,6 +30,5 @@ public interface IOrcamentoRepositorio extends JpaRepository<OrcamentoModel, Lon
             @Param("dataFinal") LocalDate dataFinal);
 
     long countByDataGeracaoBetween(LocalDate dataInicial, LocalDate dataFinal);
-
     long countByEfetivadoIsTrueAndDataGeracaoBetween(LocalDate dataInicial, LocalDate dataFinal);
 }

@@ -18,9 +18,9 @@ import com.bcopstein.sistvendas.dominio.modelos.OrcamentoModel;
 import com.bcopstein.sistvendas.dominio.modelos.PedidoModel;
 import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
 import com.bcopstein.sistvendas.dominio.modelos.ItemPedidoModel;
-import com.bcopstein.sistvendas.dominio.modelos.ClienteModel; // Import da nova entidade
+import com.bcopstein.sistvendas.dominio.modelos.ClienteModel;
 import com.bcopstein.sistvendas.dominio.persistencia.IOrcamentoRepositorio;
-import com.bcopstein.sistvendas.dominio.persistencia.IClienteRepositorio; // Import do novo repositório
+import com.bcopstein.sistvendas.dominio.persistencia.IClienteRepositorio;
 import com.bcopstein.sistvendas.aplicacao.dtos.ItemCompradoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.PerfilClienteDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.TaxaConversaoDTO;
@@ -31,7 +31,7 @@ import com.bcopstein.sistvendas.aplicacao.dtos.VolumeVendasDTO;
 public class ServicoDeVendas {
     private IOrcamentoRepositorio orcamentosRepo;
     private ServicoDeEstoque servicoDeEstoque;
-    private IClienteRepositorio clienteRepo; // Adicionado para gerenciar Clientes
+    private IClienteRepositorio clienteRepo;
 
     private static final Map<String, List<String>> LOCAIS_ATENDIDOS;
     static {
@@ -43,7 +43,7 @@ public class ServicoDeVendas {
     public ServicoDeVendas(IOrcamentoRepositorio orcamentos, ServicoDeEstoque servicoDeEstoque, IClienteRepositorio clienteRepo) {
         this.orcamentosRepo = orcamentos;
         this.servicoDeEstoque = servicoDeEstoque;
-        this.clienteRepo = clienteRepo; // Atribuir
+        this.clienteRepo = clienteRepo;
     }
 
     public List<ProdutoModel> produtosDisponiveis() {
@@ -115,11 +115,11 @@ public class ServicoDeVendas {
             System.out.println("INFO: Cliente '" + nomeClienteRequest + (cpfLimpo != null ? ", CPF: " + cpfLimpo : "")
                     + "' não encontrado por identificadores únicos. Criando novo cliente.");
             clienteAssociado = new ClienteModel(nomeClienteRequest.trim(), cpfLimpo, emailLimpo);
-            clienteRepo.save(clienteAssociado); // Salva o novo cliente
+            clienteRepo.save(clienteAssociado);
         }
 
         OrcamentoModel novoOrcamento = new OrcamentoModel();
-        novoOrcamento.setCliente(clienteAssociado); // Associa a entidade ClienteModel
+        novoOrcamento.setCliente(clienteAssociado);
         novoOrcamento.setEstadoCliente(estadoCliente.trim());
         novoOrcamento.setPaisCliente(paisCliente.trim());
         novoOrcamento.addItensPedido(pedido);
@@ -205,7 +205,7 @@ public class ServicoDeVendas {
     public List<VendaProdutoDTO> calcularTotalVendasPorProduto(LocalDate dataInicial, LocalDate dataFinal,
             Long idProdutoEspecifico) {
         List<OrcamentoModel> orcamentosConsiderados;
-        if (dataInicial == null || dataFinal == null) { // Tornando datas obrigatórias para esta consulta também
+        if (dataInicial == null || dataFinal == null) {
             throw new IllegalArgumentException(
                     "Data inicial e data final são obrigatórias para consulta de vendas por produto.");
         }
@@ -248,7 +248,6 @@ public class ServicoDeVendas {
             throw new IllegalArgumentException("Nome do cliente é obrigatório.");
         }
         List<OrcamentoModel> orcamentosCliente;
-        // As queries em IOrcamentoRepositorio foram atualizadas para buscar por cliente.nomeCompleto
         if (dataInicial != null && dataFinal != null) {
             if (dataInicial.isAfter(dataFinal)) {
                 throw new IllegalArgumentException("Data inicial não pode ser posterior à data final.");
@@ -289,7 +288,6 @@ public class ServicoDeVendas {
     }
 
     public List<String> listarNomesClientesComCompras() {
-        // A query em IOrcamentoRepositorio já foi atualizada para o.cliente.nomeCompleto
         return orcamentosRepo.findDistinctNomesClientesComOrcamentosEfetivados();
     }
 

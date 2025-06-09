@@ -14,7 +14,6 @@
         <h2 id="produtoFormPopupTitulo">Adicionar Novo Produto</h2>
         <form id="formProdutoPopup">
             <input type="hidden" id="produtoIdFormPopup">
-
             <div>
                 <label for="produtoDescricaoPopup">Descrição do Produto:</label>
                 <input type="text" id="produtoDescricaoPopup" required>
@@ -46,10 +45,8 @@
                     <label>Status Atual do Produto:</label>
                     <span id="produtoStatusAtual">Carregando...</span>
                     <div class="toggle-button-group" style="margin-top:5px; margin-bottom:10px;">
-                        <button type="button" id="btnRelistarProduto" onclick="definirStatusProduto(true)">Re-listar
-                            Produto</button>
-                        <button type="button" id="btnDelistarProduto" onclick="definirStatusProduto(false)">De-listar
-                            Produto</button>
+                        <button type="button" id="btnRelistarProduto" onclick="definirStatusProduto(true)">Re-listar Produto</button>
+                        <button type="button" id="btnDelistarProduto" onclick="definirStatusProduto(false)">De-listar Produto</button>
                     </div>
                 </div>
                 <div>
@@ -72,12 +69,10 @@
 
             <div class="button-group">
                 <button type="button" class="cancel" onclick="window.close()">Cancelar</button>
-                <button type="button" id="btnSalvarProduto" onclick="submeterFormularioProdutoPopup()">Salvar
-                    Alterações</button>
+                <button type="button" id="btnSalvarProduto" onclick="submeterFormularioProdutoPopup()">Salvar Alterações</button>
             </div>
         </form>
         <div id="produtoFormPopupResult" class="result" style="display: none;"></div>
     </div>
 </body>
-
 </html>

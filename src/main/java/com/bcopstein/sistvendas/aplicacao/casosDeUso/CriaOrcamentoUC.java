@@ -29,8 +29,8 @@ public class CriaOrcamentoUC {
     public OrcamentoDTO run(NovoOrcamentoRequestDTO request) { 
         List<ItemPedidoDTO> itens = request.getItens();
         String nomeCliente = request.getNomeCliente();
-        String cpfCliente = request.getCpfCliente(); // Obter CPF
-        String emailCliente = request.getEmailCliente(); // Obter Email
+        String cpfCliente = request.getCpfCliente();
+        String emailCliente = request.getEmailCliente(); 
         String estadoCliente = request.getEstadoCliente();
         String paisCliente = request.getPaisCliente();
 
