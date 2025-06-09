@@ -251,9 +251,6 @@ async function submeterFormularioProdutoPopup() {
           `Produto novo adicionado com sucesso! (ID: ${salvo.id})`
         );
         operacoesConcluidas++;
-        // Definir produtoIdToEdit para permitir aumento de estoque subsequente na mesma tela (opcional)
-        // produtoIdToEdit = salvo.id;
-        // editMode = true; // Poderia mudar para modo de edição
       } catch (error) {
         mensagensErro.push(`Erro ao adicionar novo produto: ${error.message}`);
         operacoesFalhas++;
@@ -338,8 +335,6 @@ function notificarAlteracaoProduto() {
     typeof window.opener.notificarProdutoSalvo === "function"
   ) {
     window.opener.notificarProdutoSalvo(); // Função na janela principal para recarregar a lista
-  } else {
-    // alert("Produto salvo/atualizado! Feche esta janela e atualize a lista principal se necessário.");
   }
 }
 
@@ -388,8 +383,6 @@ async function popularSelectProdutos(selectId) {
   selectProduto.innerHTML = '<option value="">-- Todos os Produtos --</option>'; // Opção para buscar todos
 
   try {
-    // Usar /todosProdutosStatus para ter a lista completa de produtos cadastrados
-    // Ou /produtosDisponiveis se quiser apenas os que têm estoque e estão listados
     const response = await fetch("/todosProdutosStatus");
     const produtos = await handleFetchError(response);
 
@@ -403,7 +396,6 @@ async function popularSelectProdutos(selectId) {
     }
   } catch (error) {
     console.error("Erro ao popular select de produtos:", error);
-    // Adicionar uma opção de erro ou desabilitar o select
   }
 }
 
@@ -507,7 +499,6 @@ function renderizarFiltrosConsultaAvancada() {
   }
 }
 
-// Função para executar a consulta gerencial avançada selecionada
 async function executarConsultaGerencialAvancada() {
   const tipoConsulta = document.getElementById(
     "tipoConsultaGerencialAvancada"
@@ -613,7 +604,7 @@ async function executarConsultaGerencialAvancada() {
       queryParams.append("dataInicial", dataInicial);
       queryParams.append("dataFinal", dataFinal);
       break;
-    case "baixoEstoque": // NOVO CASE
+    case "baixoEstoque":
       url = "/gerencial/relatorioEstoqueBaixo";
       // Não há parâmetros para adicionar
       break;
@@ -670,12 +661,11 @@ async function executarConsultaGerencialAvancada() {
 
     // Tratar a resposta baseando-se no tipo de consulta
     if (tipoConsulta === "baixoEstoque") {
-      const dadosTexto = await response.text(); // LÊ A RESPOSTA COMO TEXTO
-      exibirResultadoOperacao(resultDivId, dadosTexto, "normal_pre"); // Exibe o texto pré-formatado
+      const dadosTexto = await response.text();
+      exibirResultadoOperacao(resultDivId, dadosTexto, "normal_pre");
     } else {
       // Lógica para as outras consultas que retornam JSON
       if (response.status === 204) {
-        // No Content
         exibirResultadoOperacao(
           resultDivId,
           "Nenhum resultado encontrado.",
@@ -698,7 +688,6 @@ async function executarConsultaGerencialAvancada() {
           "normal"
         );
       } else {
-        // ... (sua lógica de formatação de JSON existente) ...
         if (tipoConsulta === "vendasPorProduto" && Array.isArray(dadosJson)) {
           exibirResultadoOperacao(
             resultDivId,
@@ -752,9 +741,6 @@ function formatarTaxaConversao(dados) {
   return texto;
 }
 
-// As funções formatarVendasPorProduto e formatarPerfilCliente já foram fornecidas anteriormente.
-// Certifique-se de que elas estão no seu <script> e funcionam bem com 'normal_pre'.
-// Exemplo de formatarVendasPorProduto (revisada para consistência):
 function formatarVendasPorProduto(dados) {
   if (!dados || dados.length === 0)
     return "Nenhum dado de vendas por produto encontrado.";
@@ -773,7 +759,6 @@ function formatarVendasPorProduto(dados) {
   return texto;
 }
 
-// Exemplo de formatarPerfilCliente (revisada para consistência):
 function formatarPerfilCliente(dados) {
   if (!dados) return "Nenhum dado de perfil de cliente encontrado.";
   let texto = `Perfil do Cliente: ${dados.nomeCliente}\n`;
@@ -832,7 +817,6 @@ async function handleFetchError(response) {
         errorData.message || response.statusText
       }`;
     } catch (e) {
-      /* Mantém msg original se JSON falhar */
     }
     throw new Error(errorMsg);
   }
@@ -888,7 +872,6 @@ function notificarProdutoSalvo() {
     "normal"
   );
   setTimeout(() => {
-    // Hide message after a few seconds
     document.getElementById("produtoFormGlobalResult").style.display = "none";
   }, 4000);
   carregarProdutosParaGerenciamento();
@@ -902,11 +885,9 @@ async function carregarProdutosParaGerenciamento() {
       "none";
     document.getElementById("produtosGerenciamentoResult").innerHTML = "";
 
-    // exibirResultadoOperacao('produtosGerenciamentoResult', 'Carregando produtos para gerenciamento...', 'Carregando');
     const response = await fetch("/todosProdutosStatus");
     produtosCarregadosParaGerenciamento = await handleFetchError(response);
     renderizarProdutosComoCards();
-    // Esconde a mensagem de "Carregando" se não houver nenhum erro e outra mensagem é renderizada.
     if (
       document
         .getElementById("produtosGerenciamentoResult")
@@ -1206,8 +1187,8 @@ async function submeterNovoOrcamento() {
   const payload = {
     itens: itens,
     nomeCliente: nomeCliente,
-    cpfCliente: cpfCliente, // Adicionar cpfCliente
-    emailCliente: emailCliente, // Adicionar emailCliente
+    cpfCliente: cpfCliente,
+    emailCliente: emailCliente, 
     paisCliente: paisCliente,
     estadoCliente: estadoCliente,
   };
@@ -1223,10 +1204,7 @@ async function submeterNovoOrcamento() {
 
     let displayText = "Orçamento Criado com Sucesso:\n";
     displayText += `ID: ${orcCriado.id}\n`;
-    // O orcCriado.nomeCliente agora virá do ClienteModel associado
     displayText += `Cliente: ${orcCriado.nomeCliente}\n`;
-    // Se quiser mostrar CPF/Email do cliente no resultado, adicione-os ao OrcamentoDTO
-    // ou faça uma consulta separada do cliente se necessário.
     displayText += `Local: ${orcCriado.paisCliente} / ${orcCriado.estadoCliente}\n`;
     displayText += `Data Geração: ${orcCriado.dataGeracao}\n`;
     displayText += `SubTotal: R$ ${parseFloat(orcCriado.subTotal).toFixed(
