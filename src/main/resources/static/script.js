@@ -717,7 +717,6 @@ async function executarConsultaGerencialAvancada() {
     );
   }
 }
-Ex;
 
 // Adicionar funções de formatação específicas para os DTOs gerenciais
 function formatarVolumeVendas(dados) {
