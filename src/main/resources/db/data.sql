@@ -12,7 +12,7 @@ INSERT INTO produto (id,descricao,preco_unitario) VALUES (100,'Liquidificador Tu
 INSERT INTO produto (id,descricao,preco_unitario) VALUES (110,'Batedeira Planetária Pro',700.0);
 
 -- Adiciona a coluna 'listado' e o valor 'true' em todos os INSERTS
-INSERT INTO item_de_estoque (id, produto_id, quantidade, estoque_min, estoque_max, listado ) VALUES (100,10,20,5,50,true);
+INSERT INTO item_de_estoque (id, produto_id, quantidade, estoque_min, estoque_max, listado ) VALUES (100,10,4,5,50,true);
 INSERT INTO item_de_estoque (id, produto_id, quantidade, estoque_min, estoque_max, listado ) VALUES (200,20,10,5,30,true);
 INSERT INTO item_de_estoque (id, produto_id, quantidade, estoque_min, estoque_max, listado ) VALUES (300,40,8,5,50,true);
 INSERT INTO item_de_estoque (id, produto_id, quantidade, estoque_min, estoque_max, listado ) VALUES (400,30,15,5,40,true);

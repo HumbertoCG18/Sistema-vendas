@@ -3,6 +3,8 @@ package com.bcopstein.sistvendas.dominio.servicos;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+//import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -105,6 +107,44 @@ public class ServicoDeEstoque {
         }
         item.setQuantidade(item.getQuantidade() - qtdade);
         estoqueRepo.save(item);
+    }
+
+    public List<ProdutoEstoqueDTO> consultarProdutosComEstoqueBaixo() {
+        return estoqueRepo.findItensComEstoqueBaixo()
+                .stream()
+                .map(item -> ProdutoEstoqueDTO.fromModels(item.getProduto(), item))
+                .collect(Collectors.toList());
+    }
+
+     public String gerarRelatorioEstoqueBaixo() {
+        List<ProdutoEstoqueDTO> produtosComBaixoEstoque = consultarProdutosComEstoqueBaixo();
+
+        StringBuilder relatorio = new StringBuilder();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        
+        relatorio.append("==================================================================\n");
+        relatorio.append("       RELATÓRIO DE PRODUTOS COM BAIXO ESTOQUE\n");
+        relatorio.append("   Data de Geração: ").append(java.time.LocalDateTime.now().format(formatter)).append("\n");
+        relatorio.append("==================================================================\n");
+        relatorio.append(String.format("%-12s | %-30s | %-15s | %-15s\n", "ID Produto", "Descrição", "Estoque Atual", "Estoque Mínimo"));
+        relatorio.append("------------------------------------------------------------------\n");
+
+        if (produtosComBaixoEstoque.isEmpty()) {
+            relatorio.append("Nenhum produto com baixo estoque encontrado.\n");
+        } else {
+            for (ProdutoEstoqueDTO dto : produtosComBaixoEstoque) {
+                relatorio.append(String.format("%-12d | %-30.30s | %-15d | %-15d\n",
+                        dto.getId(),
+                        dto.getDescricao(),
+                        dto.getQuantidadeEmEstoque(),
+                        dto.getEstoqueMin()));
+            }
+        }
+        
+        relatorio.append("==================================================================\n");
+        relatorio.append("Fim do Relatório.\n");
+
+        return relatorio.toString();
     }
 
     @Transactional

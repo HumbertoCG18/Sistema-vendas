@@ -86,20 +86,18 @@
     <div class="card">
         <h2>Consultas Gerenciais Avançadas</h2>
         <div>
-            <label for="tipoConsultaGerencialAvancada" style="display:block; margin-bottom:5px;"><b>Selecione a
-                    Consulta:</b></label>
-            <select id="tipoConsultaGerencialAvancada" onchange="renderizarFiltrosConsultaAvancada()"
-                style="margin-bottom:15px; padding:8px; width:100%;">
+            <label for="tipoConsultaGerencialAvancada" style="display:block; margin-bottom:5px;"><b>Selecione a Consulta:</b></label>
+            <select id="tipoConsultaGerencialAvancada" onchange="renderizarFiltrosConsultaAvancada()" style="margin-bottom:15px; padding:8px; width:100%;">
                 <option value="">-- Selecione uma Consulta --</option>
                 <option value="volumeVendas">Volume Total de Vendas</option>
                 <option value="vendasPorProduto">Total de Vendas por Produto</option>
                 <option value="perfilCliente">Perfil de Compras do Cliente</option>
                 <option value="taxaConversao">Taxa de Conversão de Orçamentos</option>
-            </select>
+                <option value="baixoEstoque">Relatório de Produtos com Baixo Estoque</option> </select>
         </div>
 
         <div id="filtrosConsultaAvancadaContainer" style="margin-bottom:15px;">
-        </div>
+            </div>
 
         <div class="button-group">
             <button onclick="executarConsultaGerencialAvancada()">Consultar</button>

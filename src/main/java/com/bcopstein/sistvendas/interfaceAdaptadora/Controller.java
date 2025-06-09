@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType; // Adicionar import
 import org.springframework.web.server.ResponseStatusException;
 
 import com.bcopstein.sistvendas.aplicacao.casosDeUso.*;
@@ -45,6 +46,8 @@ public class Controller {
     private QtdadeEmEstoqueUC qtdadeEmEstoqueUC;
     private RelistarProdutoUC relistarProdutoUC;
     private ListarNomesClientesUC listarNomesClientesUC;
+    private RelatorioEstoqueBaixoUC relatorioEstoqueBaixoUC; // Adicionar novo UC
+
 
     @Autowired
     public Controller(
@@ -66,7 +69,9 @@ public class Controller {
             ConsultaTaxaConversaoUC consultaTaxaConversaoUC,
             QtdadeEmEstoqueUC qtdadeEmEstoqueUC,
             ConsultaPerfilClienteUC consultaPerfilClienteUC, 
-            ListarNomesClientesUC listarNomesClientesUC
+            ListarNomesClientesUC listarNomesClientesUC,
+            RelatorioEstoqueBaixoUC relatorioEstoqueBaixoUC // Injetar novo UC
+
 
     ) {
         this.produtosDisponiveisUC = produtosDisponiveisUC;
@@ -85,9 +90,27 @@ public class Controller {
         this.qtdadeEmEstoqueUC = qtdadeEmEstoqueUC;
         this.consultaVolumeVendasUC = consultaVolumeVendasUC;
         this.consultaVendasPorProdutoUC = consultaVendasPorProdutoUC;
-        this.consultaTaxaConversaoUC = consultaTaxaConversaoUC; 
+        this.consultaTaxaConversaoUC = consultaTaxaConversaoUC;
         this.consultaPerfilClienteUC = consultaPerfilClienteUC;
         this.listarNomesClientesUC = listarNomesClientesUC;
+        this.relatorioEstoqueBaixoUC = relatorioEstoqueBaixoUC; // Atribuir novo UC
+
+    }
+
+      @GetMapping(value = "/gerencial/relatorioEstoqueBaixo", produces = MediaType.TEXT_PLAIN_VALUE)
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<String> getRelatorioEstoqueBaixo() {
+        try {
+            String relatorio = relatorioEstoqueBaixoUC.run();
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=\"relatorio_estoque_baixo.txt\"") // Sugere download
+                    .body(relatorio);
+        } catch (Exception e) {
+            System.err.println("Controller Erro: /gerencial/relatorioEstoqueBaixo -> " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("Erro ao gerar relatório de baixo estoque.");
+        }
     }
 
     @PostMapping("/produtos/{id}/relistar")
