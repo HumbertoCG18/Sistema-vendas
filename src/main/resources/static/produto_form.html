@@ -1,78 +1,242 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<script src="script.js"></script>
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
     <title>Gerenciar Produto</title>
+    <style>
+        /* Seu CSS existente ... */
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #919191; }
+        .container { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); max-width: 500px; margin: auto; border: solid black; }
+        h2 { color: #333; text-align: center; }
+        label { display: block; margin-top: 15px; color: #555; font-weight: bold; }
+        input[type="text"], input[type="number"] { width: calc(100% - 22px); padding: 10px; margin-top: 5px; border: solid black; border-radius: 4px; box-sizing: border-box; }
+        .button-group { margin-top: 25px; text-align: right; }
+        button { background-color: #5cb85c; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px; font-weight: bold; }
+        button:hover { opacity: 0.9; }
+        button.cancel { background-color: #f0ad4e; }
+        .result { margin-top: 15px; padding: 10px; border-radius: 4px; font-size: 0.9em; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .loading { background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+        .hidden { display: none; }
+    </style>
 </head>
-
 <body>
     <div class="container">
-        <h2 id="produtoFormPopupTitulo">Adicionar Novo Produto</h2>
-        <form id="formProdutoPopup">
-            <input type="hidden" id="produtoIdFormPopup">
+        <h2 id="formTitulo"></h2>
+        <form id="produtoForm">
+            <input type="hidden" id="produtoId">
+            
             <div>
-                <label for="produtoDescricaoPopup">Descrição do Produto:</label>
-                <input type="text" id="produtoDescricaoPopup" required>
+                <label for="produtoDescricao">Descrição do Produto:</label>
+                <input type="text" id="produtoDescricao" required>
             </div>
             <div>
-                <label for="produtoPrecoPopup">Preço Unitário (R$):</label>
-                <input type="number" id="produtoPrecoPopup" step="0.01" min="0" required>
+                <label for="produtoPreco">Preço Unitário (R$):</label>
+                <input type="number" id="produtoPreco" step="0.01" min="0" required>
+            </div>
+            
+            <div id="camposNovoProduto" class="hidden">
+                <label for="produtoEstoqueInicial">Estoque Inicial:</label>
+                <input type="number" id="produtoEstoqueInicial" min="0" value="10">
+                <label for="produtoEstoqueMin">Estoque Mínimo:</label>
+                <input type="number" id="produtoEstoqueMin" min="0" value="5">
+                <label for="produtoEstoqueMax">Estoque Máximo:</label>
+                <input type="number" id="produtoEstoqueMax" min="0" value="20">
             </div>
 
-            <div id="novoProdutoEstoqueDivPopup">
-                <div>
-                    <label for="produtoEstoqueInicialPopup">Estoque Inicial (para novos produtos):</label>
-                    <input type="number" id="produtoEstoqueInicialPopup" min="0" value="10">
-                </div>
-                <div>
-                    <label for="produtoEstoqueMinPopup">Estoque Mínimo:</label>
-                    <input type="number" id="produtoEstoqueMinPopup" min="0" value="5">
-                </div>
-                <div>
-                    <label for="produtoEstoqueMaxPopup">Estoque Máximo:</label>
-                    <input type="number" id="produtoEstoqueMaxPopup" min="0" value="50">
+            <div id="camposEdicaoProduto" class="hidden">
+                <hr style="margin-top: 20px;">
+                <p><strong>Status Atual:</strong> <span id="produtoStatus" style="font-weight:bold;"></span></p>
+                <p><strong>Estoque Atual:</strong> <span id="produtoEstoqueAtual"></span> unidades</p>
+                
+                <label for="quantidadeAumentarEstoque">Adicionar ao Estoque:</label>
+                <input type="number" id="quantidadeAumentarEstoque" min="0" value="0" placeholder="Digite a quantidade a ser adicionada">
+                
+                <div id="botaoRelistarContainer" class="hidden" style="margin-top:15px;">
+                     <button type="button" class="cancel" onclick="relistarProduto()">Re-listar Produto</button>
                 </div>
             </div>
-
-            <div id="edicaoProdutoDivPopup" class="hidden">
-                <hr>
-                <h4>Gerenciamento de Estoque e Status (Edição)</h4>
-                <div>
-                    <label>Status Atual do Produto:</label>
-                    <span id="produtoStatusAtual">Carregando...</span>
-                    <div class="toggle-button-group" style="margin-top:5px; margin-bottom:10px;">
-                        <button type="button" id="btnRelistarProduto" onclick="definirStatusProduto(true)">Re-listar Produto</button>
-                        <button type="button" id="btnDelistarProduto" onclick="definirStatusProduto(false)">De-listar Produto</button>
-                    </div>
-                </div>
-                <div>
-                    <label for="produtoEstoqueAtualPopup">Estoque Atual:</label>
-                    <input type="number" id="produtoEstoqueAtualPopup" readonly style="background-color:#eee;">
-                </div>
-                <div>
-                    <label for="quantidadeAumentarEstoquePopup">Aumentar Estoque em (unidades):</label>
-                    <input type="number" id="quantidadeAumentarEstoquePopup" min="0" value="0">
-                </div>
-                <div>
-                    <label for="produtoEstoqueMinEdicaoPopup">Estoque Mínimo (informativo):</label>
-                    <input type="number" id="produtoEstoqueMinEdicaoPopup" readonly style="background-color:#eee;">
-                </div>
-                <div>
-                    <label for="produtoEstoqueMaxEdicaoPopup">Estoque Máximo (informativo):</label>
-                    <input type="number" id="produtoEstoqueMaxEdicaoPopup" readonly style="background-color:#eee;">
-                </div>
-            </div>
-
+            
             <div class="button-group">
                 <button type="button" class="cancel" onclick="window.close()">Cancelar</button>
-                <button type="button" id="btnSalvarProduto" onclick="submeterFormularioProdutoPopup()">Salvar Alterações</button>
+                <button type="button" id="btnSalvar" onclick="submeterFormulario()">Salvar</button>
             </div>
         </form>
-        <div id="produtoFormPopupResult" class="result" style="display: none;"></div>
+        <div id="formResultado" class="result" style="display: none;"></div>
     </div>
+
+    <script>
+        let editMode = false;
+        let produtoAtual = null;
+
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            const produtoId = params.get('id');
+
+            if (produtoId) {
+                editMode = true;
+                document.getElementById('formTitulo').textContent = `Editando Produto ID: ${produtoId}`;
+                document.getElementById('produtoId').value = produtoId;
+                document.getElementById('camposEdicaoProduto').classList.remove('hidden');
+                fetchProductDetails(produtoId);
+            } else {
+                editMode = false;
+                document.getElementById('formTitulo').textContent = 'Adicionar Novo Produto';
+                document.getElementById('camposNovoProduto').classList.remove('hidden');
+            }
+        };
+
+        async function fetchProductDetails(id) {
+            exibirResultado('Carregando dados...', 'loading');
+            try {
+                // O endpoint /todosProdutosStatus agora retorna o DTO com o status calculado.
+                const response = await fetch('/todosProdutosStatus');
+                if (!response.ok) throw new Error('Falha ao buscar lista de produtos.');
+                
+                const produtos = await response.json();
+                produtoAtual = produtos.find(p => p.id == id);
+
+                if (produtoAtual) {
+                    document.getElementById('produtoDescricao').value = produtoAtual.descricao;
+                    document.getElementById('produtoPreco').value = produtoAtual.precoUnitario;
+                    document.getElementById('produtoEstoqueAtual').textContent = produtoAtual.quantidadeEmEstoque;
+                    
+                    const statusSpan = document.getElementById('produtoStatus');
+                    statusSpan.textContent = produtoAtual.status;
+                    statusSpan.style.color = (produtoAtual.status === 'De-listado' || produtoAtual.status === 'Baixo Estoque') ? 'orange' : 'green';
+
+                    // Mostra o botão de re-listar APENAS se o produto estiver de-listado
+                    if (produtoAtual.status === 'De-listado') {
+                        document.getElementById('botaoRelistarContainer').classList.remove('hidden');
+                    } else {
+                        document.getElementById('botaoRelistarContainer').classList.add('hidden');
+                    }
+                    
+                    document.getElementById('formResultado').style.display = 'none'; // Esconde o "Carregando..."
+                } else {
+                    throw new Error('Produto não encontrado.');
+                }
+            } catch (error) {
+                exibirResultado('Erro ao carregar produto: ' + error.message, 'error');
+            }
+        }
+
+        async function relistarProduto() {
+            if (!produtoAtual) return;
+            if (!confirm(`Tem certeza que deseja re-listar o produto "${produtoAtual.descricao}"?`)) return;
+
+            exibirResultado('Re-listando produto...', 'loading');
+            try {
+                const response = await fetch(`/produtos/${produtoAtual.id}/relistar`, { method: 'POST' });
+                if (!response.ok) throw new Error(await response.text() || 'Falha na requisição.');
+                
+                exibirResultado('Produto re-listado com sucesso! As alterações serão salvas ao clicar em "Salvar".', 'success');
+                // Atualiza o estado local para refletir a mudança
+                produtoAtual.listado = true;
+                produtoAtual.status = "Disponível"; // Ou o status correto baseado no estoque
+                fetchProductDetails(produtoAtual.id); // Recarrega para atualizar o status corretamente
+                notificarJanelaPrincipal();
+            } catch (error) {
+                exibirResultado('Erro ao re-listar: ' + error.message, 'error');
+            }
+        }
+
+        async function submeterFormulario() {
+            const id = document.getElementById('produtoId').value;
+            const descricao = document.getElementById('produtoDescricao').value.trim();
+            const preco = parseFloat(document.getElementById('produtoPreco').value);
+
+            if (!descricao || isNaN(preco) || preco < 0) {
+                exibirResultado('Descrição e preço válido são obrigatórios.', 'error');
+                return;
+            }
+
+            if (editMode) {
+                await submeterEdicao(id, descricao, preco);
+            } else {
+                await submeterNovo(descricao, preco);
+            }
+        }
+
+        async function submeterEdicao(id, descricao, preco) {
+            let operacoesSucesso = [];
+            let operacoesFalha = [];
+
+            // 1. Atualizar Descrição e Preço
+            try {
+                const payloadEdicao = { id: parseInt(id), descricao, precoUnitario: preco };
+                const response = await fetch(`/produtos/${id}`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payloadEdicao)
+                });
+                if (!response.ok) throw new Error(await response.text() || 'Falha na requisição.');
+                operacoesSucesso.push('Descrição e Preço atualizados.');
+            } catch (error) {
+                operacoesFalha.push('Falha ao atualizar Descrição/Preço: ' + error.message);
+            }
+
+            // 2. Aumentar Estoque
+            const qtdAumentar = parseInt(document.getElementById('quantidadeAumentarEstoque').value);
+            if (qtdAumentar > 0) {
+                try {
+                    const response = await fetch(`/produtos/${id}/entradaEstoque?qtdade=${qtdAumentar}`, { method: 'POST' });
+                    if (!response.ok) throw new Error(await response.text() || 'Falha na requisição.');
+                    operacoesSucesso.push(`Estoque aumentado em ${qtdAumentar} unidades.`);
+                } catch (error) {
+                    operacoesFalha.push('Falha ao aumentar estoque: ' + error.message);
+                }
+            }
+
+            if (operacoesFalha.length > 0) {
+                exibirResultado('Ocorreram erros:\n' + operacoesFalha.join('\n'), 'error');
+            } else if (operacoesSucesso.length > 0) {
+                exibirResultado('Alterações salvas com sucesso!', 'success');
+                notificarJanelaPrincipal();
+                setTimeout(() => window.close(), 1500);
+            } else {
+                 exibirResultado('Nenhuma alteração para salvar.', 'loading');
+            }
+        }
+
+        async function submeterNovo(descricao, preco) {
+            const qtdIni = parseInt(document.getElementById('produtoEstoqueInicial').value);
+            const estMin = parseInt(document.getElementById('produtoEstoqueMin').value);
+            const estMax = parseInt(document.getElementById('produtoEstoqueMax').value);
+
+            if (isNaN(qtdIni) || isNaN(estMin) || isNaN(estMax) || estMax < estMin) {
+                exibirResultado('Valores de estoque inválidos.', 'error');
+                return;
+            }
+
+            const payload = { descricao, precoUnitario: preco, quantidadeInicialEstoque: qtdIni, estoqueMin: estMin, estoqueMax: estMax };
+
+            exibirResultado('Salvando novo produto...', 'loading');
+            try {
+                const response = await fetch('/produtos', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error(await response.text() || 'Falha na requisição.');
+                const salvo = await response.json();
+                exibirResultado(`Produto adicionado com sucesso! (ID: ${salvo.id})`, 'success');
+                notificarJanelaPrincipal();
+                setTimeout(() => window.close(), 1500);
+            } catch (error) {
+                exibirResultado('Erro ao criar produto: ' + error.message, 'error');
+            }
+        }
+
+        function notificarJanelaPrincipal() {
+            if (window.opener && typeof window.opener.notificarProdutoSalvo === 'function') {
+                window.opener.notificarProdutoSalvo();
+            }
+        }
+
+        function exibirResultado(message, type) {
+            const el = document.getElementById('formResultado');
+            el.style.display = 'block';
+            el.innerHTML = message.replace(/\n/g, '<br>');
+            el.className = 'result ' + type;
+        }
+    </script>
 </body>
 </html>

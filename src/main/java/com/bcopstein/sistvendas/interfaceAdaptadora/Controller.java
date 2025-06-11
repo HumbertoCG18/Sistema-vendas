@@ -175,7 +175,6 @@ public class Controller {
         }
     }
 
-
     @GetMapping("/gerencial/volumeVendas")
     @CrossOrigin(origins = "*")
     public ResponseEntity<VolumeVendasDTO> getVolumeVendas(

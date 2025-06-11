@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dependências - Sistema de Vendas</title>
+    <style>
+        :root {
+            --background-color: #111;
+            --text-color: #eaeaea;
+            --sidebar-bg: #000;
+            --border-color: #333;
+            --link-color: #888;
+            --link-hover-color: #fff;
+            --accent-color: #0070f3;
+            --code-bg: #222;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.7;
+        }
+        .wrapper {
+            display: flex;
+        }
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        .sidebar-header {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+        }
+        .sidebar-header h1 {
+            font-size: 1.25rem;
+            margin: 0;
+            color: #fff;
+        }
+        .sidebar-header a {
+             color: var(--link-color);
+             text-decoration: none;
+             font-size: 0.9rem;
+        }
+        .sidebar-header a:hover {
+            color: var(--link-hover-color);
+        }
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem 4rem;
+            width: calc(100% - 280px - 8rem);
+        }
+        .content-section {
+            padding-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #fff;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        h3 {
+            font-size: 1.75rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.25rem;
+            color: #fff;
+        }
+        p, li {
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+        code {
+            background-color: var(--code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 0.9em;
+            color: #eee;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.85rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            font-weight: 600;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>Sistema de Vendas</h1>
+                <a href="/index.html">Voltar para a Aplicação</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <section id="info-projeto" class="content-section">
+                <h2>Informações do Projeto (<code>pom.xml</code>)</h2>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td><strong>GroupId</strong></td>
+                            <td><code>com.bcopstein</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ArtifactId</strong></td>
+                            <td><code>sist-vendas</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Versão</strong></td>
+                            <td><code>0.0.1-SNAPSHOT</code></td>
+                        </tr>
+                         <tr>
+                            <td><strong>Spring Boot Versão</strong></td>
+                            <td><code>3.2.3</code> (via parent pom)</td>
+                        </tr>
+                         <tr>
+                            <td><strong>Java Versão</strong></td>
+                            <td><code>21</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+             <section id="dependencias" class="content-section">
+                <h2>Dependências do Projeto</h2>
+                <p>A seguir, a lista de dependências principais declaradas no arquivo <code>pom.xml</code>.</p>
+                <table>
+                     <thead>
+                        <tr><th>Dependência (ArtifactId)</th><th>Descrição</th><th>Escopo (Scope)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>spring-boot-starter-data-jpa</code></td>
+                            <td>Starter para persistência de dados com Spring Data e JPA (Java Persistence API). Facilita a criação de repositórios e a interação com o banco de dados.</td>
+                            <td>Padrão (compile)</td>
+                        </tr>
+                         <tr>
+                            <td><code>h2</code></td>
+                            <td>Banco de dados H2, um banco de dados relacional em memória escrito em Java. Ideal para desenvolvimento e testes.</td>
+                            <td><code>runtime</code></td>
+                        </tr>
+                         <tr>
+                            <td><code>spring-boot-starter-web</code></td>
+                            <td>Starter para construir aplicações web, incluindo APIs REST. Inclui o servidor web embarcado (Tomcat por padrão).</td>
+                            <td>Padrão (compile)</td>
+                        </tr>
+                         <tr>
+                            <td><code>spring-boot-devtools</code></td>
+                            <td>Ferramentas de desenvolvedor (DevTools). Fornece reinicialização automática da aplicação, LiveReload e outras facilidades para o desenvolvimento.</td>
+                            <td><code>runtime</code></td>
+                        </tr>
+                         <tr>
+                            <td><code>spring-boot-starter-test</code></td>
+                            <td>Starter para testes, incluindo bibliotecas como JUnit 5, Mockito e Spring Test.</td>
+                            <td><code>test</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

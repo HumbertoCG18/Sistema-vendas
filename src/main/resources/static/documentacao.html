@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação - Sistema de Vendas</title>
+    <style>
+        :root {
+            --background-color: #111;
+            --text-color: #eaeaea;
+            --sidebar-bg: #000;
+            --border-color: #333;
+            --link-color: #888;
+            --link-hover-color: #fff;
+            --accent-color: #0070f3;
+            --code-bg: #222;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.7;
+        }
+        .wrapper {
+            display: flex;
+        }
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        .sidebar-header {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+        }
+        .sidebar-header h1 {
+            font-size: 1.25rem;
+            margin: 0;
+            color: #fff;
+        }
+        .sidebar-header a {
+             color: var(--link-color);
+             text-decoration: none;
+             font-size: 0.9rem;
+        }
+        .sidebar-header a:hover {
+            color: var(--link-hover-color);
+        }
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar nav li {
+            margin-bottom: 0.75rem;
+        }
+        .sidebar nav a {
+            text-decoration: none;
+            color: var(--link-color);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        .sidebar nav a:hover {
+            color: var(--link-hover-color);
+        }
+        .main-content {
+            margin-left: 280px; /* Mesma largura da sidebar */
+            padding: 2rem 4rem;
+            width: calc(100% - 280px - 8rem);
+        }
+        .content-section {
+            padding-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            font-size: 2.5rem;
+            margin:1.2rem;
+            color: #fff;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        h3 {
+            font-size: 1.75rem;
+            margin:1.2rem;
+            color: #fff;
+        }
+        p, li {
+            font-size: 1rem;
+            margin:1.2rem;
+            color: var(--text-color);
+        }
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        code {
+            background-color: var(--code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 0.9em;
+            color: #eee;
+        }
+        pre {
+            background-color: #1a1a1a;
+            border: 1px solid var(--border-color);
+            padding: 1.25rem;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.85rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            font-weight: 600;
+            color: #fff;
+        }
+        .http-method {
+            font-weight: bold;
+            padding: 0.2em 0.5em;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.8em;
+            text-transform: uppercase;
+        }
+        .get { background-color: #0c8ce9; }
+        .post { background-color: #1a9e5a; }
+        .put { background-color: #d88a07; }
+        .delete { background-color: #d12c2c; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>Sistema de Vendas</h1>
+                <a href="/index.html">Voltar para a Aplicação</a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#arquitetura">Arquitetura do Sistema</a></li>
+                    <li><a href="#casos-de-uso">Casos de Uso (Use Cases)</a></li>
+                    <li><a href="#dtos">DTOs</a></li>
+                    <li><a href="#dominio">Camada de Domínio</a></li>
+                    <li><a href="#endpoints">Endpoints da API</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <section id="arquitetura" class="content-section">
+                <h2>Arquitetura do Sistema</h2>
+                <p>O sistema foi estruturado seguindo os princípios da <strong>Arquitetura Limpa (Clean Architecture)</strong>, que promove a separação de responsabilidades em camadas concêntricas. Isso garante que a lógica de negócio principal seja independente de frameworks, banco de dados e interface de usuário, resultando em um sistema mais testável, manutenível e escalável.</p>
+                <ul>
+                    <li><strong>Entidades de Domínio:</strong> O núcleo do sistema, contendo a lógica de negócio mais pura (ex: <code>OrcamentoModel</code>, <code>ClienteModel</code>).</li>
+                    <li><strong>Casos de Uso (Use Cases):</strong> Orquestram o fluxo de dados e aplicam as regras de negócio para uma ação específica do sistema (ex: <code>CriaOrcamentoUC</code>).</li>
+                    <li><strong>Adaptadores de Interface:</strong> Conectam o sistema ao mundo exterior. Incluem o <code>Controller</code> (para a API REST) e os Repositórios (para a persistência de dados).</li>
+                    <li><strong>Frameworks e Drivers:</strong> A camada mais externa, composta por tecnologias como Spring Boot, JPA/Hibernate e o banco de dados H2.</li>
+                </ul>
+            </section>
+
+            <section id="casos-de-uso" class="content-section">
+                <h2>Casos de Uso (Use Cases)</h2>
+                <p>Cada classe de Caso de Uso (UC) representa uma única funcionalidade do sistema, servindo como ponto de entrada para a lógica de negócio a partir da camada de interface.</p>
+                <ul>
+                    <li><code>AdicionarProdutoUC</code>: Adiciona um novo produto ao catálogo e ao estoque.</li>
+                    <li><code>CriaOrcamentoUC</code>: Orquestra a criação de um novo orçamento, validando os dados, encontrando/criando o cliente e acionando o serviço de vendas.</li>
+                    <li><code>EfetivaOrcamentoUC</code>: Efetiva um orçamento existente, validando regras (estoque, validade) e dando baixa no estoque dos produtos.</li>
+                    <li><code>EditarProdutoUC</code>: Altera informações básicas de um produto, como sua descrição e preço unitário.</li>
+                    <li><code>DesativarProdutoUC</code> e <code>RelistarProdutoUC</code>: Alteram o status de um produto, tornando-o disponível ou indisponível para novas vendas.</li>
+                    <li><code>EntradaEstoqueUC</code> e <code>BaixaEstoqueUC</code>: Gerenciam a quantidade de produtos no estoque, permitindo ajustes manuais.</li>
+                    <li><strong>UCs de Consulta:</strong> <code>ConsultaVolumeVendasUC</code>, <code>ConsultaVendasPorProdutoUC</code>, <code>ConsultaPerfilClienteUC</code>, e <code>ConsultaTaxaConversaoUC</code> fornecem dados consolidados para relatórios e análises gerenciais.</li>
+                    <li><code>RelatorioEstoqueBaixoUC</code>: Gera o relatório em formato texto dos produtos que precisam de reposição.</li>
+                </ul>
+            </section>
+
+            <section id="dtos" class="content-section">
+                <h2>DTOs (Data Transfer Objects)</h2>
+                <p>Os DTOs são objetos simples usados para transferir dados entre as camadas da aplicação, especialmente entre o backend e o frontend, evitando a exposição direta das entidades de domínio e moldando os dados para a necessidade específica da interface.</p>
+                <ul>
+                    <li><code>NovoOrcamentoRequestDTO</code>: Carrega os dados enviados pelo frontend para criar um novo orçamento (itens, dados do cliente, localidade).</li>
+                    <li><code>OrcamentoDTO</code>: Representa a visão completa de um orçamento para ser enviada ao frontend, com dados já calculados e formatados (impostos, descontos, totais).</li>
+                    <li><code>NovoProdutoRequestDTO</code>: Usado para criar um novo produto com seus dados de estoque iniciais.</li>
+                    <li><code>ProdutoEstoqueDTO</code>: Fornece uma visão completa de um produto e seu status de estoque (quantidade, mínimo, máximo, etc.).</li>
+                    <li><strong>DTOs Gerenciais:</strong> <code>VolumeVendasDTO</code>, <code>VendaProdutoDTO</code>, <code>PerfilClienteDTO</code>, <code>TaxaConversaoDTO</code>, etc., estruturam os dados para as respostas das consultas gerenciais.</li>
+                </ul>
+            </section>
+
+            <section id="dominio" class="content-section">
+                <h2>Camada de Domínio</h2>
+                <h3>Modelos (<code>dominio.modelos</code>)</h3>
+                <p>Representam os conceitos centrais do negócio. São classes anotadas com <code>@Entity</code> para persistência no banco de dados. Contêm os dados e as regras de negócio mais fundamentais.</p>
+                <ul>
+                    <li><code>ClienteModel</code>: Armazena os dados do cliente (ID, nome, CPF, email).</li>
+                    <li><code>ProdutoModel</code>: Define um produto com ID, descrição e preço.</li>
+                    <li><code>ItemDeEstoqueModel</code>: Controla o estoque de um produto.</li>
+                    <li><code>OrcamentoModel</code>: A entidade central, que agrega o cliente, os itens do pedido e contém toda a lógica de cálculo de subtotais, impostos e descontos.</li>
+                    <li><code>ItemPedidoModel</code>: Representa um item dentro de um orçamento, ligando um produto a uma quantidade.</li>
+                </ul>
+                <h3>Serviços (<code>dominio.servicos</code>)</h3>
+                <p>Orquestram a lógica de negócio que envolve múltiplas entidades. Atuam como uma fachada para o domínio.</p>
+                <ul>
+                    <li><code>ServicoDeVendas</code>: Centraliza as operações relacionadas a vendas, como criar e efetivar orçamentos e gerar relatórios gerenciais.</li>
+                    <li><code>ServicoDeEstoque</code>: Lida com todas as operações de estoque, como dar entrada, baixa e consultar produtos.</li>
+                </ul>
+                <h3>Persistência (<code>dominio.persistencia</code>)</h3>
+                <p>Interfaces que definem os contratos para acesso a dados (Padrão Repositório), abstraindo a implementação do banco de dados. Ex: <code>IClienteRepositorio</code>, <code>IOrcamentoRepositorio</code>.</p>
+            </section>
+
+            <section id="endpoints" class="content-section">
+                <h2>Endpoints da API</h2>
+                <p>A seguir, uma lista dos principais endpoints REST expostos pelo <code>Controller</code>.</p>
+                
+                <h3>Orçamentos</h3>
+                <table>
+                    <thead>
+                        <tr><th>Método</th><th>Endpoint</th><th>Descrição</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="http-method post">POST</span></td><td><code>/novoOrcamento</code></td><td>Cria um novo orçamento. Recebe um <code>NovoOrcamentoRequestDTO</code> no corpo. Retorna o <code>OrcamentoDTO</code> criado.</td></tr>
+                        <tr><td><span class="http-method get">GET</span></td><td><code>/efetivaOrcamento/{id}</code></td><td>Efetiva um orçamento existente. Retorna o <code>OrcamentoDTO</code> atualizado.</td></tr>
+                        <tr><td><span class="http-method get">GET</span></td><td><code>/todosOrcamentos</code></td><td>Retorna uma lista de todos os orçamentos (<code>OrcamentoDTO</code>).</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Produtos e Estoque</h3>
+                <table>
+                     <thead>
+                        <tr><th>Método</th><th>Endpoint</th><th>Descrição</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="http-method get">GET</span></td><td><code>/todosProdutosStatus</code></td><td>Retorna a lista de todos os produtos com seu status de estoque (<code>List&lt;ProdutoEstoqueDTO&gt;</code>).</td></tr>
+                        <tr><td><span class="http-method post">POST</span></td><td><code>/produtos</code></td><td>Adiciona um novo produto. Recebe <code>NovoProdutoRequestDTO</code>. Retorna o <code>ProdutoDTO</code> criado.</td></tr>
+                        <tr><td><span class="http-method put">PUT</span></td><td><code>/produtos/{id}</code></td><td>Edita descrição e preço de um produto.</td></tr>
+                        <tr><td><span class="http-method post">POST</span></td><td><code>/produtos/{id}/entradaEstoque</code></td><td>Aumenta a quantidade de um produto no estoque. Parâmetro: <code>?qtdade=X</code>.</td></tr>
+                        <tr><td><span class="http-method delete">DELETE</span></td><td><code>/produtos/{id}</code></td><td>De-lista um produto.</td></tr>
+                        <tr><td><span class="http-method post">POST</span></td><td><code>/produtos/{id}/relistar</code></td><td>Re-lista um produto.</td></tr>
+                    </tbody>
+                </table>
+                
+                <h3>Consultas Gerenciais</h3>
+                 <table>
+                     <thead>
+                        <tr><th>Método</th><th>Endpoint</th><th>Descrição</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="http-method get">GET</span></td><td><code>/gerencial/volumeVendas</code></td><td>Retorna o volume total de vendas para um período. Parâmetros: <code>?dataInicial=...&dataFinal=...</code>.</td></tr>
+                        <tr><td><span class="http-method get">GET</span></td><td><code>/gerencial/vendasPorProduto</code></td><td>Retorna as vendas agregadas por produto. Parâmetros: <code>?dataInicial=...&dataFinal=...&idProduto=...</code> (opcional).</td></tr>
+                         <tr><td><span class="http-method get">GET</span></td><td><code>/gerencial/perfilCliente</code></td><td>Retorna o perfil de compras de um cliente. Parâmetros: <code>?nomeCliente=...&dataInicial=...&dataFinal=...</code> (datas opcionais).</td></tr>
+                        <tr><td><span class="http-method get">GET</span></td><td><code>/gerencial/taxaConversao</code></td><td>Retorna a taxa de conversão de orçamentos. Parâmetros: <code>?dataInicial=...&dataFinal=...</code>.</td></tr>
+                        <tr><td><span class="http-method get">GET</span></td><td><code>/gerencial/clientesComCompras</code></td><td>Retorna uma lista de nomes de clientes distintos com compras efetivadas.</td></tr>
+                        <tr><td><span class="http-method get">GET</span></td><td><code>/gerencial/relatorioEstoqueBaixo</code></td><td>Retorna um relatório em <strong>texto plano</strong> com produtos de baixo estoque.</td></tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
