@@ -1,11 +1,11 @@
-package com.bcopstein.sistvendas; // Ou o pacote base da sua aplicação
+package com.bcopstein.sistvendas;
 
-import com.bcopstein.sistvendas.dominio.modelos.ClienteModel; // Importar ClienteModel
+import com.bcopstein.sistvendas.dominio.modelos.ClienteModel;
 import com.bcopstein.sistvendas.dominio.modelos.ItemPedidoModel;
 import com.bcopstein.sistvendas.dominio.modelos.OrcamentoModel;
 import com.bcopstein.sistvendas.dominio.modelos.PedidoModel;
 import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
-import com.bcopstein.sistvendas.dominio.persistencia.IClienteRepositorio; // Importar IClienteRepositorio
+import com.bcopstein.sistvendas.dominio.persistencia.IClienteRepositorio;
 import com.bcopstein.sistvendas.dominio.persistencia.IOrcamentoRepositorio;
 import com.bcopstein.sistvendas.dominio.persistencia.IProdutoRepositorio;
 
@@ -18,14 +18,14 @@ public class InitialDataRunner implements CommandLineRunner {
 
     private final IOrcamentoRepositorio orcamentoRepo;
     private final IProdutoRepositorio produtoRepo;
-    private final IClienteRepositorio clienteRepo; // Adicionar IClienteRepositorio
+    private final IClienteRepositorio clienteRepo;
 
     public InitialDataRunner(IOrcamentoRepositorio orcamentoRepo,
             IProdutoRepositorio produtoRepo,
-            IClienteRepositorio clienteRepo) { // Adicionar ao construtor
+            IClienteRepositorio clienteRepo) {
         this.orcamentoRepo = orcamentoRepo;
         this.produtoRepo = produtoRepo;
-        this.clienteRepo = clienteRepo; // Atribuir
+        this.clienteRepo = clienteRepo;
     }
 
     @Override

@@ -39,7 +39,7 @@ public class Controller {
     private DesativarProdutoUC desativarProdutoUC;
     private ConsultaVendasPorProdutoUC consultaVendasPorProdutoUC;
     private ConsultaTaxaConversaoUC consultaTaxaConversaoUC;
-    private ConsultaPerfilClienteUC consultaPerfilClienteUC; 
+    private ConsultaPerfilClienteUC consultaPerfilClienteUC;
     private BaixaEstoqueUC baixaEstoqueUC;
     private EntradaEstoqueUC entradaEstoqueUC;
     private ProdutoPorCodigoUC produtoPorCodigoUC;
@@ -67,10 +67,9 @@ public class Controller {
             ConsultaVendasPorProdutoUC consultaVendasPorProdutoUC,
             ConsultaTaxaConversaoUC consultaTaxaConversaoUC,
             QtdadeEmEstoqueUC qtdadeEmEstoqueUC,
-            ConsultaPerfilClienteUC consultaPerfilClienteUC, 
+            ConsultaPerfilClienteUC consultaPerfilClienteUC,
             ListarNomesClientesUC listarNomesClientesUC,
-            RelatorioEstoqueBaixoUC relatorioEstoqueBaixoUC) 
-    {
+            RelatorioEstoqueBaixoUC relatorioEstoqueBaixoUC) {
         this.produtosDisponiveisUC = produtosDisponiveisUC;
         this.todosProdutosStatusUC = todosProdutosStatusUC;
         this.criaOrcamentoUC = criaOrcamentoUC;
@@ -92,40 +91,18 @@ public class Controller {
         this.listarNomesClientesUC = listarNomesClientesUC;
         this.relatorioEstoqueBaixoUC = relatorioEstoqueBaixoUC;
     }
-
-    @GetMapping(value = "/gerencial/relatorioEstoqueBaixo", produces = MediaType.TEXT_PLAIN_VALUE)
+    
+// --- Endpoint da página Redirecionadora ---
+    @GetMapping("")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<String> getRelatorioEstoqueBaixo() {
-        try {
-            String relatorio = relatorioEstoqueBaixoUC.run();
-            return ResponseEntity.ok()
-                    .header("Content-Disposition", "attachment; filename=\"relatorio_estoque_baixo.txt\"")
-                    .body(relatorio);
-        } catch (Exception e) {
-            System.err.println("Controller Erro: /gerencial/relatorioEstoqueBaixo -> " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Erro ao gerar relatório de baixo estoque.");
-        }
+    public ResponseEntity<Void> welcomeMessage() {
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create("/welcome.html"))
+                .build();
     }
+// -------------------------------------------------------------------------------------------------------------------------
 
-    @PostMapping("/produtos/{id}/relistar")
-    @CrossOrigin(origins = "*")
-    public ResponseEntity<Void> relistarProduto(@PathVariable long id) {
-        try {
-            boolean relistado = relistarProdutoUC.run(id);
-            if (relistado) {
-                return ResponseEntity.ok().build();
-            } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Produto ID " + id + " não encontrado para re-listar.");
-            }
-        } catch (Exception e) {
-            System.err.println("Controller Erro: /produtos/" + id + "/relistar -> " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao re-listar produto.", e);
-        }
-    }
-
+// --- Endpoints das Consultas ---
     @GetMapping("/gerencial/clientesComCompras")
     @CrossOrigin(origins = "*")
     public ResponseEntity<List<String>> getClientesComCompras() {
@@ -198,19 +175,6 @@ public class Controller {
         }
     }
 
-    @GetMapping("")
-    @CrossOrigin(origins = "*")
-    public ResponseEntity<Void> welcomeMessage() {
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create("/welcome.html"))
-                .build();
-    }
-
-    @GetMapping("/todosOrcamentos")
-    @CrossOrigin(origins = "*")
-    public List<OrcamentoDTO> todosOrcamentos() {
-        return todosOrcamentosUC.run();
-    }
 
     @GetMapping("/gerencial/volumeVendas")
     @CrossOrigin(origins = "*")
@@ -228,6 +192,14 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao calcular volume de vendas.",
                     e);
         }
+    }
+// -------------------------------------------------------------------------------------------------------------------------
+
+// --- Endpoints dos Orçamentos ---
+    @GetMapping("/todosOrcamentos")
+    @CrossOrigin(origins = "*")
+    public List<OrcamentoDTO> todosOrcamentos() {
+        return todosOrcamentosUC.run();
     }
 
     @PostMapping("/novoOrcamento")
@@ -278,7 +250,8 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (Exception e) {
             System.err.println("Controller Erro: /orcamentosEfetivados -> " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar orçamentos efetivados.",e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar orçamentos efetivados.",
+                    e);
         }
     }
 
@@ -299,12 +272,31 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao remover orçamento.", e);
         }
     }
+// -------------------------------------------------------------------------------------------------------------------------
 
-    // --- Endpoints de Produto ---
+
+// --- Endpoints de Produto ---
     @GetMapping("/produtosDisponiveis")
     @CrossOrigin(origins = "*")
     public List<ProdutoDTO> produtosDisponiveis() {
         return produtosDisponiveisUC.run();
+    }
+
+    @PostMapping("/produtos/{id}/relistar")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Void> relistarProduto(@PathVariable long id) {
+        try {
+            boolean relistado = relistarProdutoUC.run(id);
+            if (relistado) {
+                return ResponseEntity.ok().build();
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Produto ID " + id + " não encontrado para re-listar.");
+            }
+        } catch (Exception e) {
+            System.err.println("Controller Erro: /produtos/" + id + "/relistar -> " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao re-listar produto.", e);
+        }
     }
 
     @GetMapping("/todosProdutosStatus")
@@ -339,7 +331,7 @@ public class Controller {
         }
     }
 
-    //Editar Produto
+    // Editar Produto
     @PutMapping("/produtos/{id}")
     @CrossOrigin(origins = "*")
     public ResponseEntity<ProdutoDTO> editarProduto(@PathVariable long id, @RequestBody ProdutoDTO produtoDTO) {
@@ -360,7 +352,7 @@ public class Controller {
         }
     }
 
-    //Delistar Produto
+    // Delistar Produto
     @DeleteMapping("/produtos/{id}")
     @CrossOrigin(origins = "*")
     public ResponseEntity<Void> desativarProduto(@PathVariable long id) {
@@ -377,9 +369,9 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao desativar produto.", e);
         }
     }
+// -------------------------------------------------------------------------------------------------------------------------
 
-    // --- Endpoints de Estoque ---
-
+// --- Endpoints de Estoque ---
     // Endpoint para quantidade de um único produto
     @GetMapping("/produtos/{id}/qtdadeEstoque")
     @CrossOrigin(origins = "*")
@@ -437,4 +429,21 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao dar entrada no estoque.", e);
         }
     }
+
+    @GetMapping(value = "/gerencial/relatorioEstoqueBaixo", produces = MediaType.TEXT_PLAIN_VALUE)
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<String> getRelatorioEstoqueBaixo() {
+        try {
+            String relatorio = relatorioEstoqueBaixoUC.run();
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=\"relatorio_estoque_baixo.txt\"")
+                    .body(relatorio);
+        } catch (Exception e) {
+            System.err.println("Controller Erro: /gerencial/relatorioEstoqueBaixo -> " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao gerar relatório de baixo estoque.");
+        }
+    }
+// -------------------------------------------------------------------------------------------------------------------------
 }
