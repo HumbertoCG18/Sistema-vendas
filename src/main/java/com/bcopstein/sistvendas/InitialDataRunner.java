@@ -177,7 +177,7 @@ public class InitialDataRunner implements CommandLineRunner {
             return;
         }
         OrcamentoModel orc = new OrcamentoModel();
-        orc.setCliente(cliente); // Associa a instância de ClienteModel
+        orc.setCliente(cliente);
         orc.setPaisCliente(pais);
         orc.setEstadoCliente(estado);
         orc.setDataGeracao(dataGeracao);
