@@ -723,47 +723,30 @@ function formatarVendasPorProduto(dados) {
 }
 
 function formatarPerfilCliente(dados) {
-  if (!dados) return "Nenhum dado de perfil de cliente encontrado.";
-  let texto = `Perfil do Cliente: ${dados.nomeCliente}\n`;
-  texto += `Email do Cliente: ${dados.emailCliente}\n`;
-  texto += `CPF: ${dados.cpfCliente}\n`;
-  texto += "----------------------------------------------------------\n";
+    if (!dados) return "Nenhum dado de perfil de cliente encontrado.";
+    
+    // Adiciona a exibição do CPF e E-mail
+    let texto = `Perfil do Cliente: ${dados.nomeCliente}\n`;
+    texto += `CPF: ${dados.cpf || 'Não informado'}\n`;
+    texto += `Email: ${dados.email || 'Não informado'}\n\n`;
 
-  if (dados.dataInicialFiltro || dados.dataFinalFiltro) {
-    texto += `Período do Filtro: ${dados.dataInicialFiltro || "N/A"} a ${
-      dados.dataFinalFiltro || "N/A"
-    }\n`;
-  }
-
-  texto += `Total Gasto: R$ ${parseFloat(dados.totalGastoPeloCliente).toFixed(
-    2
-  )}\n`;
-  texto += `Total de Orçamentos Efetivados Considerados: ${dados.totalOrcamentosEfetivadosConsiderados}\n\n`;
-
-  texto += "----------------------------------------------------------\n";
-
-  texto += "Itens Comprados:\n";
-  texto +=
-    "ID Produto | Descrição                               | Qtd. Comprada | Valor Gasto (R$)\n";
-  texto +=
-    "-------------------------------------------------------------------------------------------------\n";
-  if (dados.itensComprados && dados.itensComprados.length > 0) {
-    dados.itensComprados.forEach((item) => {
-      texto += `${String(item.idProduto).padEnd(10)} | ${String(
-        item.descricaoProduto
-      )
-        .padEnd(40)
-        .substring(0, 40)} | ${String(item.quantidadeTotalComprada).padStart(
-        13
-      )} | ${parseFloat(item.valorTotalGastoNoProduto)
-        .toFixed(2)
-        .padStart(17)}\n`;
-    });
-  } else {
-    texto +=
-      "Nenhum item comprado encontrado para este cliente (ou nos filtros aplicados).\n";
-  }
-  return texto;
+    if (dados.dataInicialFiltro || dados.dataFinalFiltro) {
+        texto += `Período do Filtro: ${dados.dataInicialFiltro || 'N/A'} a ${dados.dataFinalFiltro || 'N/A'}\n`;
+    }
+    texto += `Total Gasto: R$ ${parseFloat(dados.totalGastoPeloCliente).toFixed(2)}\n`;
+    texto += `Total de Orçamentos Efetivados Considerados: ${dados.totalOrcamentosEfetivadosConsiderados}\n\n`;
+    texto += "Itens Comprados:\n";
+    texto += "ID Produto | Descrição                               | Qtd. Comprada | Valor Gasto (R$)\n";
+    texto += "-------------------------------------------------------------------------------------------------\n";
+    
+    if (dados.itensComprados && dados.itensComprados.length > 0) {
+        dados.itensComprados.forEach(item => {
+            texto += `${String(item.idProduto).padEnd(10)} | ${String(item.descricaoProduto).padEnd(40).substring(0,40)} | ${String(item.quantidadeTotalComprada).padStart(13)} | ${parseFloat(item.valorTotalGastoNoProduto).toFixed(2).padStart(17)}\n`;
+        });
+    } else {
+        texto += "Nenhum item comprado encontrado para este cliente (ou nos filtros aplicados).\n";
+    }
+    return texto;
 }
 
 let produtosCarregadosParaGerenciamento = [];
