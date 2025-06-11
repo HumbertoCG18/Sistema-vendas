@@ -5,19 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dependências - Sistema de Vendas</title>
     <style>
-        :root {
-            --background-color: #111;
-            --text-color: #eaeaea;
+       :root {
+            --background-color: #0a0a0a;
+            --text-color: #bbb;
+            --title-color: #fff;
             --sidebar-bg: #000;
             --border-color: #333;
-            --link-color: #888;
+            --link-color: #999;
             --link-hover-color: #fff;
             --accent-color: #0070f3;
-            --code-bg: #222;
+            --code-bg: #1a1a1a;
+            --code-border: #444;
+            --detail-summary-bg: #111;
         }
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
@@ -25,9 +26,7 @@
             color: var(--text-color);
             line-height: 1.7;
         }
-        .wrapper {
-            display: flex;
-        }
+        .wrapper { display: flex; }
         .sidebar {
             width: 280px;
             height: 100vh;
@@ -38,81 +37,78 @@
             border-right: 1px solid var(--border-color);
             padding: 2rem;
             overflow-y: auto;
+            box-sizing: border-box;
         }
         .sidebar-header {
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--border-color);
             margin-bottom: 1rem;
         }
-        .sidebar-header h1 {
-            font-size: 1.25rem;
-            margin: 0;
-            color: #fff;
-        }
-        .sidebar-header a {
-             color: var(--link-color);
-             text-decoration: none;
-             font-size: 0.9rem;
-        }
-        .sidebar-header a:hover {
-            color: var(--link-hover-color);
-        }
+        .sidebar-header h1 { font-size: 1.25rem; margin: 0; color: var(--title-color); }
+        .sidebar-header a { color: var(--link-color); text-decoration: none; font-size: 0.9rem; }
+        .sidebar-header a:hover { color: var(--link-hover-color); }
+        .sidebar nav ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar nav li { margin-bottom: 0.75rem; }
+        .sidebar nav a { text-decoration: none; color: var(--link-color); font-weight: 500; font-size: 0.95rem; transition: color 0.2s; }
+        .sidebar nav a:hover { color: var(--link-hover-color); }
+        .sidebar .sub-menu { padding-left: 1rem; font-size: 0.9em; }
         .main-content {
             margin-left: 280px;
             padding: 2rem 4rem;
-            width: calc(100% - 280px - 8rem);
+            width: calc(100% - 280px);
+            box-sizing: border-box;
         }
-        .content-section {
-            padding-top: 2rem;
-            margin-bottom: 2rem;
-        }
-        h2 {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            color: #fff;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        h3 {
-            font-size: 1.75rem;
-            margin-top: 2.5rem;
-            margin-bottom: 1.25rem;
-            color: #fff;
-        }
-        p, li {
-            font-size: 1rem;
-            color: var(--text-color);
-        }
+        .content-section { padding-top: 2rem; margin-bottom: 2rem; }
+        h2 { font-size: 2.5rem; margin-bottom: 2rem; color: var(--title-color); padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+        h3 { font-size: 1.75rem; margin-top: 2.5rem; margin-bottom: 1.25rem; color: var(--title-color); }
+        p, li { font-size: 1rem; color: var(--text-color); }
+        a { color: var(--accent-color); text-decoration: none; }
+        a:hover { text-decoration: underline; }
         code {
             background-color: var(--code-bg);
+            border: 1px solid var(--code-border);
             padding: 0.2em 0.4em;
             border-radius: 4px;
             font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
             font-size: 0.9em;
             color: #eee;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1.5rem;
+        pre { background-color: var(--code-bg); border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 8px; overflow-x: auto; }
+        pre code { padding: 0; border: none; background: none; }
+        details {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background-color: var(--detail-summary-bg);
         }
-        th, td {
-            text-align: left;
-            padding: 0.85rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        th {
+        summary {
             font-weight: 600;
-            color: #fff;
+            padding: 1rem;
+            cursor: pointer;
+            color: var(--title-color);
+            font-size: 1.1rem;
         }
+        .detail-content {
+            padding: 0 1rem 1rem 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+        th, td { text-align: left; padding: 0.85rem; border-bottom: 1px solid var(--border-color); }
+        th { font-weight: 600; color: var(--title-color); }
+        .http-method { font-weight: bold; padding: 0.2em 0.5em; border-radius: 4px; color: white; font-size: 0.8em; text-transform: uppercase; }
+        .get { background-color: #0c8ce9; }
+        .post { background-color: #1a9e5a; }
+        .put { background-color: #d88a07; }
+        .delete { background-color: #d12c2c; }
     </style>
 </head>
 <body>
     <div class="wrapper">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h1>Sistema de Vendas</h1>
-                <a href="/index.html">Voltar para a Aplicação</a>
+                <h1>Dependências</h1>
+                <a href="/index.html">Voltar para a Aplicação</a><br>
+                <a href="/documentacao.html">Ver Documentação</a>
             </div>
         </aside>
 
@@ -131,14 +127,14 @@
                         </tr>
                         <tr>
                             <td><strong>Versão</strong></td>
-                            <td><code>0.0.1-SNAPSHOT</code></td>
+                            <td><code>1.0</code></td>
                         </tr>
                          <tr>
-                            <td><strong>Spring Boot Versão</strong></td>
+                            <td><strong>Versão do Spring Boot</strong></td>
                             <td><code>3.2.3</code> (via parent pom)</td>
                         </tr>
                          <tr>
-                            <td><strong>Java Versão</strong></td>
+                            <td><strong>Versão do Java</strong></td>
                             <td><code>21</code></td>
                         </tr>
                     </tbody>
