@@ -64,7 +64,6 @@
           border-radius: 4px;
           cursor: pointer;
           margin: 5px 0;
-          /* Margin padrão */
           transition: background-color 0.3s, transform 0.1s;
           font-weight: bold;
           display: inline-block;
@@ -96,6 +95,17 @@
       button.add:hover {
           background-color: #27ae60;
       }
+
+      /* Estilo para o novo botão 'Ver' */
+      button.view {
+          background-color: #95a5a6;
+          border-color: #7f8c8d;
+      }
+
+      button.view:hover {
+          background-color: #7f8c8d;
+      }
+
 
       .success {
           background-color: #d4edda;
@@ -279,7 +289,8 @@
           border: 1px solid #eee;
           border-radius: 4px;
           display: flex;
-          flex-wrap: wrap;
+          /* flex-wrap: wrap; */
+          /* LINHA REMOVIDA OU COMENTADA */
           justify-content: space-between;
           align-items: center;
       }

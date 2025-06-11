@@ -40,7 +40,8 @@ public class ServicoDeVendas {
     }
 
     @Autowired
-    public ServicoDeVendas(IOrcamentoRepositorio orcamentos, ServicoDeEstoque servicoDeEstoque, IClienteRepositorio clienteRepo) {
+    public ServicoDeVendas(IOrcamentoRepositorio orcamentos, ServicoDeEstoque servicoDeEstoque,
+            IClienteRepositorio clienteRepo) {
         this.orcamentosRepo = orcamentos;
         this.servicoDeEstoque = servicoDeEstoque;
         this.clienteRepo = clienteRepo;
@@ -55,7 +56,8 @@ public class ServicoDeVendas {
     }
 
     @Transactional
-    public OrcamentoModel criaOrcamento(PedidoModel pedido, String estadoCliente, String paisCliente, String nomeClienteRequest, String cpfClienteRequest, String emailClienteRequest) {
+    public OrcamentoModel criaOrcamento(PedidoModel pedido, String estadoCliente, String paisCliente,
+            String nomeClienteRequest, String cpfClienteRequest, String emailClienteRequest) {
 
         if (pedido == null || pedido.getItens() == null || pedido.getItens().isEmpty()) {
             throw new IllegalArgumentException("Pedido inválido: não pode ser nulo ou vazio.");
@@ -243,68 +245,75 @@ public class ServicoDeVendas {
         return new ArrayList<>(vendasPorProdutoMap.values());
     }
 
-public PerfilClienteDTO gerarPerfilCliente(String nomeCliente, LocalDate dataInicial, LocalDate dataFinal) {
-    if (nomeCliente == null || nomeCliente.trim().isEmpty()) {
-        throw new IllegalArgumentException("Nome do cliente é obrigatório.");
-    }
-
-    List<OrcamentoModel> orcamentosCliente;
-    if (dataInicial != null && dataFinal != null) {
-        // ... (lógica de busca com data) ...
-        orcamentosCliente = orcamentosRepo.findByClienteNomeCompletoAndEfetivadoIsTrueAndDataGeracaoBetweenOrderByDataGeracaoDesc(
-            nomeCliente.trim(), dataInicial, dataFinal);
-    } else {
-        // ... (lógica de busca sem data) ...
-        orcamentosCliente = orcamentosRepo.findByClienteNomeCompletoAndEfetivadoIsTrueOrderByDataGeracaoDesc(nomeCliente.trim());
-    }
-
-    if (orcamentosCliente.isEmpty()) {
-        // Se não houver orçamentos, ainda podemos tentar encontrar o cliente pelo nome para retornar seus dados básicos
-        ClienteModel cliente = clienteRepo.findByNomeCompletoIgnoreCase(nomeCliente.trim()).orElse(null);
-        if (cliente != null) {
-             return new PerfilClienteDTO(cliente.getNomeCompleto(), cliente.getCpf(), cliente.getEmail(),
-                                    dataInicial, dataFinal, BigDecimal.ZERO, 0, new ArrayList<>());
+    public PerfilClienteDTO gerarPerfilCliente(String nomeCliente, LocalDate dataInicial, LocalDate dataFinal) {
+        if (nomeCliente == null || nomeCliente.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome do cliente é obrigatório.");
         }
-        // Se nem o cliente for encontrado, retorna perfil vazio
-        return new PerfilClienteDTO(nomeCliente, null, null, dataInicial, dataFinal, BigDecimal.ZERO, 0, new ArrayList<>());
-    }
 
-    // Pega os dados do cliente a partir do primeiro orçamento encontrado.
-    // Como a consulta é por nome, o cliente será o mesmo em todos os orçamentos.
-    ClienteModel cliente = orcamentosCliente.get(0).getCliente();
-    String cpfCliente = (cliente != null) ? cliente.getCpf() : null;
-    String emailCliente = (cliente != null) ? cliente.getEmail() : null;
-
-    BigDecimal totalGastoPeloCliente = BigDecimal.ZERO;
-    Map<Long, ItemCompradoDTO> itensAgregados = new HashMap<>();
-
-    for (OrcamentoModel orcamento : orcamentosCliente) {
-        totalGastoPeloCliente = totalGastoPeloCliente.add(orcamento.getCustoConsumidor());
-        for (ItemPedidoModel item : orcamento.getItens()) {
-            ProdutoModel produto = item.getProduto();
-            if (produto == null) continue;
-
-            // ... (lógica de agregação de itens, que já está correta) ...
-            long idProduto = produto.getId();
-            BigDecimal valorDoItemNoOrcamento = BigDecimal.valueOf(produto.getPrecoUnitario())
-                                                    .multiply(new BigDecimal(item.getQuantidade()))
-                                                    .setScale(2, RoundingMode.HALF_UP);
-
-            itensAgregados.compute(idProduto, (key, dto) -> 
-                (dto == null) ? new ItemCompradoDTO(idProduto, produto.getDescricao(), item.getQuantidade(), valorDoItemNoOrcamento) :
-                                new ItemCompradoDTO(idProduto, produto.getDescricao(), dto.getQuantidadeTotalComprada() + item.getQuantidade(), dto.getValorTotalGastoNoProduto().add(valorDoItemNoOrcamento))
-            );
+        List<OrcamentoModel> orcamentosCliente;
+        if (dataInicial != null && dataFinal != null) {
+            // ... (lógica de busca com data) ...
+            orcamentosCliente = orcamentosRepo
+                    .findByClienteNomeCompletoAndEfetivadoIsTrueAndDataGeracaoBetweenOrderByDataGeracaoDesc(
+                            nomeCliente.trim(), dataInicial, dataFinal);
+        } else {
+            // ... (lógica de busca sem data) ...
+            orcamentosCliente = orcamentosRepo
+                    .findByClienteNomeCompletoAndEfetivadoIsTrueOrderByDataGeracaoDesc(nomeCliente.trim());
         }
+
+        if (orcamentosCliente.isEmpty()) {
+            // Se não houver orçamentos, ainda podemos tentar encontrar o cliente pelo nome
+            // para retornar seus dados básicos
+            ClienteModel cliente = clienteRepo.findByNomeCompletoIgnoreCase(nomeCliente.trim()).orElse(null);
+            if (cliente != null) {
+                return new PerfilClienteDTO(cliente.getNomeCompleto(), cliente.getCpf(), cliente.getEmail(),
+                        dataInicial, dataFinal, BigDecimal.ZERO, 0, new ArrayList<>());
+            }
+            // Se nem o cliente for encontrado, retorna perfil vazio
+            return new PerfilClienteDTO(nomeCliente, null, null, dataInicial, dataFinal, BigDecimal.ZERO, 0,
+                    new ArrayList<>());
+        }
+
+        // Pega os dados do cliente a partir do primeiro orçamento encontrado.
+        // Como a consulta é por nome, o cliente será o mesmo em todos os orçamentos.
+        ClienteModel cliente = orcamentosCliente.get(0).getCliente();
+        String cpfCliente = (cliente != null) ? cliente.getCpf() : null;
+        String emailCliente = (cliente != null) ? cliente.getEmail() : null;
+
+        BigDecimal totalGastoPeloCliente = BigDecimal.ZERO;
+        Map<Long, ItemCompradoDTO> itensAgregados = new HashMap<>();
+
+        for (OrcamentoModel orcamento : orcamentosCliente) {
+            totalGastoPeloCliente = totalGastoPeloCliente.add(orcamento.getCustoConsumidor());
+            for (ItemPedidoModel item : orcamento.getItens()) {
+                ProdutoModel produto = item.getProduto();
+                if (produto == null)
+                    continue;
+
+                // ... (lógica de agregação de itens, que já está correta) ...
+                long idProduto = produto.getId();
+                BigDecimal valorDoItemNoOrcamento = BigDecimal.valueOf(produto.getPrecoUnitario())
+                        .multiply(new BigDecimal(item.getQuantidade()))
+                        .setScale(2, RoundingMode.HALF_UP);
+
+                itensAgregados.compute(idProduto,
+                        (key, dto) -> (dto == null)
+                                ? new ItemCompradoDTO(idProduto, produto.getDescricao(), item.getQuantidade(),
+                                        valorDoItemNoOrcamento)
+                                : new ItemCompradoDTO(idProduto, produto.getDescricao(),
+                                        dto.getQuantidadeTotalComprada() + item.getQuantidade(),
+                                        dto.getValorTotalGastoNoProduto().add(valorDoItemNoOrcamento)));
+            }
+        }
+
+        // ATUALIZAÇÃO: Passa os novos dados (cpf, email) para o construtor do DTO
+        return new PerfilClienteDTO(nomeCliente, cpfCliente, emailCliente,
+                dataInicial, dataFinal,
+                totalGastoPeloCliente.setScale(2, RoundingMode.HALF_UP),
+                orcamentosCliente.size(),
+                new ArrayList<>(itensAgregados.values()));
     }
-
-    // ATUALIZAÇÃO: Passa os novos dados (cpf, email) para o construtor do DTO
-    return new PerfilClienteDTO(nomeCliente, cpfCliente, emailCliente,
-                                dataInicial, dataFinal,
-                                totalGastoPeloCliente.setScale(2, RoundingMode.HALF_UP),
-                                orcamentosCliente.size(),
-                                new ArrayList<>(itensAgregados.values()));
-}
-
 
     public List<String> listarNomesClientesComCompras() {
         return orcamentosRepo.findDistinctNomesClientesComOrcamentosEfetivados();

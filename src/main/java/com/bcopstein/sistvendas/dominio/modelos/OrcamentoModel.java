@@ -81,8 +81,8 @@ public class OrcamentoModel {
     public void setPaisCliente(String paisCliente) { this.paisCliente = paisCliente;}
     public long getId() {return id;}
     public void setId(long id) {this.id = id;}
-    public void setCustoItens(BigDecimal custoItens) { this.custoItens = custoItens;} // Para JPA e testes
-    public void setCustoConsumidor(BigDecimal custoConsumidor) { this.custoConsumidor = custoConsumidor;} // Para JPA e testes
+    public void setCustoItens(BigDecimal custoItens) { this.custoItens = custoItens;}
+    public void setCustoConsumidor(BigDecimal custoConsumidor) { this.custoConsumidor = custoConsumidor;}
     public void setItens(List<ItemPedidoModel> itens) { this.itens = itens;}
     
     public boolean isVencido() {
@@ -240,51 +240,47 @@ public class OrcamentoModel {
         this.valorDesconto = BigDecimal.ZERO; // Inicializa o campo da classe
         BigDecimal descontoCalculado = BigDecimal.ZERO; // Acumulador local
 
-        System.out.println("DEBUG: Entrando em calcularDescontosInterno()");
-        System.out.println("DEBUG: CustoItens ANTES dos descontos: " + this.custoItens.toPlainString());
+        //System.out.println("DEBUG: Entrando em calcularDescontosInterno()");
+        //System.out.println("DEBUG: CustoItens ANTES dos descontos: " + this.custoItens.toPlainString());
 
         // 1. Desconto por item cuja quantidade solicitada seja superior a três unidades (5%)
         if (this.itens != null) {
-            System.out.println("DEBUG: Verificando desconto por item. Número de itens na lista: " + this.itens.size());
+            //System.out.println("DEBUG: Verificando desconto por item. Número de itens na lista: " + this.itens.size());
             for (ItemPedidoModel item : this.itens) {
-                System.out.println("DEBUG: Processando item ID: " + item.getProduto().getId() + ", Quantidade: "
-                        + item.getQuantidade());
+                //System.out.println("DEBUG: Processando item ID: " + item.getProduto().getId() + ", Quantidade: " + item.getQuantidade());
                 if (item.getQuantidade() >= 3) {
-                    System.out.println("DEBUG: CONDIÇÃO DE DESCONTO POR ITEM ATENDIDA para produto ID: "
-                            + item.getProduto().getId());
+                    //System.out.println("DEBUG: CONDIÇÃO DE DESCONTO POR ITEM ATENDIDA para produto ID: "+ item.getProduto().getId());
                     BigDecimal precoUnitario = BigDecimal.valueOf(item.getProduto().getPrecoUnitario());
                     BigDecimal quantidade = new BigDecimal(item.getQuantidade());
                     BigDecimal valorOriginalItem = precoUnitario.multiply(quantidade);
                     BigDecimal descontoDoItem = valorOriginalItem.multiply(new BigDecimal("0.05"));
                     descontoCalculado = descontoCalculado.add(descontoDoItem);
-                    System.out.println("DEBUG: Desconto para este item: " + descontoDoItem.toPlainString()
-                            + ", Desconto Acumulado: " + descontoCalculado.toPlainString());
+                    //System.out.println("DEBUG: Desconto para este item: " + descontoDoItem.toPlainString() + ", Desconto Acumulado: " + descontoCalculado.toPlainString());
                 } else {
-                    System.out.println("DEBUG: CONDIÇÃO DE DESCONTO POR ITEM NÃO ATENDIDA para produto ID: "
-                            + item.getProduto().getId());
+                    //System.out.println("DEBUG: CONDIÇÃO DE DESCONTO POR ITEM NÃO ATENDIDA para produto ID: " + item.getProduto().getId());
                 }
             }
         } else {
-            System.out.println("DEBUG: Lista de itens é nula. Nenhum desconto por item a ser calculado.");
+            //System.out.println("DEBUG: Lista de itens é nula. Nenhum desconto por item a ser calculado.");
         }
 
         // 2. Desconto sobre o valor total do orçamento quando este contiver mais de dez itens (10%)
-        System.out.println("DEBUG: Verificando desconto por volume. Número de linhas de itens: "
-                + (this.itens != null ? this.itens.size() : "N/A - lista nula"));
+        //System.out.println("DEBUG: Verificando desconto por volume. Número de linhas de itens: " + (this.itens != null ? this.itens.size() : "N/A - lista nula"));
         if (this.itens != null && this.itens.size() > 10) {
-            System.out.println(
-                    "DEBUG: CONDIÇÃO DE DESCONTO POR VOLUME ATENDIDA. CustoItens: " + this.custoItens.toPlainString());
+            // System.out.println(
+            //         "DEBUG: CONDIÇÃO DE DESCONTO POR VOLUME ATENDIDA. CustoItens: " + this.custoItens.toPlainString());
             BigDecimal descontoPorVolume = this.custoItens.multiply(new BigDecimal("0.10"));
             descontoCalculado = descontoCalculado.add(descontoPorVolume);
-            System.out.println("DEBUG: Desconto por volume: " + descontoPorVolume.toPlainString()
-                    + ", Desconto Acumulado Total: " + descontoCalculado.toPlainString());
-        } else {
-            System.out.println("DEBUG: CONDIÇÃO DE DESCONTO POR VOLUME NÃO ATENDIDA.");
-        }
+            // System.out.println("DEBUG: Desconto por volume: " + descontoPorVolume.toPlainString()
+            //         + ", Desconto Acumulado Total: " + descontoCalculado.toPlainString());
+        } 
+        // else {
+        //     System.out.println("DEBUG: CONDIÇÃO DE DESCONTO POR VOLUME NÃO ATENDIDA.");
+        // }
 
         this.valorDesconto = descontoCalculado;
-        System.out.println("DEBUG: Saindo de calcularDescontosInterno(). ValorDesconto FINAL: "
-                + this.valorDesconto.toPlainString());
+        // System.out.println("DEBUG: Saindo de calcularDescontosInterno(). ValorDesconto FINAL: "
+        //         + this.valorDesconto.toPlainString());
     }
 
     public boolean isEfetivado() {

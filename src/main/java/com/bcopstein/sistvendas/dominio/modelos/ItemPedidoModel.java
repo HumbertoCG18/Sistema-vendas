@@ -20,7 +20,7 @@ public class ItemPedidoModel {
     private int quantidade;
 
     @ManyToOne
-    @JsonBackReference // Para evitar recursão infinita no JSON
+    @JsonBackReference
     private OrcamentoModel orcamento;
 
     // Construtor padrão para JPA

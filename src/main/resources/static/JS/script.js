@@ -961,40 +961,44 @@ function atualizarTodosOsSeletoresDeProduto() {
   });
 }
 
-function renderizarListaDeOrcamentos() {
-  const divLista = document.getElementById("listaOrcamentosParaGerenciar");
-  divLista.innerHTML = "";
+        function renderizarListaDeOrcamentos() {
+            const divLista = document.getElementById('listaOrcamentosParaGerenciar');
+            divLista.innerHTML = '';
+            if (!orcamentosCarregados || orcamentosCarregados.length === 0) {
+                divLista.innerHTML = '<p>Nenhum orçamento encontrado.</p>';
+                return;
+            }
+            const ul = document.createElement('ul');
+            orcamentosCarregados.sort((a, b) => b.id - a.id);
+            orcamentosCarregados.forEach(orc => {
+                const li = document.createElement('li');
+                const status = orc.efetivado ? '<span style="color: green;">(EFETIVADO)</span>' : '<span style="color: orange;">(PENDENTE)</span>';
+                const clienteInfo = orc.nomeCliente ? `Cliente: ${orc.nomeCliente}` : '';
 
-  if (!orcamentosCarregados || orcamentosCarregados.length === 0) {
-    divLista.innerHTML = "<p>Nenhum orçamento encontrado para gerenciar.</p>";
-    return;
-  }
-  const ul = document.createElement("ul");
-  orcamentosCarregados.sort((a, b) => a.id - b.id);
-  orcamentosCarregados.forEach((orc) => {
-    const li = document.createElement("li");
-    const status = orc.efetivado
-      ? '<span style="color: green;">(EFETIVADO)</span>'
-      : '<span style="color: orange;">(PENDENTE)</span>';
-    let clienteInfo = orc.estadoCliente
-      ? ` [${orc.estadoCliente.toUpperCase()}]`
-      : "";
-    let botoesAcao = '<div class="orc-actions">';
-    if (!orc.efetivado) {
-      botoesAcao += `<button onclick="efetivarOrcamentoDaLista(${orc.id})">Efetivar</button>`;
-    }
-    botoesAcao += `<button class="remove" onclick="removerOrcamentoDaLista(${orc.id})">Remover</button>`;
-    botoesAcao += "</div>";
+                let botoesAcao = '<div class="orc-actions">';
+                if (!orc.efetivado) {
+                    botoesAcao += `<button onclick="efetivarOrcamentoDaLista(${orc.id})" style="background-color: #28a745;" >Efetivar</button>`;
+                }
+                // >>> NOVO BOTÃO 'Ver' ADICIONADO AQUI <<<
+                botoesAcao += `<button class="view" onclick="verDetalhesOrcamento(${orc.id})">Ver</button>`;
+                botoesAcao += `<button class="remove" onclick="removerOrcamentoDaLista(${orc.id})">Remover</button>`;
+                botoesAcao += '</div>';
 
-    li.innerHTML = `<span class="orc-info"><strong>Orçamento #${
-      orc.id
-    }</strong>${clienteInfo} - Total: R$ ${(orc.custoConsumidor || 0).toFixed(
-      2
-    )} ${status}</span> ${botoesAcao}`;
-    ul.appendChild(li);
-  });
-  divLista.appendChild(ul);
-}
+                li.innerHTML = `<span class="orc-info"><strong>Orçamento #${orc.id}</strong> - ${clienteInfo} - Total: R$ ${parseFloat(orc.custoConsumidor || 0).toFixed(2)} ${status}</span> ${botoesAcao}`;
+                ul.appendChild(li);
+            });
+            divLista.appendChild(ul);
+        }
+        
+        // >>> NOVA FUNÇÃO para o botão 'Ver' <<<
+        function verDetalhesOrcamento(orcamentoId) {
+            const orcamento = orcamentosCarregados.find(o => o.id === orcamentoId);
+            if (orcamento) {
+                exibirResultadoOperacao('gerenciarOrcamentoResult', orcamento);
+            } else {
+                exibirResultadoOperacao('gerenciarOrcamentoResult', `Orçamento com ID ${orcamentoId} não encontrado localmente.`, 'error');
+            }
+        }
 
 function formatarComoJson(data) {
   return JSON.stringify(data, null, 2);

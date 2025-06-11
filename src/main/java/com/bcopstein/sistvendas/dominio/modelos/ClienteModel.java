@@ -11,21 +11,21 @@ public class ClienteModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false) // Nome não pode ser nulo
+    @Column(nullable = false)
     private String nomeCompleto;
     
-    @Column(unique = true) // CPF pode ser único, se desejado
+    @Column(unique = true)
     private String cpf;
     private String email;
 
     // Construtor padrão para JPA
     protected ClienteModel() {}
 
-    // Construtor para criar um novo cliente
+
     public ClienteModel(String nomeCompleto, String cpf, String email) {
         this.nomeCompleto = nomeCompleto;
-        this.cpf = cpf; // Validar formato do CPF seria uma boa prática
-        this.email = email; // Validar formato do email
+        this.cpf = cpf;
+        this.email = email;
     }
 
     // Getters
@@ -34,7 +34,7 @@ public class ClienteModel {
     public String getCpf() { return cpf; }
     public String getEmail() { return email; }
 
-    // Setters (use com cuidado, especialmente para ID)
+    // Setters
     public void setNomeCompleto(String nomeCompleto) { this.nomeCompleto = nomeCompleto; }
     public void setCpf(String cpf) { this.cpf = cpf; }
     public void setEmail(String email) { this.email = email; }

@@ -105,23 +105,23 @@ public class OrcamentoDTO {
     public void setPaisCliente(String paisCliente) { this.paisCliente = paisCliente;}
 
     public static OrcamentoDTO fromModel(OrcamentoModel orcamento) {
-        if (orcamento == null) {
-            System.err.println("OrcamentoDTO.fromModel: Tentativa de converter OrcamentoModel nulo.");
-            OrcamentoDTO dtoPadrao = new OrcamentoDTO();
-            dtoPadrao.setId(0);
-            return dtoPadrao;
-        }
+        // if (orcamento == null) {
+        //     System.err.println("OrcamentoDTO.fromModel: Tentativa de converter OrcamentoModel nulo.");
+        //     OrcamentoDTO dtoPadrao = new OrcamentoDTO();
+        //     dtoPadrao.setId(0);
+        //     return dtoPadrao;
+        // }
 
         List<ItemPedidoDTO> itensDTO = new ArrayList<>();
         List<Double> precosUnitarios = new ArrayList<>();
 
         if (orcamento.getItens() != null) {
             for (ItemPedidoModel ip : orcamento.getItens()) {
-                if (ip.getProduto() == null) {
-                    System.err.println("OrcamentoDTO.fromModel: ItemPedidoModel com ProdutoModel nulo no orçamento ID: "
-                            + orcamento.getId());
-                    continue;
-                }
+                // if (ip.getProduto() == null) {
+                //     System.err.println("OrcamentoDTO.fromModel: ItemPedidoModel com ProdutoModel nulo no orçamento ID: "
+                //             + orcamento.getId());
+                //     continue;
+                // }
                 itensDTO.add(ItemPedidoDTO.fromModel(ip));
                 ProdutoModel produto = ip.getProduto();
                 precosUnitarios.add(produto.getPrecoUnitario());

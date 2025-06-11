@@ -1,90 +1,90 @@
-# README - Sistema de Vendas (sist-vendas)
+# Sistema de Vendas - Lojas ACME
 
-Este arquivo README fornece instruções sobre como configurar o ambiente e executar o projeto Spring Boot "sist-vendas".
+![Java](https://img.shields.io/badge/java-21-blue.svg)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.3-brightgreen.svg)
+![Maven](https://img.shields.io/badge/build-maven-red.svg)
+![Arquitetura](https://img.shields.io/badge/arquitetura-Clean-informational.svg)
 
-## 1. Pré-requisitos
+---
 
-Certifique-se de ter os seguintes softwares instalados em seu sistema:
+### 1. Introdução
 
-* **Java Development Kit (JDK)**:
-    * **Versão Utilizada no Projeto**: Java 21
-    * Você pode baixar o JDK de sites como o [Oracle JDK](https://www.oracle.com/java/technologies/downloads/) ou [OpenJDK](https://openjdk.java.net/).
-    * Após a instalação, verifique se a variável de ambiente `JAVA_HOME` está configurada corretamente e se o `java` está no PATH do seu sistema.
-        ```bash
-        java -version
-        ```
-* **Apache Maven**:
-    * **Versão do Wrapper Utilizada no Projeto**: Maven 3.9.5 (conforme `maven-wrapper.properties`)
-    * Embora o projeto inclua um Maven Wrapper (`mvnw`), ter o Maven instalado globalmente pode ser útil. Você pode baixá-lo em [maven.apache.org](https://maven.apache.org/download.cgi).
-    * Após a instalação, verifique se a variável de ambiente `MAVEN_HOME` (ou `M2_HOME`) está configurada e se o `mvn` está no PATH.
-        ```bash
-        mvn -version
-        ```
-* **Git** (Opcional, mas recomendado para clonar o repositório):
-    * Para clonar o projeto de um repositório Git. Você pode baixá-lo em [git-scm.com](https://git-scm.com/downloads).
+Este projeto é o backend de um sistema de vendas completo para as "Lojas ACME". Desenvolvido com foco em boas práticas de engenharia de software, o sistema gerencia o catálogo de produtos, controle de estoque, criação de orçamentos com cálculos de impostos e descontos, efetivação de vendas e consultas gerenciais.
 
-## 2. Configuração do Projeto
+### 2. Arquitetura do Sistema
+
+A aplicação foi estruturada seguindo os princípios da **Arquitetura Limpa (Clean Architecture)**. Essa abordagem garante um sistema desacoplado, testável e de fácil manutenção, separando as responsabilidades em quatro camadas principais:
+
+-   **Domínio:** O núcleo do sistema. Contém as entidades de negócio (`ClienteModel`, `OrcamentoModel`, etc.) e os serviços de domínio (`ServicoDeVendas`, `ServicoDeEstoque`) que encapsulam as regras de negócio mais importantes.
+-   **Aplicação:** Contém os Casos de Uso (Use Cases, ex: `CriaOrcamentoUC`), que orquestram a execução das funcionalidades do sistema, conectando as camadas externas à lógica de domínio.
+-   **Adaptadores de Interface:** A "cola" do sistema. Inclui o `Controller` (que adapta as requisições HTTP para chamadas de Casos de Uso) e as implementações dos Repositórios (que adaptam a necessidade de persistência do domínio para a tecnologia de banco de dados).
+-   **Frameworks e Drivers:** A camada mais externa, composta por tecnologias como Spring Boot, JPA/Hibernate e o banco de dados H2.
+
+### 3. Principais Tecnologias
+
+-   **Java 21:** Versão da linguagem Java utilizada no projeto.
+-   **Spring Boot 3.2.3:** Framework principal para a criação da aplicação, facilitando a configuração e o desenvolvimento.
+-   **Spring Data JPA & Hibernate:** Para a camada de persistência, abstraindo o acesso ao banco de dados e mapeando objetos Java para tabelas (ORM).
+-   **Maven:** Ferramenta de gerenciamento de dependências e build do projeto.
+-   **H2 Database:** Banco de dados em memória, ideal para ambientes de desenvolvimento e testes rápidos.
+
+### 4. Pré-requisitos
+
+-   **Java Development Kit (JDK):** Versão 21 ou superior.
+-   **Apache Maven:** Versão 3.9 ou superior (ou utilize o Maven Wrapper incluído).
+
+### 5. Como Executar a Aplicação
 
 1.  **Clone o Repositório** (se aplicável):
-    Se você estiver obtendo o projeto de um repositório Git, clone-o para o seu sistema local:
     ```bash
-    git clone <URL_DO_REPOSITORIO_GIT>
-    cd sist-vendas
+    git clone <URL_DO_REPOSITORIO>
+    cd sistema-vendas
     ```
-    Se você já possui os arquivos do projeto (como os fornecidos no contexto), pule esta etapa e navegue até o diretório raiz do projeto `sist-vendas` que contém o arquivo `pom.xml`.
 
-2.  **Verifique a Estrutura do Projeto**:
-    Certifique-se de que você está no diretório raiz do projeto `sist-vendas`, onde o arquivo `pom.xml` está localizado.
+2.  **Execute com o Maven Wrapper** (recomendado):
+    O wrapper garante que a versão correta do Maven seja utilizada.
 
-## 3. Executando o Projeto com Maven Spring Boot Plugin
-
-O projeto está configurado para usar o Spring Boot Maven Plugin, que facilita a execução de aplicações Spring Boot.
-
-1.  **Abra um Terminal ou Prompt de Comando**:
-    Navegue até o diretório raiz do projeto `sist-vendas`.
-
-2.  **Use o Maven Wrapper (Recomendado)**:
-    O Maven Wrapper (`mvnw` para Linux/macOS ou `mvnw.cmd` para Windows) garante que você use a versão do Maven especificada e configurada para o projeto.
-
-    * No Linux ou macOS:
+    -   No Linux ou macOS:
         ```bash
         ./mvnw spring-boot:run
         ```
-        (Se `./mvnw` não for executável, execute `chmod +x ./mvnw` primeiro)
+        *(Se necessário, dê permissão de execução com `chmod +x ./mvnw`)*
 
-    * No Windows:
+    -   No Windows:
         ```bash
         .\mvnw.cmd spring-boot:run
         ```
 
-3.  **Use o Maven Global** (Alternativa, se o wrapper não estiver disponível ou se preferir):
-    Se você tem o Maven instalado globalmente e configurado no PATH:
-    ```bash
-    mvn spring-boot:run
-    ```
+3.  A aplicação será iniciada e estará disponível em `http://localhost:8080`.
 
-4.  **Aguarde a Inicialização**:
-    O Maven irá baixar as dependências (se for a primeira vez ou se houverem novas dependências) e compilar o projeto. Após isso, o Spring Boot iniciará a aplicação.
-    Você verá logs no console, e a aplicação geralmente estará disponível em `http://localhost:8080` (a menos que uma porta diferente seja especificada no arquivo `application.properties`).
+### 6. Acessando a Aplicação
 
-    O arquivo `application.properties` define o nome da aplicação como `sist-vendas`.
-    O arquivo `pom.xml` especifica a versão do Java como 21 e a versão do Spring Boot Starter Parent como 3.2.3.
+#### 6.1. Interface Web e Documentação
 
-## 4. Acessando a Aplicação
+-   **Página de Boas-vindas:** [http://localhost:8080/](http://localhost:8080/) ou [http://localhost:8080/welcome.html](http://localhost:8080/welcome.html)
+-   **Aplicação Principal:** [http://localhost:8080/index.html](http://localhost:8080/index.html)
+-   **Documentação da API:** [http://localhost:8080/documentacao.html](http://localhost:8080/documentacao.html)
+-   **Dependências do Projeto:** [http://localhost:8080/dependencias.html](http://localhost:8080/dependencias.html)
 
-Após a inicialização bem-sucedida, você pode acessar os endpoints da aplicação:
+#### 6.2. Console do Banco de Dados H2
 
-* **Página de Boas-vindas**:
-    * O controller principal (`Controller.java`) redireciona a rota raiz `/` para `/welcome.html`.
-    * Acesse: `http://localhost:8080/` ou `http://localhost:8080/welcome.html`
-* **Interface Principal do Sistema de Vendas**:
-    * A página `index.html` parece ser a interface principal para interagir com as funcionalidades de produtos e orçamentos.
-    * Acesse: `http://localhost:8080/index.html`
+É possível acessar o console do banco de dados H2 diretamente pelo navegador para inspecionar as tabelas e os dados em tempo real. Esta funcionalidade está habilitada pela propriedade `spring.h2.console.enabled=true` em `application.properties`.
 
-## 5. Parando a Aplicação
+1.  Acesse a URL: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
 
-Para parar a aplicação Spring Boot que está rodando no terminal, geralmente você pode pressionar `Ctrl+C` no mesmo terminal onde o comando `mvn spring-boot:run` foi executado.
+2.  Na tela de login, utilize as seguintes configurações, que estão definidas no arquivo `application.properties`:
+    -   **Driver Class:** `org.h2.Driver`
+    -   **JDBC URL:** `jdbc:h2:mem:testdb`
+    -   **User Name:** `sa`
+    -   **Password:** (deixe em branco)
 
----
+3.  Clique em **"Connect"**. Você poderá executar queries SQL diretamente no banco de dados em memória.
 
-Este README deve fornecer os passos essenciais para executar o projeto `sist-vendas`. Consulte os arquivos `pom.xml` e `application.properties` para mais detalhes sobre as configurações e dependências do projeto.
+#### 6.3. Endpoints da API
+
+A aplicação expõe uma API REST completa para todas as suas funcionalidades. A documentação detalhada de cada endpoint, incluindo parâmetros e exemplos de resposta, está disponível na **[Página de Documentação da API](http://localhost:8080/documentacao.html)**.
+
+Exemplos de endpoints:
+-   `POST /novoOrcamento`: Para criar um novo orçamento.
+-   `GET /gerencial/volumeVendas?dataInicial=...&dataFinal=...`: Para consultar o volume de vendas.
+-   `GET /todosProdutosStatus`: Para listar todos os produtos e seus estoques.

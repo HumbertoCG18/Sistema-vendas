@@ -6,15 +6,14 @@ import java.util.List;
 
 public class PerfilClienteDTO {
     private String nomeCliente;
-    private String cpf; // NOVO CAMPO
-    private String email; // NOVO CAMPO
+    private String cpf;
+    private String email;
     private LocalDate dataInicialFiltro;
     private LocalDate dataFinalFiltro;
     private BigDecimal totalGastoPeloCliente;
     private int totalOrcamentosEfetivadosConsiderados;
     private List<ItemCompradoDTO> itensComprados;
 
-    // Construtor ATUALIZADO
     public PerfilClienteDTO(String nomeCliente, String cpf, String email,
                             LocalDate dataInicialFiltro, LocalDate dataFinalFiltro,
                             BigDecimal totalGastoPeloCliente, int totalOrcamentosEfetivadosConsiderados,
@@ -31,8 +30,8 @@ public class PerfilClienteDTO {
 
     // Getters
     public String getNomeCliente() { return nomeCliente; }
-    public String getCpf() { return cpf; } // NOVO GETTER
-    public String getEmail() { return email; } // NOVO GETTER
+    public String getCpf() { return cpf; }
+    public String getEmail() { return email; }
     public LocalDate getDataInicialFiltro() { return dataInicialFiltro; }
     public LocalDate getDataFinalFiltro() { return dataFinalFiltro; }
     public BigDecimal getTotalGastoPeloCliente() { return totalGastoPeloCliente; }
