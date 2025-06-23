@@ -26,6 +26,8 @@ import com.bcopstein.sistvendas.aplicacao.dtos.PerfilClienteDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.TaxaConversaoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.VendaProdutoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.VolumeVendasDTO;
+import com.bcopstein.sistvendas.dominio.servicos.impostos.CalculadorImpostoEstadualStrategy;
+import com.bcopstein.sistvendas.dominio.servicos.impostos.ImpostoStrategyFactory;
 
 @Service
 public class ServicoDeVendas {
@@ -85,6 +87,9 @@ public class ServicoDeVendas {
             throw new IllegalArgumentException(
                     "Local de entrega não atendido: País '" + paisCliente + "', Estado '" + estadoCliente + "'.");
         }
+        
+        // Seleciona a estratégia de imposto
+        CalculadorImpostoEstadualStrategy impostoStrategy = ImpostoStrategyFactory.getStrategy(estadoUpper);
 
         ClienteModel clienteAssociado = null;
         String cpfLimpo = (cpfClienteRequest != null && !cpfClienteRequest.trim().isEmpty())
@@ -124,6 +129,7 @@ public class ServicoDeVendas {
         novoOrcamento.setCliente(clienteAssociado);
         novoOrcamento.setEstadoCliente(estadoCliente.trim());
         novoOrcamento.setPaisCliente(paisCliente.trim());
+        novoOrcamento.setImpostoStrategy(impostoStrategy); // Injeta a estratégia
         novoOrcamento.addItensPedido(pedido);
         novoOrcamento.recalculaTotais();
 
@@ -252,31 +258,24 @@ public class ServicoDeVendas {
 
         List<OrcamentoModel> orcamentosCliente;
         if (dataInicial != null && dataFinal != null) {
-            // ... (lógica de busca com data) ...
             orcamentosCliente = orcamentosRepo
                     .findByClienteNomeCompletoAndEfetivadoIsTrueAndDataGeracaoBetweenOrderByDataGeracaoDesc(
                             nomeCliente.trim(), dataInicial, dataFinal);
         } else {
-            // ... (lógica de busca sem data) ...
             orcamentosCliente = orcamentosRepo
                     .findByClienteNomeCompletoAndEfetivadoIsTrueOrderByDataGeracaoDesc(nomeCliente.trim());
         }
 
         if (orcamentosCliente.isEmpty()) {
-            // Se não houver orçamentos, ainda podemos tentar encontrar o cliente pelo nome
-            // para retornar seus dados básicos
             ClienteModel cliente = clienteRepo.findByNomeCompletoIgnoreCase(nomeCliente.trim()).orElse(null);
             if (cliente != null) {
                 return new PerfilClienteDTO(cliente.getNomeCompleto(), cliente.getCpf(), cliente.getEmail(),
                         dataInicial, dataFinal, BigDecimal.ZERO, 0, new ArrayList<>());
             }
-            // Se nem o cliente for encontrado, retorna perfil vazio
             return new PerfilClienteDTO(nomeCliente, null, null, dataInicial, dataFinal, BigDecimal.ZERO, 0,
                     new ArrayList<>());
         }
 
-        // Pega os dados do cliente a partir do primeiro orçamento encontrado.
-        // Como a consulta é por nome, o cliente será o mesmo em todos os orçamentos.
         ClienteModel cliente = orcamentosCliente.get(0).getCliente();
         String cpfCliente = (cliente != null) ? cliente.getCpf() : null;
         String emailCliente = (cliente != null) ? cliente.getEmail() : null;
@@ -291,7 +290,6 @@ public class ServicoDeVendas {
                 if (produto == null)
                     continue;
 
-                // ... (lógica de agregação de itens, que já está correta) ...
                 long idProduto = produto.getId();
                 BigDecimal valorDoItemNoOrcamento = BigDecimal.valueOf(produto.getPrecoUnitario())
                         .multiply(new BigDecimal(item.getQuantidade()))
@@ -306,8 +304,7 @@ public class ServicoDeVendas {
                                         dto.getValorTotalGastoNoProduto().add(valorDoItemNoOrcamento)));
             }
         }
-
-        // ATUALIZAÇÃO: Passa os novos dados (cpf, email) para o construtor do DTO
+        
         return new PerfilClienteDTO(nomeCliente, cpfCliente, emailCliente,
                 dataInicial, dataFinal,
                 totalGastoPeloCliente.setScale(2, RoundingMode.HALF_UP),
