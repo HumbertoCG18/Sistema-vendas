@@ -19,7 +19,7 @@ public class CalculadorImpostoSP implements CalculadorImpostoEstadualStrategy {
     
     @Override
     public BigDecimal getAliguotaEfetiva(List<ItemPedidoModel> itens) {
-        return ALIQUOTA_SP; // Alíquota fixa
+        return ALIQUOTA_SP; 
     }
     
     @Override

@@ -111,17 +111,18 @@ public class ServicoDeEstoque {
                 .collect(Collectors.toList());
     }
 
-     public String gerarRelatorioEstoqueBaixo() {
+    public String gerarRelatorioEstoqueBaixo() {
         List<ProdutoEstoqueDTO> produtosComBaixoEstoque = consultarProdutosComEstoqueBaixo();
 
         StringBuilder relatorio = new StringBuilder();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        
+
         relatorio.append("==================================================================\n");
         relatorio.append("       RELATÓRIO DE PRODUTOS COM BAIXO ESTOQUE\n");
         relatorio.append("   Data de Geração: ").append(java.time.LocalDateTime.now().format(formatter)).append("\n");
         relatorio.append("==================================================================\n");
-        relatorio.append(String.format("%-12s | %-30s | %-15s | %-15s\n", "ID Produto", "Descrição", "Estoque Atual", "Estoque Mínimo"));
+        relatorio.append(String.format("%-12s | %-30s | %-15s | %-15s\n", "ID Produto", "Descrição", "Estoque Atual",
+                "Estoque Mínimo"));
         relatorio.append("------------------------------------------------------------------\n");
 
         if (produtosComBaixoEstoque.isEmpty()) {
@@ -135,7 +136,7 @@ public class ServicoDeEstoque {
                         dto.getEstoqueMin()));
             }
         }
-        
+
         relatorio.append("==================================================================\n");
         relatorio.append("Fim do Relatório.\n");
 

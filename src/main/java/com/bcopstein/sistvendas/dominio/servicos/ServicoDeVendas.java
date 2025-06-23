@@ -87,8 +87,7 @@ public class ServicoDeVendas {
             throw new IllegalArgumentException(
                     "Local de entrega não atendido: País '" + paisCliente + "', Estado '" + estadoCliente + "'.");
         }
-        
-        // Seleciona a estratégia de imposto
+
         CalculadorImpostoEstadualStrategy impostoStrategy = ImpostoStrategyFactory.getStrategy(estadoUpper);
 
         ClienteModel clienteAssociado = null;
@@ -129,7 +128,7 @@ public class ServicoDeVendas {
         novoOrcamento.setCliente(clienteAssociado);
         novoOrcamento.setEstadoCliente(estadoCliente.trim());
         novoOrcamento.setPaisCliente(paisCliente.trim());
-        novoOrcamento.setImpostoStrategy(impostoStrategy); // Injeta a estratégia
+        novoOrcamento.setImpostoStrategy(impostoStrategy);
         novoOrcamento.addItensPedido(pedido);
         novoOrcamento.recalculaTotais();
 
@@ -304,7 +303,7 @@ public class ServicoDeVendas {
                                         dto.getValorTotalGastoNoProduto().add(valorDoItemNoOrcamento)));
             }
         }
-        
+
         return new PerfilClienteDTO(nomeCliente, cpfCliente, emailCliente,
                 dataInicial, dataFinal,
                 totalGastoPeloCliente.setScale(2, RoundingMode.HALF_UP),
