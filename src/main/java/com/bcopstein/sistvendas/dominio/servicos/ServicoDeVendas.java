@@ -1,39 +1,38 @@
 package com.bcopstein.sistvendas.dominio.servicos;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Optional;
-import java.time.LocalDate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bcopstein.sistvendas.dominio.modelos.OrcamentoModel;
-import com.bcopstein.sistvendas.dominio.modelos.PedidoModel;
-import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
-import com.bcopstein.sistvendas.dominio.modelos.ItemPedidoModel;
-import com.bcopstein.sistvendas.dominio.modelos.ClienteModel;
-import com.bcopstein.sistvendas.dominio.persistencia.IOrcamentoRepositorio;
-import com.bcopstein.sistvendas.dominio.persistencia.IClienteRepositorio;
 import com.bcopstein.sistvendas.aplicacao.dtos.ItemCompradoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.PerfilClienteDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.TaxaConversaoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.VendaProdutoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.VolumeVendasDTO;
+import com.bcopstein.sistvendas.dominio.modelos.ClienteModel;
+import com.bcopstein.sistvendas.dominio.modelos.ItemPedidoModel;
+import com.bcopstein.sistvendas.dominio.modelos.OrcamentoModel;
+import com.bcopstein.sistvendas.dominio.modelos.PedidoModel;
+import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
+import com.bcopstein.sistvendas.dominio.persistencia.IClienteRepositorio;
+import com.bcopstein.sistvendas.dominio.persistencia.IOrcamentoRepositorio;
 import com.bcopstein.sistvendas.dominio.servicos.impostos.CalculadorImpostoEstadualStrategy;
 import com.bcopstein.sistvendas.dominio.servicos.impostos.ImpostoStrategyFactory;
 
 @Service
 public class ServicoDeVendas {
-    private IOrcamentoRepositorio orcamentosRepo;
-    private ServicoDeEstoque servicoDeEstoque;
-    private IClienteRepositorio clienteRepo;
+    private final IOrcamentoRepositorio orcamentosRepo;
+    private final ServicoDeEstoque servicoDeEstoque;
+    private final IClienteRepositorio clienteRepo;
 
     private static final Map<String, List<String>> LOCAIS_ATENDIDOS;
     static {
@@ -41,7 +40,6 @@ public class ServicoDeVendas {
         LOCAIS_ATENDIDOS.put("BRASIL", Arrays.asList("RS", "SP", "PE"));
     }
 
-    @Autowired
     public ServicoDeVendas(IOrcamentoRepositorio orcamentos, ServicoDeEstoque servicoDeEstoque,
             IClienteRepositorio clienteRepo) {
         this.orcamentosRepo = orcamentos;
@@ -154,7 +152,8 @@ public class ServicoDeVendas {
         }
 
         boolean todosDisponiveis = true;
-        for (var item : orcamento.getItens()) {
+        // CORREÇÃO: Substituído 'var' por 'ItemPedidoModel'
+        for (ItemPedidoModel item : orcamento.getItens()) {
             if (item.getProduto() == null) {
                 todosDisponiveis = false;
                 break;
@@ -167,7 +166,8 @@ public class ServicoDeVendas {
         }
 
         if (todosDisponiveis) {
-            for (var item : orcamento.getItens()) {
+            // CORREÇÃO: Substituído 'var' por 'ItemPedidoModel'
+            for (ItemPedidoModel item : orcamento.getItens()) {
                 servicoDeEstoque.baixaEstoque(item.getProduto().getId(), item.getQuantidade());
             }
             orcamento.efetiva();
@@ -227,7 +227,7 @@ public class ServicoDeVendas {
                 ProdutoModel produto = item.getProduto();
                 if (produto == null)
                     continue;
-                if (idProdutoEspecifico != null && produto.getId() != idProdutoEspecifico.longValue()) {
+                if (idProdutoEspecifico != null && produto.getId() != idProdutoEspecifico) {
                     continue;
                 }
                 long idProdutoAtual = produto.getId();

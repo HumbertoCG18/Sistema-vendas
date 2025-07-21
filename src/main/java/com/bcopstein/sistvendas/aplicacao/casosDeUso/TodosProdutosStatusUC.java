@@ -2,7 +2,6 @@ package com.bcopstein.sistvendas.aplicacao.casosDeUso;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.bcopstein.sistvendas.aplicacao.dtos.ProdutoEstoqueDTO;
@@ -12,7 +11,6 @@ import com.bcopstein.sistvendas.dominio.servicos.ServicoDeEstoque;
 public class TodosProdutosStatusUC {
     private final ServicoDeEstoque servicoDeEstoque;
 
-    @Autowired
     public TodosProdutosStatusUC(ServicoDeEstoque servicoDeEstoque) {
         this.servicoDeEstoque = servicoDeEstoque;
     }

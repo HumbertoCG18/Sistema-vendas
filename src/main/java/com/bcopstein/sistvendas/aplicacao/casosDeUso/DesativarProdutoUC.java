@@ -1,17 +1,16 @@
 package com.bcopstein.sistvendas.aplicacao.casosDeUso;
 
-import com.bcopstein.sistvendas.dominio.servicos.ServicoDeEstoque;
-import com.bcopstein.sistvendas.dominio.servicos.ServicoDeVendas;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bcopstein.sistvendas.dominio.servicos.ServicoDeEstoque;
+import com.bcopstein.sistvendas.dominio.servicos.ServicoDeVendas;
+
 @Component
 public class DesativarProdutoUC {
-    private ServicoDeEstoque servicoDeEstoque;
-    private ServicoDeVendas servicoDeVendas;
+    private final ServicoDeEstoque servicoDeEstoque;
+    private final ServicoDeVendas servicoDeVendas;
 
-    @Autowired
     public DesativarProdutoUC(ServicoDeEstoque servicoDeEstoque, ServicoDeVendas servicoDeVendas) {
         this.servicoDeEstoque = servicoDeEstoque;
         this.servicoDeVendas = servicoDeVendas;

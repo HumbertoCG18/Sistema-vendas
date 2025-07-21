@@ -1,15 +1,15 @@
 package com.bcopstein.sistvendas.aplicacao.dtos;
 
-import java.time.LocalDate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 
 public class TaxaConversaoDTO {
-    private LocalDate dataInicialPeriodo;
-    private LocalDate dataFinalPeriodo;
-    private long totalOrcamentosCriados;
-    private long totalOrcamentosEfetivados;
-    private BigDecimal percentualConversao; // Usar BigDecimal para precisão
+    private final LocalDate dataInicialPeriodo;
+    private final LocalDate dataFinalPeriodo;
+    private final long totalOrcamentosCriados;
+    private final long totalOrcamentosEfetivados;
+    private final BigDecimal percentualConversao; // Usar BigDecimal para precisão
 
     public TaxaConversaoDTO(LocalDate dataInicialPeriodo, LocalDate dataFinalPeriodo, long totalOrcamentosCriados, long totalOrcamentosEfetivados) {
         this.dataInicialPeriodo = dataInicialPeriodo;

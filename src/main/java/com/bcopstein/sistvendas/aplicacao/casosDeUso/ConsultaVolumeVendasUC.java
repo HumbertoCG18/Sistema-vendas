@@ -1,16 +1,16 @@
 package com.bcopstein.sistvendas.aplicacao.casosDeUso;
 
+import java.time.LocalDate;
+
+import org.springframework.stereotype.Component;
+
 import com.bcopstein.sistvendas.aplicacao.dtos.VolumeVendasDTO;
 import com.bcopstein.sistvendas.dominio.servicos.ServicoDeVendas;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import java.time.LocalDate;
 
 @Component
 public class ConsultaVolumeVendasUC {
-    private ServicoDeVendas servicoDeVendas;
+    private final ServicoDeVendas servicoDeVendas;
 
-    @Autowired
     public ConsultaVolumeVendasUC(ServicoDeVendas servicoDeVendas) {
         this.servicoDeVendas = servicoDeVendas;
     }

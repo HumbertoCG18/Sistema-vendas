@@ -5,14 +5,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class PerfilClienteDTO {
-    private String nomeCliente;
-    private String cpf;
-    private String email;
-    private LocalDate dataInicialFiltro;
-    private LocalDate dataFinalFiltro;
-    private BigDecimal totalGastoPeloCliente;
-    private int totalOrcamentosEfetivadosConsiderados;
-    private List<ItemCompradoDTO> itensComprados;
+    private final String nomeCliente;
+    private final String cpf;
+    private final String email;
+    private final LocalDate dataInicialFiltro;
+    private final LocalDate dataFinalFiltro;
+    private final BigDecimal totalGastoPeloCliente;
+    private final int totalOrcamentosEfetivadosConsiderados;
+    private final List<ItemCompradoDTO> itensComprados;
 
     public PerfilClienteDTO(String nomeCliente, String cpf, String email,
                             LocalDate dataInicialFiltro, LocalDate dataFinalFiltro,

@@ -3,10 +3,10 @@ package com.bcopstein.sistvendas.aplicacao.dtos;
 import java.math.BigDecimal;
 
 public class VendaProdutoDTO {
-    private long idProduto;
-    private String descricaoProduto;
-    private int quantidadeTotalVendida;
-    private BigDecimal valorTotalArrecadado; // Valor baseado no preço do item no orçamento
+    private final long idProduto;
+    private final String descricaoProduto;
+    private final int quantidadeTotalVendida;
+    private final BigDecimal valorTotalArrecadado; // Valor baseado no preço do item no orçamento
 
     public VendaProdutoDTO(long idProduto, String descricaoProduto, int quantidadeTotalVendida,
             BigDecimal valorTotalArrecadado) {

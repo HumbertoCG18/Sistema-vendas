@@ -3,10 +3,10 @@ package com.bcopstein.sistvendas.aplicacao.dtos;
 import java.math.BigDecimal;
 
 public class ItemCompradoDTO {
-    private long idProduto;
-    private String descricaoProduto;
-    private int quantidadeTotalComprada;
-    private BigDecimal valorTotalGastoNoProduto;
+    private final long idProduto;
+    private final String descricaoProduto;
+    private final int quantidadeTotalComprada;
+    private final BigDecimal valorTotalGastoNoProduto;
 
     public ItemCompradoDTO(long idProduto, String descricaoProduto, int quantidadeTotalComprada, BigDecimal valorTotalGastoNoProduto) {
         this.idProduto = idProduto;

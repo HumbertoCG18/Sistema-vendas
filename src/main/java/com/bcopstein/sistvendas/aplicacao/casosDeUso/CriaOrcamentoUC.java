@@ -2,25 +2,23 @@ package com.bcopstein.sistvendas.aplicacao.casosDeUso;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.bcopstein.sistvendas.dominio.servicos.ServicoDeVendas;
 
 import com.bcopstein.sistvendas.aplicacao.dtos.ItemPedidoDTO;
-import com.bcopstein.sistvendas.aplicacao.dtos.OrcamentoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.NovoOrcamentoRequestDTO;
+import com.bcopstein.sistvendas.aplicacao.dtos.OrcamentoDTO;
 import com.bcopstein.sistvendas.dominio.modelos.ItemPedidoModel;
 import com.bcopstein.sistvendas.dominio.modelos.OrcamentoModel;
 import com.bcopstein.sistvendas.dominio.modelos.PedidoModel;
 import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
 import com.bcopstein.sistvendas.dominio.servicos.ServicoDeEstoque;
+import com.bcopstein.sistvendas.dominio.servicos.ServicoDeVendas;
 
 @Component
 public class CriaOrcamentoUC {
-    private ServicoDeVendas servicoDeVendas;
-    private ServicoDeEstoque servicoDeEstoque;
+    private final ServicoDeVendas servicoDeVendas;
+    private final ServicoDeEstoque servicoDeEstoque;
 
-    @Autowired
     public CriaOrcamentoUC(ServicoDeVendas servicoDeVendas, ServicoDeEstoque servicoDeEstoque) {
         this.servicoDeVendas = servicoDeVendas;
         this.servicoDeEstoque = servicoDeEstoque;

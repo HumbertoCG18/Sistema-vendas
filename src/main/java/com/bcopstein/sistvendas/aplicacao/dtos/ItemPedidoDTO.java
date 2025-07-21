@@ -3,8 +3,8 @@ package com.bcopstein.sistvendas.aplicacao.dtos;
 import com.bcopstein.sistvendas.dominio.modelos.ItemPedidoModel;
 
 public class ItemPedidoDTO {
-    private long idProduto;
-    private int qtdade;
+    private final long idProduto;
+    private final int qtdade;
 
     // Construtor padrão (sem argumentos) necessário para desserialização JSON
     public ItemPedidoDTO() {

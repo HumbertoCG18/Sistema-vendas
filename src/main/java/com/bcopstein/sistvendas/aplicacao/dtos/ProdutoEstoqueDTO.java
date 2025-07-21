@@ -4,14 +4,14 @@ import com.bcopstein.sistvendas.dominio.modelos.ItemDeEstoqueModel;
 import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
 
 public class ProdutoEstoqueDTO {
-    private long id;
-    private String descricao;
-    private double precoUnitario;
-    private int quantidadeEmEstoque;
-    private boolean listado;
-    private int estoqueMin;
-    private int estoqueMax;
-    private String status; // NOVO CAMPO
+    private final long id;
+    private final String descricao;
+    private final double precoUnitario;
+    private final int quantidadeEmEstoque;
+    private final boolean listado;
+    private final int estoqueMin;
+    private final int estoqueMax;
+    private final String status; // NOVO CAMPO
 
     public ProdutoEstoqueDTO(long id, String descricao, double precoUnitario, int quantidadeEmEstoque, boolean listado, int estoqueMin, int estoqueMax) {
         this.id = id;

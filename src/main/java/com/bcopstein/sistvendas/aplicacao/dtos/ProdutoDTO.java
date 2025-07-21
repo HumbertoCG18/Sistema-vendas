@@ -3,9 +3,9 @@ package com.bcopstein.sistvendas.aplicacao.dtos;
 import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
 
 public class ProdutoDTO {
-    private long id;
-    private String descricao;
-    private double precoUnitario;
+    private final long id;
+    private final String descricao;
+    private final double precoUnitario;
 
     public ProdutoDTO(long id, String descricao, double precoUnitario) {
         this.id = id;
