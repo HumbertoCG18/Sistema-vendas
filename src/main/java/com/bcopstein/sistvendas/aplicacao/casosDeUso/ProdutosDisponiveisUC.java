@@ -10,7 +10,7 @@ import com.bcopstein.sistvendas.dominio.servicos.ServicoDeEstoque;
 
 @Component
 public class ProdutosDisponiveisUC {
-    private ServicoDeEstoque servicoEstoque;
+    private final ServicoDeEstoque servicoEstoque;
 
     @Autowired
     public ProdutosDisponiveisUC(ServicoDeEstoque servicoEstoque) {

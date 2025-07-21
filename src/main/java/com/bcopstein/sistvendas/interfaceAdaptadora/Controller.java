@@ -1,14 +1,15 @@
 package com.bcopstein.sistvendas.interfaceAdaptadora;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +19,40 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.MediaType;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.bcopstein.sistvendas.aplicacao.casosDeUso.*;
-import com.bcopstein.sistvendas.aplicacao.dtos.*;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.AdicionarProdutoUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.BaixaEstoqueUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.ConsultaOrcamentosEfetivadosUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.ConsultaPerfilClienteUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.ConsultaTaxaConversaoUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.ConsultaVendasPorProdutoUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.ConsultaVolumeVendasUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.CriaOrcamentoUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.DesativarProdutoUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.EditarProdutoUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.EfetivaOrcamentoUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.EntradaEstoqueUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.ListarNomesClientesUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.ProdutoPorCodigoUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.ProdutosDisponiveisUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.QtdadeEmEstoqueUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.RelatorioEstoqueBaixoUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.RelistarProdutoUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.RemoverOrcamentoUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.TodosOrcamentosUC;
+import com.bcopstein.sistvendas.aplicacao.casosDeUso.TodosProdutosStatusUC;
+import com.bcopstein.sistvendas.aplicacao.dtos.NovoOrcamentoRequestDTO;
+import com.bcopstein.sistvendas.aplicacao.dtos.NovoProdutoRequestDTO;
+import com.bcopstein.sistvendas.aplicacao.dtos.OrcamentoDTO;
+import com.bcopstein.sistvendas.aplicacao.dtos.PerfilClienteDTO;
+import com.bcopstein.sistvendas.aplicacao.dtos.ProdutoDTO;
+import com.bcopstein.sistvendas.aplicacao.dtos.ProdutoEstoqueDTO;
+import com.bcopstein.sistvendas.aplicacao.dtos.TaxaConversaoDTO;
+import com.bcopstein.sistvendas.aplicacao.dtos.VendaProdutoDTO;
+import com.bcopstein.sistvendas.aplicacao.dtos.VolumeVendasDTO;
+
+
 
 @RestController
 public class Controller {

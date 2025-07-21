@@ -1,26 +1,26 @@
 package com.bcopstein.sistvendas.dominio.servicos;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bcopstein.sistvendas.dominio.persistencia.IEstoqueRepositorio;
-import com.bcopstein.sistvendas.dominio.persistencia.IProdutoRepositorio;
-import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
-import com.bcopstein.sistvendas.dominio.modelos.ItemDeEstoqueModel;
 import com.bcopstein.sistvendas.aplicacao.dtos.NovoProdutoRequestDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.ProdutoDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.ProdutoEstoqueDTO;
+import com.bcopstein.sistvendas.dominio.modelos.ItemDeEstoqueModel;
+import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
+import com.bcopstein.sistvendas.dominio.persistencia.IEstoqueRepositorio;
+import com.bcopstein.sistvendas.dominio.persistencia.IProdutoRepositorio;
 
 @Service
 public class ServicoDeEstoque {
-    private IEstoqueRepositorio estoqueRepo;
-    private IProdutoRepositorio produtosRepo;
+    private final IEstoqueRepositorio estoqueRepo;
+    private final IProdutoRepositorio produtosRepo;
 
     @Autowired
     public ServicoDeEstoque(IProdutoRepositorio produtos, IEstoqueRepositorio estoque) {

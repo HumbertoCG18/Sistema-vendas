@@ -1,17 +1,19 @@
 package com.bcopstein.sistvendas.aplicacao.casosDeUso;
 
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import com.bcopstein.sistvendas.aplicacao.dtos.NovoProdutoRequestDTO;
 import com.bcopstein.sistvendas.aplicacao.dtos.ProdutoDTO;
 import com.bcopstein.sistvendas.dominio.modelos.ProdutoModel;
 import com.bcopstein.sistvendas.dominio.servicos.ServicoDeEstoque;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
+@Service
 public class AdicionarProdutoUC {
-    private ServicoDeEstoque servicoDeEstoque;
+    private final ServicoDeEstoque servicoDeEstoque;
 
-    @Autowired
+
     public AdicionarProdutoUC(ServicoDeEstoque servicoDeEstoque) {
         this.servicoDeEstoque = servicoDeEstoque;
     }
